@@ -8,7 +8,7 @@ const skills = [
     category: "Research & Teaching",
     items: [
       { name: "Artificial Intelligence in Education", level: 100 },
-      { name: "Artificial Intelligence in Education", level: 95 },
+      { name: "Intelligent Tutoring Systems", level: 95 },
       { name: "Digital Learning Environments", level: 90 },
       { name: "Instructional Design", level: 90 },
     ],
