@@ -138,6 +138,7 @@ const hardcodedCourses: Course[] = [
     ],
     driveLink: "https://drive.google.com/your-drive-link-learning-analytics",
   },
+
   {
     name: "Computational Thinking, Inclusion, and AI (VOLCANIC)",
     programme: "Teacher Training Program (Erasmus+ VOLCANIC)",
@@ -163,6 +164,15 @@ const hardcodedCourses: Course[] = [
     ],
     driveLink: "https://drive.google.com/your-drive-link-volcanic",
   },
+  {
+  name: "Master Class: Integrating AI into Teaching in Southern Morocco",
+  programme: "Laayoun • Smara • Boujdour • Tarfaya",
+  semester: "Winter 2025",
+  credits: "",
+  content: [],
+  driveLink: "",
+  marksLink: "",
+},
 ];
 
 export default function Courses() {

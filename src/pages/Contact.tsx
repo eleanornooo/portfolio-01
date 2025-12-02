@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 
 // Initialize EmailJS
-emailjs.init('VY8cAgcF0COpEVHpr');
+emailjs.init('pd47JUs1ZBhhOIIan');
 
 export default function Contact() {
   const [messageSent, setMessageSent] = useState(false);
@@ -15,8 +15,8 @@ export default function Contact() {
 
     if (form.current) {
       emailjs
-        .sendForm('service_srq3qjb', 'template_iqi71wr', form.current, 'VY8cAgcF0COpEVHpr')
-        .then(
+        .sendForm('service_srq3qjb', 'template_ivo607f', form.current, 'pd47JUs1ZBhhOIIan')
+        .then( 
           () => {
             setMessageSent(true);
             setErrorMessage(null); // Clear any previous error
