@@ -16,7 +16,7 @@ const skills = [
 ];
 
 // Testimonials
-const testimonials = [
+const testimonials = [ 
   {
     quote:
       "Working with Aziz on the VOLCANIC Erasmus+ project was a true pleasure. He combines research rigor with inclusive design thinking.",
@@ -148,7 +148,7 @@ const InfiniteMovingCards = ({
     </div>
   );
 };
-
+const SHOW_TESTIMONIALS = false;
 export default function Skills() {
   return (
     <div
@@ -193,6 +193,7 @@ export default function Skills() {
         </div>
 
         {/* Testimonials Section */}
+        {SHOW_TESTIMONIALS && (
         <section id="testimonials" className="mt-20">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Testimonials from{" "}
@@ -207,7 +208,8 @@ export default function Skills() {
             />
           </div>
         </section>
-      </div>
+        )}
+    </div>
     </div>
   );
 }
