@@ -28,6 +28,20 @@ await sharp(path.join(src, 'portrait-source.jpg'))
   .webp({ quality: 80 })
   .toFile(path.join(out, 'portrait-square.webp'));
 
+// Event photos (journey, gallery, keynotes): two widths each, aspect ratio kept.
+await mkdir(path.join(out, 'events'), { recursive: true });
+for (const f of await readdir(path.join(src, 'events'))) {
+  const name = path.parse(f).name;
+  for (const w of [640, 1200]) {
+    await sharp(path.join(src, 'events', f))
+      .rotate()
+      .resize({ width: w, withoutEnlargement: true })
+      .webp({ quality: w > 800 ? 72 : 70 })
+      .toFile(path.join(out, 'events', `${name}-${w}.webp`));
+  }
+  console.log('event', name);
+}
+
 // Institution logos: grayscale, trimmed, on a white square tile.
 for (const f of await readdir(path.join(src, 'logos'))) {
   const name = path.parse(f).name;

@@ -10,6 +10,7 @@ import { talks } from '../content/talks';
 import { positions } from '../content/experience';
 import { countryCount } from '../lib/places';
 import Figures from '../components/Figures';
+import Journey from '../components/Journey';
 import { useLang } from '../i18n/useLang';
 import { useNow } from '../hooks/useNow';
 import { byDateDesc, formatDate, monthYear, timing, yearOf } from '../lib/dates';
@@ -70,6 +71,10 @@ export function Component() {
           note={t.home.metricsSource(profile.metrics.source, monthYear(profile.metrics.asOf, lang))}
         />
       </section>
+
+      <div className="h-16 md:h-24" />
+
+      <Journey index="01" />
 
       <div className="h-16 md:h-24" />
 

@@ -405,3 +405,16 @@ html.lenis body {
     display: none;
   }
 }
+
+/* ---------------------------------------------------------------- journey */
+@media (min-width: 768px) {
+  /* Without the scroll-driven version (reduced motion), the row scrolls sideways. */
+  .journey-pin {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+  .journey-pin.is-pinned {
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+}

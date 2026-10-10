@@ -56,3 +56,12 @@ export function ZelligeBand({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+
+/** A small solid eight-pointed star, used as a bullet (journey timeline). */
+export function StarMark({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} aria-hidden="true" focusable="false">
+      <path d={starPath(8, 8, 7.5)} fill="currentColor" />
+    </svg>
+  );
+}
