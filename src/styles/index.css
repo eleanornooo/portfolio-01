@@ -1,0 +1,199 @@
+@import '@fontsource-variable/fraunces/opsz.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ tokens */
+/* Colours are RGB triplets so Tailwind can apply opacity (bg-ink/10 …). */
+:root {
+  --paper: 246 242 234;
+  --paper-2: 237 231 219;
+  --ink: 23 32 51;
+  --ink-2: 62 71 89;
+  --ink-3: 91 98 115;
+  --rule: 214 205 189;
+  --accent: 168 64 31; /* terracotta, AA on paper (5.4:1) */
+  --accent-vivid: 200 81 43; /* UM6P terracotta, decorative only */
+
+  /* timetable session types: fill / line */
+  --tt-lecture: 223 228 238;
+  --tt-lecture-line: 52 70 110;
+  --tt-seminar: 244 222 211;
+  --tt-seminar-line: 168 64 31;
+  --tt-office: 220 232 223;
+  --tt-office-line: 63 107 83;
+  --tt-supervision: 242 231 200;
+  --tt-supervision-line: 128 98 16;
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --paper: 14 21 36;
+  --paper-2: 22 30 48;
+  --ink: 236 230 218;
+  --ink-2: 201 195 183;
+  --ink-3: 161 156 145;
+  --rule: 43 52 72;
+  --accent: 238 138 99;
+  --accent-vivid: 226 105 63;
+
+  --tt-lecture: 33 45 72;
+  --tt-lecture-line: 140 163 214;
+  --tt-seminar: 66 36 28;
+  --tt-seminar-line: 238 138 99;
+  --tt-office: 28 52 42;
+  --tt-office-line: 129 186 152;
+  --tt-supervision: 58 48 20;
+  --tt-supervision-line: 222 186 92;
+
+  color-scheme: dark;
+}
+
+/* -------------------------------------------------------------------- base */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply bg-paper font-sans text-base text-ink antialiased;
+    font-feature-settings: 'kern', 'liga';
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif text-ink;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  ::selection {
+    background: rgb(var(--accent-vivid) / 0.22);
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* -------------------------------------------------------------- components */
+@layer components {
+  .page {
+    @apply mx-auto w-full max-w-page px-5 sm:px-8 lg:px-12;
+  }
+  /* 12-column editorial grid; the margin column holds section labels and dates. */
+  .grid-12 {
+    @apply grid grid-cols-4 gap-x-6 md:grid-cols-12 md:gap-x-8;
+  }
+  .label {
+    @apply font-sans text-label font-medium uppercase text-ink3;
+  }
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .link {
+    @apply text-accent underline decoration-accent/40 underline-offset-[0.2em] transition-colors hover:decoration-accent;
+  }
+  .link-quiet {
+    @apply text-ink underline decoration-rule underline-offset-[0.2em] transition-colors hover:text-accent hover:decoration-accent;
+  }
+  .rule {
+    @apply border-t border-rule;
+  }
+  .prose-measure {
+    @apply max-w-measure;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-[3px] px-4 py-2.5 text-sm font-medium transition-colors;
+  }
+  .btn-solid {
+    @apply btn bg-ink text-paper hover:bg-accent;
+  }
+  .btn-line {
+    @apply btn border border-ink/25 text-ink hover:border-accent hover:text-accent;
+  }
+  .btn-small {
+    @apply inline-flex items-center gap-1.5 rounded-[3px] border border-rule px-2.5 py-1 text-sm text-ink2 transition-colors hover:border-accent hover:text-accent;
+  }
+  .tag {
+    @apply inline-flex items-center rounded-[2px] border border-current px-1.5 py-px text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.08em];
+  }
+  .field {
+    @apply w-full rounded-[3px] border border-ink/25 bg-paper px-3 py-2.5 text-base text-ink placeholder:text-ink3 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+  }
+  .chip {
+    @apply rounded-[3px] border border-rule px-3 py-1.5 text-sm text-ink2 transition-colors hover:border-ink/40 hover:text-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper;
+  }
+  /* Bibliography entry: hanging indent like a printed reference list. */
+  .hanging {
+    padding-left: 1.75em;
+    text-indent: -1.75em;
+  }
+}
+
+/* --------------------------------------------------------- reveal on scroll */
+/* Only hidden when JS is running (html.js) and motion is allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------- print */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  :root,
+  [data-theme='dark'] {
+    --paper: 255 255 255;
+    --paper-2: 255 255 255;
+    --ink: 0 0 0;
+    --ink-2: 40 40 40;
+    --ink-3: 80 80 80;
+    --rule: 190 190 190;
+  }
+  .no-print,
+  header[role='banner'],
+  footer[role='contentinfo'] {
+    display: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  a {
+    text-decoration: none;
+  }
+}

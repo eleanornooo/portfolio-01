@@ -1,16 +1,79 @@
-
 <!doctype html>
 <html lang="en">
   <head>
-    <meta name="description" content="Courses, timetable, projects and research by Aziz Mimoudi, Lecturer & Coordinator in AI and Educational Technologies at UM6P."/>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="src/assests/brain.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aziz Mimoudi . AI &Educational Technologies | Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Aziz Mimoudi" />
+    <meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0E1524" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script>
+      // Before first paint: mark JS as available (for reveal animations) and apply the theme.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var t = null;
+        try {
+          t = localStorage.getItem('theme');
+        } catch (e) {}
+        if (t !== 'dark' && t !== 'light') {
+          t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', t);
+      })();
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Aziz Mimoudi",
+        "honorificPrefix": "Dr.",
+        "honorificSuffix": "Ph.D.",
+        "jobTitle": "Assistant Professor",
+        "description": "Assistant Professor and Coordinator of the Technopedagogy & AI Axis, Institute of Education Sciences, Mohammed VI Polytechnic University (UM6P).",
+        "url": "https://www.mimoudi.com/",
+        "image": "https://www.mimoudi.com/img/portrait-square.webp",
+        "email": "mailto:aziz.mimoudi@um6p.ma",
+        "worksFor": {
+          "@type": "CollegeOrUniversity",
+          "name": "Mohammed VI Polytechnic University (UM6P)",
+          "url": "https://www.um6p.ma/",
+          "department": {
+            "@type": "Organization",
+            "name": "Institute of Education Sciences (ISE)"
+          }
+        },
+        "affiliation": {
+          "@type": "CollegeOrUniversity",
+          "name": "Mohammed VI Polytechnic University (UM6P)"
+        },
+        "alumniOf": [
+          { "@type": "CollegeOrUniversity", "name": "Université de Sherbrooke" },
+          { "@type": "CollegeOrUniversity", "name": "Université Jean Monnet Saint-Étienne" },
+          { "@type": "CollegeOrUniversity", "name": "Université Cadi Ayyad" }
+        ],
+        "workLocation": { "@type": "Place", "name": "Ben Guerir, Morocco" },
+        "knowsAbout": [
+          "Artificial intelligence in education",
+          "Teacher education",
+          "Generative AI",
+          "Intelligent tutoring systems",
+          "Educational technology"
+        ],
+        "sameAs": [
+          "https://scholar.google.com/citations?user=-9rVxq0AAAAJ",
+          "https://orcid.org/0000-0003-2219-9586",
+          "https://www.linkedin.com/in/aziz-mimoudi-328442115/",
+          "https://www.scopus.com/authid/detail.uri?authorId=59523511000"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
- 
