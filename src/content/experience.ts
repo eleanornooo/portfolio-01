@@ -1,0 +1,115 @@
+import type { Affiliation, Position } from './types';
+
+// Source: CV 2026, section 1.1 — plus the Executive Master, GSDL and CETAL-CEAN entries
+// carried over from the previous site. Newest first.
+export const positions: Position[] = [
+  {
+    id: 'ap-um6p',
+    role: 'Assistant Professor & Coordinator, Technopedagogy & AI Axis',
+    org: 'Institute of Education Sciences (ISE), UM6P',
+    place: 'Ben Guerir, Morocco',
+    start: '2026',
+    logo: 'um6p',
+  },
+  {
+    id: 'lecturer-um6p',
+    role: 'Lecturer & Coordinator, Technopedagogy & AI Axis (formerly Digital & AI Axis)',
+    org: 'Institute of Education Sciences (ISE), UM6P',
+    place: 'Ben Guerir, Morocco',
+    start: '2020',
+    end: '2026',
+    logo: 'um6p',
+  },
+  {
+    id: 'cssp',
+    role: 'Replacement Teacher',
+    org: 'Centre de services scolaire des Patriotes schools',
+    place: 'Beloeil, Québec, Canada',
+    start: '2024',
+    end: '2025',
+    logo: 'cssp',
+  },
+  {
+    id: 'executive-master',
+    role: 'Instructor, Executive Master’s Program',
+    org: 'UM6P — Educational Technologies and AI in Moroccan Schools',
+    start: '2023',
+    end: '2023',
+    periodLabel: 'May–July 2023',
+    logo: 'um6p',
+  },
+  {
+    id: 'gsdl',
+    role: 'Co-researcher, GSDL project',
+    org: 'UNESCO Chair in Global Smart Disruptive Learning, Université TÉLUQ',
+    place: 'Québec, Canada',
+    start: '2022',
+    end: '2024',
+    periodLabel: 'Oct 2022–2024',
+    logo: 'teluq',
+  },
+  {
+    id: 'cetal',
+    role: 'Co-researcher, CETAL-CEAN project',
+    org: 'Funded by the Quebec Ministry of Labour',
+    place: 'Québec, Canada',
+    start: '2022',
+    end: '2023',
+    periodLabel: 'Dec 2022–June 2023',
+    logo: 'quebec',
+  },
+  {
+    id: 'teluq-ra',
+    role: 'Research Assistant',
+    org: 'Université TÉLUQ, Quebec universities network',
+    place: 'Québec, Canada',
+    start: '2021',
+    end: '2024',
+    logo: 'teluq',
+  },
+  {
+    id: 'd4r',
+    role: 'E-learning Instructional Designer',
+    org: 'Digital for Research Lab, UM6P',
+    place: 'Ben Guerir, Morocco',
+    start: '2019',
+    end: '2020',
+    logo: 'um6p',
+    url: 'https://youtu.be/r2MhibAv4bc',
+  },
+  {
+    id: 'aefe',
+    role: 'Teacher (on secondment)',
+    org: 'AEFE — Campus Victor Hugo',
+    place: 'Marrakech, Morocco',
+    start: '2016',
+    end: '2019',
+    logo: 'aefe',
+  },
+  {
+    id: 'men',
+    role: 'Teacher of Languages & Mathematics',
+    org: 'Moroccan Ministry of Education',
+    place: 'Morocco',
+    start: '1999',
+    end: '2019',
+    logo: 'men',
+  },
+];
+
+// CV 2026, section 1.2.
+export const affiliations: Affiliation[] = [
+  {
+    name: 'CRIEVAT',
+    org: 'Centre de recherche et d’intervention sur l’éducation et la vie au travail, Université Laval',
+    role: 'Researcher',
+    period: 'since 2021',
+    url: 'https://crievat.fse.ulaval.ca/membres/membres-statut-etudiant/',
+  },
+  {
+    name: 'OBVIA',
+    org: 'Observatoire international sur les impacts sociétaux de l’IA, Université Laval',
+    role: 'Researcher',
+    period: '2021–2023',
+  },
+];
