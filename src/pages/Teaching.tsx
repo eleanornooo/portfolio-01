@@ -7,6 +7,7 @@ import Seo from '../components/Seo';
 import Section, { PageHeader } from '../components/Section';
 import Dialog from '../components/Dialog';
 import { Ext } from '../components/Ext';
+import Timetable from '../timetable/Timetable';
 
 type Sort = 'recent' | 'az' | 'za';
 
@@ -193,8 +194,11 @@ export function Component() {
     <>
       <Seo title={t.teaching.metaTitle} description={t.teaching.metaDescription} path="/teaching" />
       <PageHeader title={t.teaching.title} intro={pick(teachingStatement)} />
-      <Section id="courses" index="01" label={t.teaching.courses}>
+      <Section id="courses" index="01" label={t.teaching.courses} className="no-print">
         <Courses />
+      </Section>
+      <Section id="timetable" index="02" label={t.teaching.timetable} intro={t.timetable.intro}>
+        <Timetable />
       </Section>
     </>
   );

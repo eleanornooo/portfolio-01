@@ -193,6 +193,18 @@
     opacity: 1 !important;
     transform: none !important;
   }
+  /* Timetable: always print the week grid, never the phone agenda. */
+  .tt-grid {
+    display: block !important;
+    overflow: visible !important;
+  }
+  .tt-agenda {
+    display: none !important;
+  }
+  .tt-grid button {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   a {
     text-decoration: none;
   }
