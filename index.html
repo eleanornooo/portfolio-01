@@ -11,10 +11,9 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <script>
-      // Before first paint: mark JS as available (for reveal animations) and apply the theme.
+      // Before first paint: apply the saved (or system) colour theme, so dark mode never flashes.
       (function () {
         var d = document.documentElement;
-        d.classList.add('js');
         var t = null;
         try {
           t = localStorage.getItem('theme');

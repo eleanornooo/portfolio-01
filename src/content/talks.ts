@@ -162,7 +162,8 @@ export const talks: Talk[] = [
       'Impact de l’usage de l’IA dans une plateforme de formation à distance pour les élèves de 3e année primaire',
     event: 'ROC 2021 — REFAD & Observatoire du numérique en éducation (ONE)',
     location: 'Montréal, Canada',
-    links: [{ label: 'Speaker badge', url: 'https://cadre21.org/membres/aziz-mimoudi-usherbrooke-ca/badges/colloque-roc-2021-conferencier' }],
+    // The CV's CADRE21 speaker-badge link returns 404 (checked Oct 2026); proceedings link instead.
+    links: [{ label: 'Proceedings (p. 31)', url: 'https://r-libre.teluq.ca/2590/1/Actes%20du%20Colloque%20ROC2021.pdf' }],
     lang: 'fr',
   },
   {

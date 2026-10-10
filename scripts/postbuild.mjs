@@ -1,9 +1,49 @@
-// Runs after `vite-react-ssg build`: writes dist/sitemap.xml from the pre-rendered pages.
-import { readdir, writeFile } from 'node:fs/promises';
+// Runs after `vite-react-ssg build`:
+//  1. moves <meta charset> and viewport to the very top of <head> (react-helmet puts the
+//     page <title> and meta tags before them; browsers want charset in the first 1 KB);
+//  2. replaces the SSG's preload of *every* font file with preloads of the three faces
+//     needed for the first paint (the others load on demand via unicode-range);
+//  3. inlines the stylesheet (≈9 KB gzipped) so the first paint needs no extra request;
+//  4. writes dist/sitemap.xml from the pre-rendered pages.
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SITE = 'https://www.mimoudi.com';
 const dist = path.resolve(import.meta.dirname, '..', 'dist');
+
+const assets = await readdir(path.join(dist, 'assets'));
+const criticalFonts = [
+  /^fraunces-latin-opsz-normal-.*\.woff2$/,
+  /^ibm-plex-sans-latin-400-normal-.*\.woff2$/,
+  /^ibm-plex-sans-latin-500-normal-.*\.woff2$/,
+]
+  .map((re) => assets.find((f) => re.test(f)))
+  .filter(Boolean)
+  .map((f) => `<link rel="preload" as="font" type="font/woff2" href="/assets/${f}" crossorigin>`)
+  .join('');
+
+const cssCache = new Map();
+for (const f of assets.filter((a) => a.endsWith('.css'))) {
+  cssCache.set(`/assets/${f}`, await readFile(path.join(dist, 'assets', f), 'utf8'));
+}
+
+const htmlFiles = (await readdir(dist)).filter((f) => f.endsWith('.html'));
+for (const f of htmlFiles) {
+  const file = path.join(dist, f);
+  let html = await readFile(file, 'utf8');
+  const first = [];
+  html = html.replace(/<meta charset="[^"]*"\s*\/?>|<meta name="viewport"[^>]*>/gi, (tag) => {
+    first.push(tag);
+    return '';
+  });
+  html = html.replace(/<head>/i, `<head>${first.join('')}`);
+  html = html.replace(/<link rel="preload" as="font"[^>]*>/g, '');
+  html = html.replace(/<link rel="stylesheet"[^>]*href="(\/assets\/[^"]+\.css)"[^>]*>/, (_tag, href) => {
+    const css = cssCache.get(href);
+    return `${criticalFonts}<style>${css}</style>`;
+  });
+  await writeFile(file, html);
+}
 
 const pages = (await readdir(dist))
   .filter((f) => f.endsWith('.html') && f !== '404.html')

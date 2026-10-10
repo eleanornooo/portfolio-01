@@ -1,8 +1,8 @@
 import { useEffect, useRef, type ElementType, type HTMLAttributes, type ReactNode } from 'react';
 
 /**
- * Fades its content in when it scrolls into view. Content stays visible without JS
- * and under prefers-reduced-motion (see .reveal in styles/index.css).
+ * Fades its content in when it scrolls into view. Content is visible by default
+ * (no JS, reduced motion, or already on screen); see .reveal-armed in styles/index.css.
  */
 export default function Reveal({
   as: Tag = 'div',
@@ -18,11 +18,12 @@ export default function Reveal({
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (!('IntersectionObserver' in window)) {
-      el.classList.add('is-visible');
-      return;
-    }
+    if (!el || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Content already on screen is never hidden (it is the page's first paint);
+    // only sections that start below the fold fade in when scrolled to.
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
+    el.classList.add('reveal-armed');
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {

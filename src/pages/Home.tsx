@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Head } from 'vite-react-ssg';
 import { ArrowRight, Download } from 'lucide-react';
 import { profile } from '../content/profile';
 import { news } from '../content/news';
@@ -25,6 +26,9 @@ const FIGURE_CELL = [
   'border-l border-t pl-6 md:border-t-0 md:pl-8',
 ];
 
+const PORTRAIT_SRCSET = '/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w';
+const PORTRAIT_SIZES = '(min-width: 1248px) 470px, (min-width: 768px) 38vw, 92vw';
+
 const sortYear = (y: number | 'in press') => (y === 'in press' ? 9999 : y);
 
 export function Component() {
@@ -50,6 +54,17 @@ export function Component() {
   return (
     <>
       <Seo title={t.home.metaTitle} description={t.home.metaDescription} path="/" />
+      <Head>
+        {/* The portrait is the largest element on the page: fetch it early. */}
+        <link
+          rel="preload"
+          as="image"
+          href="/img/portrait-560.webp"
+          imageSrcSet={PORTRAIT_SRCSET}
+          imageSizes={PORTRAIT_SIZES}
+          {...{ fetchpriority: 'high' }}
+        />
+      </Head>
 
       {/* ---------------------------------------------------------------- hero */}
       <section className="page pb-14 pt-10 md:pb-20 md:pt-16" aria-labelledby="hero-name">
@@ -66,7 +81,7 @@ export function Component() {
               <span className="sr-only">, {profile.postnominal}</span>
             </h1>
             <p className="mt-6 max-w-[40ch] text-lead text-ink">
-              <span className="font-medium">{profile.postnominal}</span> — {pick(profile.title)} ·{' '}
+              {profile.postnominal} — {pick(profile.title)} ·{' '}
               {pick(profile.role)}, {profile.institutionShort}
             </p>
             <p className="mt-8 max-w-[36ch] border-l-2 border-vivid pl-5 font-serif text-[1.375rem] font-light italic leading-snug text-ink2 md:text-[1.5rem]">
@@ -97,8 +112,8 @@ export function Component() {
           <figure className="col-span-4 md:col-span-5">
             <img
               src="/img/portrait-560.webp"
-              srcSet="/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w"
-              sizes="(min-width: 1248px) 470px, (min-width: 768px) 38vw, 92vw"
+              srcSet={PORTRAIT_SRCSET}
+              sizes={PORTRAIT_SIZES}
               width={736}
               height={920}
               alt={t.home.portraitAlt}
@@ -115,7 +130,7 @@ export function Component() {
       <Reveal as="section" className="page" aria-label="Key figures">
         <dl className="grid grid-cols-2 border-y border-rule md:grid-cols-4">
           {figures.map((f, i) => (
-            <div key={f.label} className={`flex flex-col-reverse gap-1 border-rule py-6 md:py-8 ${FIGURE_CELL[i]}`}>
+            <div key={f.label} className={`flex flex-col-reverse justify-end gap-1 border-rule py-6 md:py-8 ${FIGURE_CELL[i]}`}>
               <dt className="text-sm text-ink2">{f.label}</dt>
               <dd className="num font-serif text-[2.75rem] font-light leading-none md:text-[3.5rem]">{f.value}</dd>
             </div>

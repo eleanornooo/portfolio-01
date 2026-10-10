@@ -95,12 +95,12 @@ export function Component() {
               <div role="group" aria-label={t.publications.filterType} className="flex flex-wrap gap-2">
                 <button type="button" className="chip" aria-pressed={type === 'all'} onClick={() => setType('all')}>
                   {t.publications.types.all}
-                  <span className="num ml-1.5 opacity-60">{publications.length}</span>
+                  <span className="num ml-1.5">{publications.length}</span>
                 </button>
                 {TYPES.filter((ty) => counts[ty]).map((ty) => (
                   <button key={ty} type="button" className="chip" aria-pressed={type === ty} onClick={() => setType(ty)}>
                     {t.publications.types[ty]}
-                    <span className="num ml-1.5 opacity-60">{counts[ty]}</span>
+                    <span className="num ml-1.5">{counts[ty]}</span>
                   </button>
                 ))}
               </div>

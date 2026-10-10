@@ -1,7 +1,7 @@
 import { Head } from 'vite-react-ssg';
 
 export const SITE_URL = 'https://www.mimoudi.com';
-const OG_IMAGE = `${SITE_URL}/og-image.png`;
+const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 /** Per-page <head>: title, description, canonical URL, Open Graph and Twitter card. */
 export default function Seo({

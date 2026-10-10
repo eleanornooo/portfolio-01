@@ -14,7 +14,7 @@ export function TimingTag({ timing }: { timing: Timing }) {
   const { t } = useLang();
   if (timing === 'past') return null;
   return (
-    <span className="tag border-vivid bg-vivid text-paper">
+    <span className="tag border-accent bg-accent text-paper">
       {timing === 'upcoming' ? t.common.upcoming : t.common.ongoing}
     </span>
   );

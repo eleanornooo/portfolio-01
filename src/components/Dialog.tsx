@@ -60,6 +60,25 @@ export default function Dialog({
       onClick={(e) => {
         if (e.target === ref.current) ref.current?.close();
       }}
+      onKeyDown={(e) => {
+        // Keep Tab / Shift+Tab cycling inside the dialog.
+        if (e.key !== 'Tab' || !ref.current) return;
+        const items = [
+          ...ref.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+          ),
+        ];
+        if (!items.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }}
       className={
         sheet
           ? `m-0 h-dvh max-h-none w-full max-w-none bg-paper p-0 text-ink backdrop:bg-ink/40 ${className}`

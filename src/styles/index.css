@@ -1,8 +1,11 @@
 @import '@fontsource-variable/fraunces/opsz.css';
-@import '@fontsource/ibm-plex-sans/400.css';
-@import '@fontsource/ibm-plex-sans/400-italic.css';
-@import '@fontsource/ibm-plex-sans/500.css';
-@import '@fontsource/ibm-plex-sans/600.css';
+/* Latin + Latin Extended only (French, Turkish names…); no Cyrillic/Greek/Vietnamese. */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans/latin-400-italic.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
 
 @tailwind base;
 @tailwind components;
@@ -155,19 +158,17 @@
 }
 
 /* --------------------------------------------------------- reveal on scroll */
-/* Only hidden when JS is running (html.js) and motion is allowed. */
-@media (prefers-reduced-motion: no-preference) {
-  .js .reveal {
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-      opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
-      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .js .reveal.is-visible {
-    opacity: 1;
-    transform: none;
-  }
+/* Armed by <Reveal> only for sections below the fold, and only when motion is allowed. */
+.reveal-armed {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-armed.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 /* ------------------------------------------------------------------- print */
@@ -189,7 +190,7 @@
   footer[role='contentinfo'] {
     display: none !important;
   }
-  .reveal {
+  .reveal-armed {
     opacity: 1 !important;
     transform: none !important;
   }
