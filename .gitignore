@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Private source documents (contain personal data: date of birth, home address, phone)
+CV_Aziz_2026.md
+*.docx
