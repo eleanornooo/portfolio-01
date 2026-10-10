@@ -157,6 +157,186 @@
   }
 }
 
+/* ------------------------------------------------------------ smooth scroll */
+/* Lenis (lib/smooth.ts) sets these classes on <html> while it drives the scroll. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* -------------------------------------------------------------------- hero */
+.hero {
+  min-height: calc(100svh - 3.5rem);
+}
+@media (min-width: 768px) {
+  .hero {
+    min-height: min(calc(100svh - 4rem), 62rem);
+  }
+}
+
+/* Entrance: pure CSS so it starts with the first paint, before any JavaScript. */
+.kin-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+.kin-line > span {
+  display: block;
+  animation: kin-rise 1.05s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+.kin-fade {
+  animation: kin-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes kin-rise {
+  from {
+    transform: translateY(108%) rotate(2deg);
+  }
+}
+@keyframes kin-fade {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* Portrait: a Moorish arch. The image is painted at once (it is the LCP element); a
+   terracotta curtain lifts off it, then the outline draws itself. */
+.arch {
+  clip-path: url(#hero-arch);
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0; /* fallback shape */
+}
+@supports (clip-path: url(#a)) {
+  .arch {
+    border-radius: 0;
+  }
+}
+.arch-img {
+  animation: arch-settle 1.6s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
+}
+.arch-curtain {
+  transform-origin: top;
+  animation: arch-lift 1.05s cubic-bezier(0.77, 0, 0.18, 1) both 0.25s;
+}
+.arch-outline path {
+  stroke: rgb(var(--accent-vivid));
+  stroke-width: 0.28;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: draw-in 1.8s cubic-bezier(0.65, 0, 0.35, 1) both 0.9s;
+}
+@keyframes arch-settle {
+  from {
+    transform: scale(1.14);
+  }
+}
+@keyframes arch-lift {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+@keyframes draw-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* Network: SVG stand-ins until the canvas has drawn its first frame. */
+.hero-canvas {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.hero[data-live] .hero-canvas {
+  opacity: 1;
+}
+.hero-poster {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 162%; /* 2 × 1.62 × 0.5 — the network radius is half the stage */
+  max-width: none;
+  translate: -50% -50%;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.hero-poster-final {
+  display: none;
+}
+.hero[data-live] .hero-poster {
+  opacity: 0;
+}
+.hero-veil {
+  background: linear-gradient(0deg, rgb(var(--paper)) 0%, rgb(var(--paper) / 0.9) 45%, rgb(var(--paper) / 0) 62%);
+}
+@media (min-width: 768px) {
+  .hero-veil {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--paper)) 0%,
+      rgb(var(--paper) / 0.9) 36%,
+      rgb(var(--paper) / 0.35) 52%,
+      rgb(var(--paper) / 0) 62%
+    );
+  }
+}
+
+.cue-track {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 2.5rem;
+  overflow: hidden;
+  background: rgb(var(--rule));
+}
+.cue-track > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 40%;
+  background: rgb(var(--accent-vivid));
+  animation: cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite 1.6s;
+  transform: translateY(-100%);
+}
+@keyframes cue {
+  to {
+    transform: translateY(260%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kin-line > span,
+  .kin-fade,
+  .arch-img,
+  .arch-outline path,
+  .cue-track > span {
+    animation: none;
+  }
+  .arch-curtain {
+    display: none;
+  }
+  .hero-poster-star {
+    display: none;
+  }
+  .hero-poster-final {
+    display: block;
+  }
+}
+
 /* --------------------------------------------------------- reveal on scroll */
 /* Armed by <Reveal> only for sections below the fold, and only when motion is allowed. */
 .reveal-armed {

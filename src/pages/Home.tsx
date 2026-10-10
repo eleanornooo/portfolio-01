@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
-import { ArrowRight, Download } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { profile } from '../content/profile';
 import { news } from '../content/news';
 import { publications } from '../content/publications';
@@ -17,6 +17,7 @@ import PubEntry from '../components/PubEntry';
 import { Ext } from '../components/Ext';
 import { KindTag, StatusTag, TimingTag } from '../components/Tags';
 import { ZelligeRule } from '../components/Zellige';
+import Hero, { PORTRAIT_SIZES, PORTRAIT_SRCSET } from '../components/hero/Hero';
 
 // Borders for a 2×2 grid on phones and a single row of four from md up.
 const FIGURE_CELL = [
@@ -25,9 +26,6 @@ const FIGURE_CELL = [
   'border-t md:border-l md:border-t-0 md:pl-8',
   'border-l border-t pl-6 md:border-t-0 md:pl-8',
 ];
-
-const PORTRAIT_SRCSET = '/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w';
-const PORTRAIT_SIZES = '(min-width: 1248px) 470px, (min-width: 768px) 38vw, 92vw';
 
 const sortYear = (y: number | 'in press') => (y === 'in press' ? 9999 : y);
 
@@ -66,68 +64,10 @@ export function Component() {
         />
       </Head>
 
-      {/* ---------------------------------------------------------------- hero */}
-      <section className="page pb-14 pt-10 md:pb-20 md:pt-16" aria-labelledby="hero-name">
-        <div className="grid-12 items-end gap-y-12">
-          <div className="col-span-4 md:col-span-7 lg:pb-6">
-            <p className="label">
-              {pick(profile.institute)} · UM6P · {pick(profile.location)}
-            </p>
-            <h1 id="hero-name" className="mt-8 font-serif font-light tracking-[-0.035em]">
-              <span className="block font-sans text-lead font-normal tracking-normal text-ink2">
-                {profile.honorific}
-              </span>
-              <span className="block text-display">{profile.name}</span>
-              <span className="sr-only">, {profile.postnominal}</span>
-            </h1>
-            <p className="mt-6 max-w-[40ch] text-lead text-ink">
-              {profile.postnominal} — {pick(profile.title)} ·{' '}
-              {pick(profile.role)}, {profile.institutionShort}
-            </p>
-            <p className="mt-8 max-w-[36ch] border-l-2 border-vivid pl-5 font-serif text-[1.375rem] font-light italic leading-snug text-ink2 md:text-[1.5rem]">
-              {pick(profile.statement)}
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-              {__HAS_CV__ && (
-                <a href={profile.cvPdf} className="btn-solid" download>
-                  <Download size={16} aria-hidden="true" />
-                  {t.common.downloadCv}
-                  <span className="sr-only"> (PDF)</span>
-                </a>
-              )}
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                <li>
-                  <Ext href={profile.links.scholar}>Google Scholar</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.orcid}>ORCID</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.linkedin}>LinkedIn</Ext>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <figure className="col-span-4 md:col-span-5">
-            <img
-              src="/img/portrait-560.webp"
-              srcSet={PORTRAIT_SRCSET}
-              sizes={PORTRAIT_SIZES}
-              width={736}
-              height={920}
-              alt={t.home.portraitAlt}
-              {...{ fetchpriority: "high" }}
-              decoding="async"
-              className="aspect-[4/5] w-full bg-ink object-cover"
-            />
-            <figcaption className="mt-3 text-sm text-ink3">{t.home.portraitCaption}</figcaption>
-          </figure>
-        </div>
-      </section>
+      <Hero />
 
       {/* ------------------------------------------------------------- numbers */}
-      <Reveal as="section" className="page" aria-label="Key figures">
+      <Reveal as="section" id="figures" className="page scroll-mt-24" aria-label="Key figures">
         <dl className="grid grid-cols-2 border-y border-rule md:grid-cols-4">
           {figures.map((f, i) => (
             <div key={f.label} className={`flex flex-col-reverse justify-end gap-1 border-rule py-6 md:py-8 ${FIGURE_CELL[i]}`}>

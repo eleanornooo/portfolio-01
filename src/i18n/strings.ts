@@ -61,6 +61,15 @@ export const strings = {
       contactTitle: 'Collaborations, invitations, supervision enquiries.',
       contactCta: 'Write to Aziz',
     },
+    hero: {
+      explore: 'Explore the research',
+      scroll: 'Scroll',
+      networkTitle: 'Research network',
+      networkSummary: (pubs: number, projects: number, talks: number, coauthors: number) =>
+        `An interactive map of his work: ${pubs} publications, ${projects} projects and ${talks} talks, linked to five research themes and ${coauthors} recurring co-authors. Each faint particle is one citation.`,
+      networkHint: 'Hover a node to see what it is',
+      themeCount: (n: number) => `${n} works`,
+    },
     research: {
       metaTitle: 'Research — Dr. Aziz Mimoudi',
       metaDescription:
@@ -299,6 +308,15 @@ export const strings = {
       allResearch: 'Recherche et projets',
       contactTitle: 'Collaborations, invitations, demandes d’encadrement.',
       contactCta: 'Écrire à Aziz',
+    },
+    hero: {
+      explore: 'Découvrir la recherche',
+      scroll: 'Défiler',
+      networkTitle: 'Réseau de recherche',
+      networkSummary: (pubs: number, projects: number, talks: number, coauthors: number) =>
+        `Une carte interactive de ses travaux : ${pubs} publications, ${projects} projets et ${talks} conférences, reliés à cinq thèmes de recherche et à ${coauthors} coauteurs réguliers. Chaque particule pâle représente une citation.`,
+      networkHint: 'Survolez un nœud pour le découvrir',
+      themeCount: (n: number) => `${n} ${n > 1 ? 'travaux' : 'travail'}`,
     },
     research: {
       metaTitle: 'Recherche — Dr Aziz Mimoudi',

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { useLang } from '../i18n/useLang';
+import { lockScroll } from '../lib/smooth';
 
 /**
  * Accessible modal built on the native <dialog> element: the rest of the page becomes
@@ -33,7 +34,7 @@ export default function Dialog({
     if (open && !d.open) {
       opener.current = document.activeElement as HTMLElement | null;
       d.showModal();
-      document.documentElement.style.overflow = 'hidden';
+      lockScroll(true);
     } else if (!open && d.open) {
       d.close();
     }
@@ -43,7 +44,7 @@ export default function Dialog({
     const d = ref.current;
     if (!d) return;
     const onDialogClose = () => {
-      document.documentElement.style.overflow = '';
+      lockScroll(false);
       opener.current?.focus?.();
       onClose();
     };
@@ -56,6 +57,7 @@ export default function Dialog({
   return (
     <dialog
       ref={ref}
+      data-lenis-prevent
       aria-labelledby={titleId}
       onClick={(e) => {
         if (e.target === ref.current) ref.current?.close();

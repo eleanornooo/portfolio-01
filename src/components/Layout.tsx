@@ -4,6 +4,7 @@ import { LangProvider } from '../i18n/context';
 import { useLang } from '../i18n/useLang';
 import Header from './Header';
 import Footer from './Footer';
+import { scrollToElement, scrollToTop, startSmoothScroll } from '../lib/smooth';
 
 function Shell() {
   const { t } = useLang();
@@ -19,12 +20,24 @@ function Shell() {
       return;
     }
     if (hash) {
-      document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
+      const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (el) scrollToElement(el);
       return;
     }
-    window.scrollTo(0, 0);
+    scrollToTop();
     main.current?.focus({ preventScroll: true });
   }, [pathname, hash]);
+
+  // Smooth scrolling, started after hydration (and never with reduced motion).
+  useEffect(() => {
+    let stop = () => {};
+    let cancelled = false;
+    startSmoothScroll().then((fn) => (cancelled ? fn() : (stop = fn)));
+    return () => {
+      cancelled = true;
+      stop();
+    };
+  }, []);
 
   return (
     <div id="top" className="flex min-h-dvh flex-col">

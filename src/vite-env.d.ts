@@ -10,8 +10,15 @@ interface ImportMetaEnv {
   readonly VITE_EMAILJS_TEMPLATE_ID?: string;
   readonly VITE_EMAILJS_PUBLIC_KEY?: string;
   readonly VITE_TIMETABLE_SHEET_CSV?: string;
+  /** Optional LLM endpoint for the research guide (e.g. a Vercel function). Unset = local answers only. */
+  readonly VITE_ASSISTANT_ENDPOINT?: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+/** Hero network layout, precomputed at build time (see scripts/research-graph-plugin.ts). */
+declare module 'virtual:research-graph' {
+  export const positions: number[];
 }
