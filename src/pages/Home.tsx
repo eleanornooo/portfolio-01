@@ -7,25 +7,19 @@ import { publications } from '../content/publications';
 import { projects } from '../content/projects';
 import { students } from '../content/students';
 import { talks } from '../content/talks';
+import { positions } from '../content/experience';
+import { countryCount } from '../lib/places';
+import Figures from '../components/Figures';
 import { useLang } from '../i18n/useLang';
 import { useNow } from '../hooks/useNow';
 import { byDateDesc, formatDate, monthYear, timing, yearOf } from '../lib/dates';
 import Seo from '../components/Seo';
 import Section from '../components/Section';
-import Reveal from '../components/Reveal';
 import PubEntry from '../components/PubEntry';
 import { Ext } from '../components/Ext';
 import { KindTag, StatusTag, TimingTag } from '../components/Tags';
 import { ZelligeRule } from '../components/Zellige';
 import Hero, { PORTRAIT_SIZES, PORTRAIT_SRCSET } from '../components/hero/Hero';
-
-// Borders for a 2×2 grid on phones and a single row of four from md up.
-const FIGURE_CELL = [
-  '',
-  'border-l pl-6 md:pl-8',
-  'border-t md:border-l md:border-t-0 md:pl-8',
-  'border-l border-t pl-6 md:border-t-0 md:pl-8',
-];
 
 const sortYear = (y: number | 'in press') => (y === 'in press' ? 9999 : y);
 
@@ -42,11 +36,14 @@ export function Component() {
     .slice(0, 5);
   const current = projects.filter((p) => p.group === 'funded' && p.status !== 'Completed');
 
+  const firstYear = Math.min(...positions.map((p) => Number(p.start)));
   const figures = [
     { value: profile.metrics.citations, label: t.home.citations },
     { value: profile.metrics.hIndex, label: t.home.hIndex },
     { value: students.length, label: t.home.students },
     { value: talksGiven, label: t.home.talks },
+    { value: new Date(now).getUTCFullYear() - firstYear, suffix: '+', label: t.home.years },
+    { value: countryCount(), label: t.home.countries },
   ];
 
   return (
@@ -67,19 +64,12 @@ export function Component() {
       <Hero />
 
       {/* ------------------------------------------------------------- numbers */}
-      <Reveal as="section" id="figures" className="page scroll-mt-24" aria-label="Key figures">
-        <dl className="grid grid-cols-2 border-y border-rule md:grid-cols-4">
-          {figures.map((f, i) => (
-            <div key={f.label} className={`flex flex-col-reverse justify-end gap-1 border-rule py-6 md:py-8 ${FIGURE_CELL[i]}`}>
-              <dt className="text-sm text-ink2">{f.label}</dt>
-              <dd className="num font-serif text-[2.75rem] font-light leading-none md:text-[3.5rem]">{f.value}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 text-sm text-ink3">
-          {t.home.metricsSource(profile.metrics.source, monthYear(profile.metrics.asOf, lang))}
-        </p>
-      </Reveal>
+      <section id="figures" className="page scroll-mt-24" aria-label={t.home.figures}>
+        <Figures
+          figures={figures}
+          note={t.home.metricsSource(profile.metrics.source, monthYear(profile.metrics.asOf, lang))}
+        />
+      </section>
 
       <div className="h-16 md:h-24" />
 
