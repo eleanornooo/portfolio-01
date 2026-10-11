@@ -199,7 +199,12 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="kin-fade hidden max-w-[16.5rem] pb-2 xl:block" style={delay(900)}>
+          <div className="kin-fade relative isolate hidden max-w-[16.5rem] pb-2 xl:block" style={delay(900)}>
+            {/* A soft dark scrim keeps the quote readable over the giant letters. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-12 -inset-y-10 -z-10 bg-[radial-gradient(closest-side,rgb(10_11_15/0.88),rgb(10_11_15/0.6)_55%,transparent)]"
+            />
             <p aria-hidden="true" className="font-serif text-[1.0625rem] font-light italic leading-snug text-ink2">
               {pick(profile.statement)}
             </p>

@@ -51,11 +51,11 @@ export const profile: Profile = {
     instagram: 'https://www.instagram.com/aziz.mimoudi',
   },
   metrics: {
-    citations: 76,
+    citations: 88,
     hIndex: 4,
     i10Index: 2,
     source: 'Google Scholar',
-    asOf: '2026-06',
+    asOf: '2026-10',
   },
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mohammed+VI+Polytechnic+University+Ben+Guerir',
   cvPdf: '/CV_Aziz_Mimoudi_2026.pdf',

@@ -4,16 +4,16 @@ import { formatDate, timing } from '../lib/dates';
 import { photoSrc, photoSrcSet, photos, type Photo } from '../lib/photos';
 import { ArrowUpRight } from 'lucide-react';
 
-/** Bento layout: which highlights get a bigger tile, and which carry a photo. */
-const FEATURES: Record<string, { span: string; photo?: Photo; big?: boolean }> = {
-  'unu-macau': { span: 'sm:col-span-2 lg:row-span-2', photo: photos.scienceWeekSpeaking, big: true },
+/** Bento layout: which highlights get a bigger tile, and which carry a photo or a giant mark. */
+const FEATURES: Record<string, { span: string; photo?: Photo; big?: boolean; mark?: [string, string] }> = {
+  'unu-macau': { span: 'sm:col-span-2 lg:row-span-2', big: true, mark: ['MACAU', '2026'] },
   'qs-judge': { span: 'sm:col-span-2', photo: photos.scienceWeekPanelC },
   phd: { span: 'sm:col-span-2' },
 };
 
 /**
- * The year's highlights as a bento grid: one large feature tile with a photo, a few wide
- * tiles and small ones. Dark cards with a glow that follows the cursor; "Upcoming" glows.
+ * The year's highlights as a bento grid: one large feature tile (a glow and a giant
+ * display mark), a few wide tiles (one with a photo) and small ones. Dark cards with a glow that follows the cursor; "Upcoming" glows.
  */
 export default function Highlights({ items, now }: { items: NewsItem[]; now: number }) {
   const { t, pick, lang } = useLang();
@@ -57,6 +57,15 @@ export default function Highlights({ items, now }: { items: NewsItem[]; now: num
                   className="absolute inset-0 bg-gradient-to-t from-paper via-paper/80 to-paper/25"
                 />
               </>
+            )}
+            {f?.mark && (
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="glow-field opacity-90" />
+                <p className="display absolute inset-x-5 top-14 text-[clamp(4.25rem,2rem+6.5vw,8.75rem)] leading-[0.84] tracking-[-0.05em] md:inset-x-6">
+                  <span className="block text-ink/90">{f.mark[0]}</span>
+                  <span className="text-glow block">{f.mark[1]}</span>
+                </p>
+              </div>
             )}
             <div className="relative z-10 flex flex-1 flex-col p-5 md:p-6">
               <div className="flex items-center justify-between gap-3">
