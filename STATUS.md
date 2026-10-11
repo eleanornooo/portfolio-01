@@ -18,11 +18,12 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 ## 3. Journey 1999 → 2026 ✅
 - ✅ `components/Journey.tsx`: pinned horizontal scroll, a progress line, years that scale up, photos; a vertical version on mobile; a reduced-motion fallback
 
-## 4. Global-impact globe 🟡 → in progress
-- ✅ `components/globe/*`: cobe globe, arcs + pulses, drag, a place list (hover rotates, click shows the items), an SVG fallback, i18n strings
-- ⬜ **Not wired into any page yet**
-- ⬜ `.place-details` entry animation is missing from CSS
-- ⬜ Home section numbering needs updating (Journey and Highlights both use "01")
+## 4. Global-impact globe ✅
+- ✅ `components/globe/*`: cobe globe (auto-rotates, draggable, paused off-screen or when the tab is hidden, DPR ≤ 1.5, fewer map samples on phones), arcs from Ben Guerir with travelling pulses, the focused place's label
+- ✅ Place list: hover/focus turns the globe to the place (the short way round), click shows its talks, positions, degrees, projects and training (staggered entry, `aria-live`)
+- ✅ Wired into Home as section 02, after the Journey; the cobe chunk loads only within 500px of the viewport (≈ 8 KB gzip)
+- ✅ Pre-rendered SVG fallback (graticule + arcs + places) shown until the first frame; reduced motion: no auto-rotation or pulses, the globe turns instantly to a selected place
+- ✅ Home section numbering fixed (01 Journey → 05 Projects)
 
 ## 5. Research projects showcase ⬜
 - Stacked sticky cards, 3D tilt (≤ 6°), sliding CTA, a case-study view with linked publications and partners

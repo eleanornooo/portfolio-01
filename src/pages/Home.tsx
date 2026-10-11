@@ -11,6 +11,7 @@ import { positions } from '../content/experience';
 import { countryCount } from '../lib/places';
 import Figures from '../components/Figures';
 import Journey from '../components/Journey';
+import GlobeSection from '../components/globe/GlobeSection';
 import { useLang } from '../i18n/useLang';
 import { useNow } from '../hooks/useNow';
 import { byDateDesc, formatDate, monthYear, timing, yearOf } from '../lib/dates';
@@ -78,8 +79,10 @@ export function Component() {
 
       <div className="h-16 md:h-24" />
 
+      <GlobeSection index="02" />
+
       {/* ---------------------------------------------------------- highlights */}
-      <Section id="highlights" index="01" label={`${t.home.highlights} ${highlightYear}`}>
+      <Section id="highlights" index="03" label={`${t.home.highlights} ${highlightYear}`}>
         <ol className="divide-y divide-rule border-b border-rule">
           {highlights.map((n) => {
             const when = timing(n.date, n.endDate, now);
@@ -109,7 +112,7 @@ export function Component() {
       </Section>
 
       {/* ------------------------------------------------ selected publications */}
-      <Section id="selected" index="02" label={t.home.selected} title={t.home.selectedTitle}>
+      <Section id="selected" index="04" label={t.home.selected} title={t.home.selectedTitle}>
         <ol className="space-y-8">
           {selected.map((p) => (
             <li key={p.id} className="grid grid-cols-1 gap-x-8 sm:grid-cols-[4rem_1fr]">
@@ -128,7 +131,7 @@ export function Component() {
       </Section>
 
       {/* ----------------------------------------------------- current projects */}
-      <Section id="projects" index="03" label={t.home.projects} title={t.home.projectsTitle}>
+      <Section id="projects" index="05" label={t.home.projects} title={t.home.projectsTitle}>
         <ul className="divide-y divide-rule border-y border-rule">
           {current.map((p) => (
             <li key={p.id} className="grid grid-cols-1 gap-x-8 gap-y-2 py-6 md:grid-cols-[1fr_auto]">

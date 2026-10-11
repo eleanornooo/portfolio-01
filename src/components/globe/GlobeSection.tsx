@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useId, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { places as allPlaces, type Place } from '../../lib/places';
@@ -167,7 +167,11 @@ export default function GlobeSection({ index }: { index: string }) {
                 </h3>
                 <ul className="space-y-2.5">
                   {(all ? current.items : current.items.slice(0, 6)).map((it, i) => (
-                    <li key={i} className="grid grid-cols-[4.5rem_1fr] gap-x-3 text-sm">
+                    <li
+                      key={i}
+                      className="grid grid-cols-[4.5rem_1fr] gap-x-3 text-sm"
+                      style={{ '--i': i } as CSSProperties}
+                    >
                       <span className="num text-ink3">{it.meta}</span>
                       <span>
                         <span className="label mr-2 text-[0.625rem]">{kinds[it.kind]}</span>
