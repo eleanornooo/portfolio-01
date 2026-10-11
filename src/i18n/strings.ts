@@ -157,6 +157,11 @@ export const strings = {
       doi: 'DOI',
       link: 'Link',
       filterType: 'Filter by type',
+      coauthors: 'With',
+      soleAuthor: 'Sole author',
+      venues: 'Journals and publishers',
+      previewHint: 'Click for the full citation, DOI and copy',
+      index: 'Index',
     },
     talks: {
       metaTitle: 'Talks — Dr. Aziz Mimoudi',
@@ -446,6 +451,11 @@ export const strings = {
       doi: 'DOI',
       link: 'Lien',
       filterType: 'Filtrer par type',
+      coauthors: 'Avec',
+      soleAuthor: 'Auteur unique',
+      venues: 'Revues et éditeurs',
+      previewHint: 'Cliquez pour la référence complète, le DOI et la copie',
+      index: 'Index',
     },
     talks: {
       metaTitle: 'Conférences — Dr Aziz Mimoudi',

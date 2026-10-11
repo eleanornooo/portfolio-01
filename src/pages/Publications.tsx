@@ -1,22 +1,20 @@
-import { useId, useMemo, useState } from 'react';
-import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
+import { useEffect, useId, useLayoutEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Search } from 'lucide-react';
 import { profile } from '../content/profile';
 import { publications } from '../content/publications';
 import type { Publication, PublicationType } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { monthYear } from '../lib/dates';
+import { prefersReducedMotion } from '../lib/motion';
 import Seo from '../components/Seo';
-import PageHero from '../components/PageHero';
 import FilterChips from '../components/FilterChips';
-import PubEntry from '../components/PubEntry';
 import { Ext } from '../components/Ext';
-import { CountUp } from '../components/Figures';
+import Marquee from '../components/publications/Marquee';
+import PubIndex from '../components/publications/PubIndex';
 
 const TYPES: PublicationType[] = ['article', 'chapter', 'proceedings', 'report', 'thesis'];
 const yearKey = (p: Publication) => (p.year === 'in press' ? 'in press' : String(p.year));
 const yearSort = (k: string) => (k === 'in press' ? 9999 : Number(k));
-const ease = [0.2, 0.7, 0.2, 1] as const;
 
 /** Lower-case, accent-insensitive text for searching. */
 const fold = (s: string) =>
@@ -24,6 +22,27 @@ const fold = (s: string) =>
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase();
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+/** The giant total: pre-rendered as the real number, counted up from zero on arrival. */
+function GiantCount({ value }: { value: number }) {
+  const [n, setN] = useState(value);
+  useIsoLayoutEffect(() => {
+    if (prefersReducedMotion()) return;
+    setN(0);
+    let raf = 0;
+    const t0 = performance.now() + 250;
+    const step = (now: number) => {
+      const k = Math.max(0, Math.min(1, (now - t0) / 1600));
+      setN(Math.round(value * (1 - (1 - k) ** 4)));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <span className="num">{n}</span>;
+}
 
 export function Component() {
   const { t, lang } = useLang();
@@ -33,38 +52,29 @@ export function Component() {
   const searchId = useId();
   const yearId = useId();
 
-  const years = useMemo(
-    () => [...new Set(publications.map(yearKey))].sort((a, b) => yearSort(b) - yearSort(a)),
-    [],
-  );
+  const years = useMemo(() => [...new Set(publications.map(yearKey))].sort((a, b) => yearSort(b) - yearSort(a)), []);
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
     for (const p of publications) c[p.type] = (c[p.type] ?? 0) + 1;
     return c;
   }, []);
+  // Marquee names come from the data: journals on one row, publishers on the other.
+  const journals = useMemo(() => [...new Set(publications.map((p) => p.journal).filter(Boolean) as string[])], []);
+  const publishers = useMemo(() => [...new Set(publications.map((p) => p.publisher).filter(Boolean) as string[])], []);
 
   const filtered = useMemo(() => {
     const q = fold(query.trim());
-    return publications.filter((p) => {
-      if (type !== 'all' && p.type !== type) return false;
-      if (year !== 'all' && yearKey(p) !== year) return false;
-      if (!q) return true;
-      const hay = fold([p.title, p.authors.join(' '), p.journal, p.container, p.publisher, p.doi].join(' '));
-      return q.split(/\s+/).every((w) => hay.includes(w));
-    });
+    return publications
+      .filter((p) => {
+        if (type !== 'all' && p.type !== type) return false;
+        if (year !== 'all' && yearKey(p) !== year) return false;
+        if (!q) return true;
+        const hay = fold([p.title, p.authors.join(' '), p.journal, p.container, p.publisher, p.doi].join(' '));
+        return q.split(/\s+/).every((w) => hay.includes(w));
+      })
+      .sort((a, b) => yearSort(yearKey(b)) - yearSort(yearKey(a)));
   }, [type, year, query]);
 
-  const groups = useMemo(() => {
-    const m = new Map<string, Publication[]>();
-    for (const p of filtered) m.set(yearKey(p), [...(m.get(yearKey(p)) ?? []), p]);
-    return [...m.entries()].sort((a, b) => yearSort(b[0]) - yearSort(a[0]));
-  }, [filtered]);
-
-  const metrics = [
-    { v: profile.metrics.citations, l: t.home.citations },
-    { v: profile.metrics.hIndex, l: 'h-index' },
-    { v: profile.metrics.i10Index, l: t.publications.i10 },
-  ];
   const filtersOn = type !== 'all' || year !== 'all' || query !== '';
   const clear = () => {
     setType('all');
@@ -75,52 +85,54 @@ export function Component() {
   return (
     <>
       <Seo title={t.publications.metaTitle} description={t.publications.metaDescription} path="/publications" />
-      <PageHero
-        eyebrow={`${profile.honorific} ${profile.name} · ${publications.length}`}
-        title={t.publications.title}
-        intro={t.publications.intro}
-        aside={
-          <div>
-            <h2 className="sr-only">{t.publications.metrics}</h2>
-            <dl className="grid grid-cols-3 gap-3">
-              {metrics.map((m, i) => (
-                <div key={m.l} className="glass flex flex-col-reverse justify-end gap-2 rounded-3xl p-4 md:p-5">
-                  <dt className="text-sm leading-snug text-ink2">{m.l}</dt>
-                  <dd className="num display text-[2.75rem] leading-[0.9] tracking-[-0.04em] md:text-[3.5rem]">
-                    <span className="text-glow">
-                      <CountUp value={m.v} delay={i * 90} />
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-3 text-sm text-ink3">
+
+      {/* -------------------------------------------- opening: the number + venues */}
+      <section aria-labelledby="pub-title" className="tone-dark blend-b relative isolate overflow-hidden pb-20 pt-28 md:pb-24 md:pt-32">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_22%_40%,rgb(226_87_43/0.22),transparent_70%)]"
+        />
+        <div className="page flex flex-col gap-6 md:flex-row md:items-end md:gap-12">
+          <p aria-hidden="true" className="kin-fade display text-glow text-[clamp(9rem,4rem+26vw,26rem)] leading-[0.78] tracking-[-0.07em]">
+            <GiantCount value={publications.length} />
+          </p>
+          <div className="kin-fade max-w-[26rem] pb-4 md:pb-10" style={{ '--d': '200ms' } as CSSProperties}>
+            <h1 id="pub-title" className="display text-[clamp(2.5rem,1.5rem+3vw,4.5rem)] leading-[0.9] tracking-[-0.045em]">
+              <span className="sr-only">{publications.length} </span>
+              {t.publications.title}
+            </h1>
+            <p className="mt-4 text-ink2">{t.publications.intro}</p>
+            <p className="mt-5 text-sm text-ink3">
+              <span className="num text-ink">{profile.metrics.citations}</span> {t.home.citations} · h-index{' '}
+              <span className="num text-ink">{profile.metrics.hIndex}</span> · {t.publications.i10}{' '}
+              <span className="num text-ink">{profile.metrics.i10Index}</span> —{' '}
               <Ext href={profile.links.scholar} className="link-quiet">
                 {profile.metrics.source}
               </Ext>
               , {monthYear(profile.metrics.asOf, lang)}
             </p>
           </div>
-        }
-      />
+        </div>
 
-      <div className="tone-light blend-t pb-28">
-        {/* ------------------------------------------------------------ filters */}
-        <div className="page sticky top-[4.75rem] z-30 pt-10 md:top-[5.25rem]">
+        <div className="mt-14 space-y-2 md:mt-20" role="group" aria-label={t.publications.venues}>
+          <Marquee items={journals} duration={52} />
+          <Marquee items={publishers} reverse duration={60} offset={1} />
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------- the index */}
+      <section aria-label={t.publications.index} className="tone-light blend-t pb-28">
+        <div className="page z-30 pt-8 md:sticky md:top-[5.25rem]">
           <div className="glass flex flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
             <FilterChips
               id="pub-type"
+              bare
               label={t.publications.filterType}
               value={type}
               onChange={setType}
-              bare
               options={[
                 { value: 'all', label: t.publications.types.all, count: publications.length },
-                ...TYPES.filter((ty) => counts[ty]).map((ty) => ({
-                  value: ty,
-                  label: t.publications.types[ty],
-                  count: counts[ty],
-                })),
+                ...TYPES.filter((ty) => counts[ty]).map((ty) => ({ value: ty, label: t.publications.types[ty], count: counts[ty] })),
               ]}
             />
             <div className="flex gap-2">
@@ -153,9 +165,8 @@ export function Component() {
           </div>
         </div>
 
-        {/* --------------------------------------------------------- bibliography */}
-        <div className="page pt-2">
-          <p className="mt-3 px-3 text-sm text-ink3" role="status" aria-live="polite">
+        <div className="page pt-6">
+          <p className="mb-6 px-1 text-sm text-ink3" role="status" aria-live="polite">
             {t.common.showing(filtered.length, publications.length)}
             {filtersOn && (
               <>
@@ -166,52 +177,9 @@ export function Component() {
               </>
             )}
           </p>
-          {groups.length === 0 && <p className="py-16 text-ink2 md:pl-[25%]">{t.common.noResults}</p>}
-          <MotionConfig reducedMotion="user">
-            <AnimatePresence initial={false} mode="popLayout">
-              {groups.map(([y, items]) => (
-                <motion.section
-                  key={y}
-                  layout="position"
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.45, ease }}
-                  className="grid-12 border-b border-ink/10 py-10"
-                  aria-labelledby={`y-${y}`}
-                >
-                  <h2 id={`y-${y}`} className="col-span-4 mb-4 md:col-span-3 md:mb-0">
-                    <span
-                      className={`num display block leading-none tracking-[-0.05em] text-ink/20 md:sticky md:top-56 ${
-                        y === 'in press' ? 'text-[2.5rem] md:text-[3rem]' : 'text-[3.5rem] md:text-[5rem]'
-                      }`}
-                    >
-                      {y === 'in press' ? t.publications.inPress : y}
-                    </span>
-                  </h2>
-                  <ol className="col-span-4 space-y-2 md:col-span-9">
-                    <AnimatePresence initial={false} mode="popLayout">
-                      {items.map((p) => (
-                        <motion.li
-                          key={p.id}
-                          layout="position"
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.98 }}
-                          transition={{ duration: 0.4, ease }}
-                          className="-mx-4 rounded-3xl border border-transparent px-4 py-4 transition-[background-color,border-color,box-shadow] duration-500 hover:border-ink/10 hover:bg-white/70 hover:shadow-[0_30px_60px_-40px_rgb(120_50_20/0.45)] md:-mx-6 md:px-6"
-                        >
-                          <PubEntry pub={p} />
-                        </motion.li>
-                      ))}
-                    </AnimatePresence>
-                  </ol>
-                </motion.section>
-              ))}
-            </AnimatePresence>
-          </MotionConfig>
+          {filtered.length === 0 ? <p className="py-16 text-ink2">{t.common.noResults}</p> : <PubIndex items={filtered} />}
         </div>
-      </div>
+      </section>
     </>
   );
 }

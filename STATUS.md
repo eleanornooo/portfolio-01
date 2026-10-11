@@ -48,7 +48,7 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 | Page | Opening | Signature interaction | Status |
 |---|---|---|---|
 | Research | Interactive knowledge graph | Pinned split-screen case studies | ✅ awaiting review |
-| Publications | Giant count-up + two journal marquees | Cursor-following preview on a typographic index | ⬜ |
+| Publications | Giant count-up + two journal marquees | Cursor-following preview on a typographic index | ✅ |
 | Talks | Tour-poster stack of city names | Hover a city → photo + talks; ticket cards | ⬜ |
 | Teaching | Statement revealed word by word on scroll | Flip cards; timetable as a framed app | ⬜ |
 | About | Magazine split: portrait + pull quote, drop cap | Horizontal draggable timeline or chapters | ⬜ |
@@ -61,8 +61,13 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 - Phones: a tappable theme cloud instead of the graph; stacked case studies
 - Reduced motion: static graph (hover and filter still work), no drift, no count-up
 
+### Publications ✅
+- Opening: the total in giant display type, counting up from zero on arrival (pre-rendered as the real number), with "Publications", the intro and the Scholar metrics beside it; two marquee rows scrolling in opposite directions with the journal and publisher names taken from the data, outlined and filled alternately (`components/publications/Marquee.tsx`; pause on hover; reduced motion: still, wrapping rows)
+- Index (`components/publications/PubIndex.tsx`): one large row per work (number · year · title · venue); the row under the cursor stays bright while the others recede and the title slides; a dark glass preview card follows the cursor (type, year, venue, co-authors, DOI). Every row is a disclosure button that expands to the full APA reference with DOI, links and "Copy APA citation" (a card that follows the cursor can't hold a button, so copying is one click away in the row) — the touch, keyboard and screen-reader path too
+- Filters (type chips, search, year) unchanged in behaviour; sticky from tablet up; rows animate in/out on filter
+
 ### Next ⬜
-- Publications, Talks, Teaching, About (in this order), then sections 7, 9 and 8
+- Talks, Teaching, About (in this order), then sections 7, 9 and 8
 
 ---
 

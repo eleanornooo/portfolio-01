@@ -779,6 +779,64 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
   }
 }
 
+/* ----------------------------------------------------------- publications */
+/* Venue marquees (components/publications/Marquee.tsx). */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur, 48s) linear infinite;
+}
+.marquee[data-reverse] .marquee-track {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.2px rgb(var(--ink) / 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .marquee-track {
+    animation: none;
+    width: auto;
+    padding-inline: 1rem;
+  }
+  .marquee-row {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+  }
+  .marquee-copy {
+    display: none;
+  }
+}
+/* Typographic index: the row under the cursor stays bright, the others recede. */
+@media (hover: hover) and (pointer: fine) {
+  .pub-index:hover > .pub-row:not(:hover) {
+    opacity: 0.38;
+  }
+  .pub-row {
+    transition: opacity 0.35s;
+  }
+  .pub-row:hover .pub-title {
+    transform: translateX(0.6rem);
+  }
+}
+
 /* --------------------------------------------------------------- research */
 /* Knowledge graph (components/research/ResearchMap.tsx). */
 .rmap-in {
