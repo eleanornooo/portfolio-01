@@ -779,6 +779,115 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
   }
 }
 
+/* --------------------------------------------------------------- research */
+/* Knowledge graph (components/research/ResearchMap.tsx). */
+.rmap-in {
+  animation: rmap-in 1.6s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.1s;
+}
+@keyframes rmap-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+.rmap line {
+  stroke: rgb(245 158 59 / 0.22);
+  stroke-width: 1;
+  transition:
+    stroke 0.4s,
+    opacity 0.4s;
+}
+.rmap line.is-lit {
+  stroke: rgb(245 158 59 / 0.9);
+  stroke-width: 1.5;
+}
+.rmap line.is-dim {
+  opacity: 0.12;
+}
+.rmap-node {
+  cursor: pointer;
+  transition: opacity 0.4s;
+}
+.rmap-node.is-dim {
+  opacity: 0.16;
+}
+.rmap-node circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    fill 0.3s,
+    stroke 0.3s;
+}
+.rmap-theme .rmap-ring {
+  fill: none;
+  stroke: rgb(247 194 122 / 0.7);
+  stroke-width: 1.2;
+}
+.rmap-theme:hover .rmap-core,
+.rmap-theme:hover .rmap-ring {
+  transform: scale(1.07);
+}
+.rmap-theme.is-active .rmap-ring {
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.rmap-theme.is-active .rmap-halo {
+  transform: scale(1.25);
+}
+.rmap-label-theme {
+  fill: rgb(var(--ink));
+  font: 600 15px 'IBM Plex Sans', system-ui, sans-serif;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.85);
+  stroke-width: 5px;
+}
+.rmap-project circle {
+  fill: #e2572b;
+  stroke: rgb(255 255 255 / 0.45);
+  stroke-width: 1;
+}
+.rmap-project:hover circle,
+.rmap-project.is-hover circle {
+  fill: #f59e3b;
+  transform: scale(1.3);
+}
+.rmap-label-project {
+  fill: rgb(var(--ink-2));
+  font: 500 12px 'IBM Plex Sans', system-ui, sans-serif;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.85);
+  stroke-width: 4px;
+}
+.rmap-publication circle {
+  fill: rgb(var(--ink-2));
+}
+.rmap-publication.is-hover circle {
+  fill: #fff;
+  transform: scale(1.6);
+}
+.rmap-label-pub {
+  fill: rgb(var(--ink));
+  font: 500 13px 'IBM Plex Sans', system-ui, sans-serif;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.9);
+  stroke-width: 5px;
+}
+.rmap-label-meta {
+  fill: rgb(var(--amber));
+  font: 500 11px 'IBM Plex Sans', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.9);
+  stroke-width: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rmap-in {
+    animation: none;
+  }
+}
+
 /* ------------------------------------------------------------------ about */
 /* Experience timeline: dots light up as the scroll reaches them (lit by default). */
 .xp-dot {

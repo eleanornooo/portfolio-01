@@ -42,9 +42,27 @@ New art direction: dark, cinematic, premium (depth, glass, glow). It replaces th
 - ✅ Teaching: teaching statement as a serif-italic intro; courses in a light section (glass filter bar, list/grid toggle with animated layout, course dialog unchanged); timetable in a framed panel
 - ✅ Contact: glass cards (email, address + map, profiles) and the form in a glass panel over a glow; magnetic glow "Send" button. EmailJS, cooldown and honeypot code untouched
 
+## Step 3: a signature per page 🟡
+Feedback: the pages felt like one template (dark opener + giant rising title + glass-card grids). Each page now gets its own opening and its own signature interaction; the design system (colours, type, nav, buttons, glass, glow) is shared.
+
+| Page | Opening | Signature interaction | Status |
+|---|---|---|---|
+| Research | Interactive knowledge graph | Pinned split-screen case studies | ✅ awaiting review |
+| Publications | Giant count-up + two journal marquees | Cursor-following preview on a typographic index | ⬜ |
+| Talks | Tour-poster stack of city names | Hover a city → photo + talks; ticket cards | ⬜ |
+| Teaching | Statement revealed word by word on scroll | Flip cards; timetable as a framed app | ⬜ |
+| About | Magazine split: portrait + pull quote, drop cap | Horizontal draggable timeline or chapters | ⬜ |
+| Contact | (kept as is) | Glass form over glow | ✅ |
+
+### Research ✅ (awaiting review)
+- Opening: full-screen knowledge graph (`components/research/ResearchMap.tsx`, `lib/research-map.ts`, d3-force): the 5 research themes from `content/projects.ts` as large glowing nodes, the 10 projects and 14 publications as smaller nodes, linked by the site's existing relations (`lib/related.ts`). Seeded layout, so the pre-rendered SVG matches the client. Nodes drift and shy away from the cursor; hover lights a node's links and dims the rest; clicking a theme filters the themes list and the projects below; clicking a project jumps to its case study. Paused off-screen. Note: the content defines 5 themes (not 7): employability/sustainability and inclusion/computational thinking are combined themes
+- Themes: numbered editorial list; each title is also the (accessible) filter button; methods line
+- Projects: pinned split screen (`components/research/ProjectCases.tsx`): sticky left half with the giant project name, status, period and budget counting up, plus a 01/10 side index; right half scrolls the case studies (context → role → outputs with linked publications and talks → partners). Every case has `#case-<id>` (the globe and the map land there)
+- Phones: a tappable theme cloud instead of the graph; stacked case studies
+- Reduced motion: static graph (hover and filter still work), no drift, no count-up
+
 ### Next ⬜
-- Research page in the same system (not yet requested; it still uses the old layout)
-- Then sections 5–9 below, in the new style
+- Publications, Talks, Teaching, About (in this order), then sections 7, 9 and 8
 
 ---
 
