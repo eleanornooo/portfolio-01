@@ -83,14 +83,14 @@ export default function Dialog({
       }}
       className={
         sheet
-          ? `m-0 h-dvh max-h-none w-full max-w-none bg-paper p-0 text-ink backdrop:bg-ink/40 ${className}`
-          : `w-[min(40rem,calc(100%-2rem))] max-h-[85dvh] rounded-[4px] border border-rule bg-paper p-0 text-ink shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] backdrop:bg-ink/40 backdrop:backdrop-blur-[1px] ${className}`
+          ? `m-0 h-dvh max-h-none w-full max-w-none bg-paper p-0 text-ink backdrop:bg-black/50 ${className}`
+          : `w-[min(40rem,calc(100%-2rem))] max-h-[85dvh] rounded-[1.75rem] border border-ink/10 bg-paper p-0 text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_40px_90px_-30px_rgb(0_0_0/0.7)] backdrop:bg-black/55 backdrop:backdrop-blur-sm ${className}`
       }
     >
       {open && (
         <div className={sheet ? 'flex h-full flex-col' : 'p-6 sm:p-8'}>
           <div className={`flex items-start justify-between gap-6 ${sheet ? 'page border-b border-rule py-4' : 'mb-5'}`}>
-            <h2 id={titleId} className={sheet ? 'label pt-2' : 'font-serif text-h3'}>
+            <h2 id={titleId} className={sheet ? 'label pt-2' : 'font-serif text-[1.625rem] leading-tight'}>
               {title}
             </h2>
             <button

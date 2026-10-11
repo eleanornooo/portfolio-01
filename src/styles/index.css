@@ -175,25 +175,38 @@
     @apply max-w-measure;
   }
   .btn {
-    @apply inline-flex items-center gap-2 rounded-[3px] px-4 py-2.5 text-sm font-medium transition-colors;
+    @apply inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors;
   }
+  /* Older names, kept for the timetable and inner pages: same look as .btn-glow / .btn-ghost. */
   .btn-solid {
-    @apply btn bg-ink text-paper hover:bg-accent;
+    @apply btn font-semibold;
+    color: #160b05;
+    background: linear-gradient(120deg, #e2572b 0%, #f08a3a 55%, #f59e3b 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 30px -12px rgb(226 87 43 / 0.8);
+  }
+  .btn-solid:hover {
+    filter: brightness(1.06);
   }
   .btn-line {
-    @apply btn border border-ink/25 text-ink hover:border-accent hover:text-accent;
+    @apply btn border border-ink/20 bg-ink/[0.03] text-ink hover:border-amber/70 hover:bg-amber/[0.08];
   }
   .btn-small {
-    @apply inline-flex items-center gap-1.5 rounded-[3px] border border-rule px-2.5 py-1 text-sm text-ink2 transition-colors hover:border-accent hover:text-accent;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1 text-sm text-ink2 transition-colors hover:border-amber/60 hover:text-ink;
   }
   .tag {
-    @apply inline-flex items-center rounded-[2px] border border-current px-1.5 py-px text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.08em];
+    @apply inline-flex items-center rounded-full border border-current px-2 py-px text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.1em];
   }
   .field {
-    @apply w-full rounded-[3px] border border-ink/25 bg-paper px-3 py-2.5 text-base text-ink placeholder:text-ink3 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+    @apply w-full rounded-2xl border border-ink/15 bg-ink/[0.04] px-4 py-2.5 text-base text-ink transition-colors placeholder:text-ink3 hover:border-ink/30 focus:border-amber focus:outline-none focus:ring-2 focus:ring-amber/30;
+  }
+  .field option {
+    background: rgb(var(--paper));
+    color: rgb(var(--ink));
   }
   .chip {
-    @apply rounded-[3px] border border-rule px-3 py-1.5 text-sm text-ink2 transition-colors hover:border-ink/40 hover:text-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper;
+    @apply rounded-full border border-ink/15 px-3.5 py-1.5 text-sm text-ink2 transition-colors hover:border-ink/40 hover:text-ink aria-pressed:border-amber aria-pressed:bg-amber aria-pressed:text-[#160b05];
   }
   /* Small refined UI label with wide tracking. */
   .eyebrow {
@@ -428,6 +441,24 @@ html {
   opacity: 0;
 }
 
+/* Page titles: each line rises from behind its own edge (CSS, so it plays on first paint). */
+.kin-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.kin-line > span {
+  display: block;
+  animation: kin-rise 1.1s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes kin-rise {
+  from {
+    transform: translateY(110%) rotate(1.5deg);
+  }
+}
+
 /* Entrance for the small text: pure CSS so it starts with the first paint. */
 .kin-fade {
   animation: kin-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -478,6 +509,7 @@ html {
   .hero-glow,
   .hero-word-in,
   .hero-portrait-img,
+  .kin-line > span,
   .kin-fade,
   .kin-rise,
   .cue-track > span {

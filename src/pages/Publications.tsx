@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from 'react';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { profile } from '../content/profile';
 import { publications } from '../content/publications';
@@ -6,14 +7,16 @@ import type { Publication, PublicationType } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { monthYear } from '../lib/dates';
 import Seo from '../components/Seo';
-import { PageHeader } from '../components/Section';
+import PageHero from '../components/PageHero';
+import FilterChips from '../components/FilterChips';
 import PubEntry from '../components/PubEntry';
 import { Ext } from '../components/Ext';
-import Reveal from '../components/Reveal';
+import { CountUp } from '../components/Figures';
 
 const TYPES: PublicationType[] = ['article', 'chapter', 'proceedings', 'report', 'thesis'];
 const yearKey = (p: Publication) => (p.year === 'in press' ? 'in press' : String(p.year));
 const yearSort = (k: string) => (k === 'in press' ? 9999 : Number(k));
+const ease = [0.2, 0.7, 0.2, 1] as const;
 
 /** Lower-case, accent-insensitive text for searching. */
 const fold = (s: string) =>
@@ -58,136 +61,156 @@ export function Component() {
   }, [filtered]);
 
   const metrics = [
+    { v: profile.metrics.citations, l: t.home.citations },
     { v: profile.metrics.hIndex, l: 'h-index' },
     { v: profile.metrics.i10Index, l: t.publications.i10 },
-    { v: profile.metrics.citations, l: t.home.citations },
   ];
   const filtersOn = type !== 'all' || year !== 'all' || query !== '';
+  const clear = () => {
+    setType('all');
+    setYear('all');
+    setQuery('');
+  };
 
   return (
     <>
       <Seo title={t.publications.metaTitle} description={t.publications.metaDescription} path="/publications" />
-      <PageHeader title={t.publications.title} intro={t.publications.intro}>
-        <div className="mt-10 flex flex-wrap items-end gap-x-10 gap-y-4 border-t border-rule pt-5">
-          <h2 className="sr-only">{t.publications.metrics}</h2>
-          <dl className="flex gap-x-10">
-            {metrics.map((m) => (
-              <div key={m.l} className="flex flex-col-reverse">
-                <dt className="text-sm text-ink2">{m.l}</dt>
-                <dd className="num font-serif text-[2.5rem] font-light leading-none">{m.v}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="text-sm text-ink3">
-            <Ext href={profile.links.scholar} className="link-quiet">
-              {profile.metrics.source}
-            </Ext>
-            , {monthYear(profile.metrics.asOf, lang)}
-          </p>
-        </div>
-      </PageHeader>
-
-      {/* ------------------------------------------------------------ filters */}
-      <div className="page">
-        <div className="grid-12 border-y border-rule py-5">
-          <div className="col-span-4 md:col-span-9 md:col-start-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div role="group" aria-label={t.publications.filterType} className="flex flex-wrap gap-2">
-                <button type="button" className="chip" aria-pressed={type === 'all'} onClick={() => setType('all')}>
-                  {t.publications.types.all}
-                  <span className="num ml-1.5">{publications.length}</span>
-                </button>
-                {TYPES.filter((ty) => counts[ty]).map((ty) => (
-                  <button key={ty} type="button" className="chip" aria-pressed={type === ty} onClick={() => setType(ty)}>
-                    {t.publications.types[ty]}
-                    <span className="num ml-1.5">{counts[ty]}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-3">
-                <div className="relative flex-1 lg:w-64 lg:flex-none">
-                  <label htmlFor={searchId} className="sr-only">
-                    {t.common.search}
-                  </label>
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink3"
-                    aria-hidden="true"
-                  />
-                  <input
-                    id={searchId}
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={t.publications.searchPlaceholder}
-                    className="field py-2 pl-9 text-sm"
-                  />
+      <PageHero
+        eyebrow={`${profile.honorific} ${profile.name} · ${publications.length}`}
+        title={t.publications.title}
+        intro={t.publications.intro}
+        aside={
+          <div>
+            <h2 className="sr-only">{t.publications.metrics}</h2>
+            <dl className="grid grid-cols-3 gap-3">
+              {metrics.map((m, i) => (
+                <div key={m.l} className="glass flex flex-col-reverse justify-end gap-2 rounded-3xl p-4 md:p-5">
+                  <dt className="text-sm leading-snug text-ink2">{m.l}</dt>
+                  <dd className="num display text-[2.75rem] leading-[0.9] tracking-[-0.04em] md:text-[3.5rem]">
+                    <span className="text-glow">
+                      <CountUp value={m.v} delay={i * 90} />
+                    </span>
+                  </dd>
                 </div>
-                <label htmlFor={yearId} className="sr-only">
-                  {t.publications.year}
-                </label>
-                <select
-                  id={yearId}
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                  className="field w-auto py-2 text-sm"
-                >
-                  <option value="all">{t.publications.allYears}</option>
-                  {years.map((y) => (
-                    <option key={y} value={y}>
-                      {y === 'in press' ? t.publications.inPress : y}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <p className="mt-4 text-sm text-ink3" role="status" aria-live="polite">
-              {t.common.showing(filtered.length, publications.length)}
-              {filtersOn && (
-                <>
-                  {' · '}
-                  <button
-                    type="button"
-                    className="link-quiet"
-                    onClick={() => {
-                      setType('all');
-                      setYear('all');
-                      setQuery('');
-                    }}
-                  >
-                    {t.common.clearFilters}
-                  </button>
-                </>
-              )}
+              ))}
+            </dl>
+            <p className="mt-3 text-sm text-ink3">
+              <Ext href={profile.links.scholar} className="link-quiet">
+                {profile.metrics.source}
+              </Ext>
+              , {monthYear(profile.metrics.asOf, lang)}
             </p>
           </div>
-        </div>
-      </div>
+        }
+      />
 
-      {/* --------------------------------------------------------- bibliography */}
-      <div className="page pb-24 pt-4">
-        {groups.length === 0 && (
-          <div className="grid-12 py-16">
-            <p className="col-span-4 text-ink2 md:col-span-9 md:col-start-4">{t.common.noResults}</p>
+      <div className="tone-light blend-t pb-28">
+        {/* ------------------------------------------------------------ filters */}
+        <div className="page sticky top-[4.75rem] z-30 pt-10 md:top-[5.25rem]">
+          <div className="glass flex flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
+            <FilterChips
+              id="pub-type"
+              label={t.publications.filterType}
+              value={type}
+              onChange={setType}
+              bare
+              options={[
+                { value: 'all', label: t.publications.types.all, count: publications.length },
+                ...TYPES.filter((ty) => counts[ty]).map((ty) => ({
+                  value: ty,
+                  label: t.publications.types[ty],
+                  count: counts[ty],
+                })),
+              ]}
+            />
+            <div className="flex gap-2">
+              <div className="relative flex-1 xl:w-60 xl:flex-none">
+                <label htmlFor={searchId} className="sr-only">
+                  {t.common.search}
+                </label>
+                <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink3" aria-hidden="true" />
+                <input
+                  id={searchId}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t.publications.searchPlaceholder}
+                  className="field rounded-full py-2 pl-10 text-sm"
+                />
+              </div>
+              <label htmlFor={yearId} className="sr-only">
+                {t.publications.year}
+              </label>
+              <select id={yearId} value={year} onChange={(e) => setYear(e.target.value)} className="field w-auto rounded-full py-2 text-sm">
+                <option value="all">{t.publications.allYears}</option>
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y === 'in press' ? t.publications.inPress : y}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        )}
-        {groups.map(([y, items]) => (
-          <Reveal as="section" key={y} className="grid-12 border-b border-rule py-10" aria-labelledby={`y-${y}`}>
-            <h2
-              id={`y-${y}`}
-              className="num col-span-4 mb-6 font-serif text-h2 font-light text-ink3 md:col-span-3 md:mb-0"
-            >
-              <span className="md:sticky md:top-24">{y === 'in press' ? t.publications.inPress : y}</span>
-            </h2>
-            <ol className="col-span-4 space-y-8 md:col-span-9">
-              {items.map((p) => (
-                <li key={p.id}>
-                  <PubEntry pub={p} />
-                </li>
+        </div>
+
+        {/* --------------------------------------------------------- bibliography */}
+        <div className="page pt-2">
+          <p className="mt-3 px-3 text-sm text-ink3" role="status" aria-live="polite">
+            {t.common.showing(filtered.length, publications.length)}
+            {filtersOn && (
+              <>
+                {' · '}
+                <button type="button" className="link-quiet" onClick={clear}>
+                  {t.common.clearFilters}
+                </button>
+              </>
+            )}
+          </p>
+          {groups.length === 0 && <p className="py-16 text-ink2 md:pl-[25%]">{t.common.noResults}</p>}
+          <MotionConfig reducedMotion="user">
+            <AnimatePresence initial={false} mode="popLayout">
+              {groups.map(([y, items]) => (
+                <motion.section
+                  key={y}
+                  layout="position"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.45, ease }}
+                  className="grid-12 border-b border-ink/10 py-10"
+                  aria-labelledby={`y-${y}`}
+                >
+                  <h2 id={`y-${y}`} className="col-span-4 mb-4 md:col-span-3 md:mb-0">
+                    <span
+                      className={`num display block leading-none tracking-[-0.05em] text-ink/20 md:sticky md:top-56 ${
+                        y === 'in press' ? 'text-[2.5rem] md:text-[3rem]' : 'text-[3.5rem] md:text-[5rem]'
+                      }`}
+                    >
+                      {y === 'in press' ? t.publications.inPress : y}
+                    </span>
+                  </h2>
+                  <ol className="col-span-4 space-y-2 md:col-span-9">
+                    <AnimatePresence initial={false} mode="popLayout">
+                      {items.map((p) => (
+                        <motion.li
+                          key={p.id}
+                          layout="position"
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.98 }}
+                          transition={{ duration: 0.4, ease }}
+                          className="-mx-4 rounded-3xl border border-transparent px-4 py-4 transition-[background-color,border-color,box-shadow] duration-500 hover:border-ink/10 hover:bg-white/70 hover:shadow-[0_30px_60px_-40px_rgb(120_50_20/0.45)] md:-mx-6 md:px-6"
+                        >
+                          <PubEntry pub={p} />
+                        </motion.li>
+                      ))}
+                    </AnimatePresence>
+                  </ol>
+                </motion.section>
               ))}
-            </ol>
-          </Reveal>
-        ))}
+            </AnimatePresence>
+          </MotionConfig>
+        </div>
       </div>
     </>
   );

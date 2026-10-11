@@ -9,4 +9,4 @@ export const NAV = [
 ] as const;
 
 /** Pages that open on a full-bleed dark hero: the header floats over it, transparent and dark. */
-export const DARK_HERO_ROUTES = ['/', '/about'];
+export const DARK_HERO_ROUTES = ['/', '/about', '/teaching', '/publications', '/talks', '/contact'];

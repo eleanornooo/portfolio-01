@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Mail, MapPin } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin } from 'lucide-react';
 import { profile } from '../content/profile';
 import { useLang } from '../i18n/useLang';
 import Seo from '../components/Seo';
-import Section, { PageHeader } from '../components/Section';
+import PageHero from '../components/PageHero';
+import Magnetic from '../components/Magnetic';
 import { Ext } from '../components/Ext';
 
 // EmailJS configuration. Values can be overridden with VITE_EMAILJS_* environment variables
@@ -93,19 +94,19 @@ function ContactForm() {
   return (
     <form onSubmit={onSubmit} aria-describedby="contact-status" className="space-y-6">
       <div>
-        <label htmlFor="from_name" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="from_name" className="mb-2 block text-sm font-medium">
           {t.contact.name} <span className="text-ink3">({t.contact.required.toLowerCase()})</span>
         </label>
         <input id="from_name" name="from_name" type="text" required autoComplete="name" maxLength={120} className="field" />
       </div>
       <div>
-        <label htmlFor="email_id" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="email_id" className="mb-2 block text-sm font-medium">
           {t.contact.yourEmail} <span className="text-ink3">({t.contact.required.toLowerCase()})</span>
         </label>
         <input id="email_id" name="email_id" type="email" required autoComplete="email" maxLength={200} className="field" />
       </div>
       <div>
-        <label htmlFor="message" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="message" className="mb-2 block text-sm font-medium">
           {t.contact.message} <span className="text-ink3">({t.contact.required.toLowerCase()})</span>
         </label>
         <textarea id="message" name="message" required rows={7} maxLength={5000} className="field resize-y" />
@@ -118,14 +119,17 @@ function ContactForm() {
       </div>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <button type="submit" className="btn-solid disabled:cursor-wait disabled:opacity-60" disabled={sending}>
-          {sending ? t.contact.sending : t.contact.send}
-        </button>
+        <Magnetic strength={0.25}>
+          <button type="submit" className="btn-glow disabled:cursor-wait disabled:opacity-60" disabled={sending}>
+            {sending ? t.contact.sending : t.contact.send}
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </button>
+        </Magnetic>
         <p className="text-sm text-ink3">{t.contact.privacy}</p>
       </div>
 
       <div id="contact-status" role="status" aria-live="polite" className="min-h-[1.5rem] text-sm">
-        {status === 'success' && <p className="border-l-2 border-vivid pl-3 text-ink">{t.contact.success}</p>}
+        {status === 'success' && <p className="border-l-2 border-amber pl-3 text-ink">{t.contact.success}</p>}
         {status === 'error' && (
           <p className="border-l-2 border-accent pl-3 text-accent">
             {t.contact.error}{' '}
@@ -146,19 +150,29 @@ export function Component() {
   return (
     <>
       <Seo title={t.contact.metaTitle} description={t.contact.metaDescription} path="/contact" />
-      <PageHeader title={t.contact.title} intro={t.contact.intro} />
+      <PageHero eyebrow={`${pick(profile.institute)} · UM6P`} title={t.contact.title} intro={t.contact.intro} />
 
-      <Section id="details" index="01" label={t.contact.email}>
-        <div className="grid gap-x-12 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div className="space-y-10">
-            <div>
-              <p className="label mb-2">{t.contact.emailPrimary}</p>
-              <a href={`mailto:${profile.email.primary}`} className="link inline-flex items-center gap-2 font-serif text-h3">
-                <Mail size={18} aria-hidden="true" />
+      <section id="details" aria-label={t.contact.email} className="relative isolate overflow-hidden pb-28 pt-4 md:pb-36">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="glow-field opacity-60" />
+        </div>
+        <div className="page grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-8">
+          <div className="space-y-4">
+            <div className="glass rounded-[1.75rem] p-6 md:p-8">
+              <p className="eyebrow mb-4">
+                {t.contact.email} · {t.contact.emailPrimary}
+              </p>
+              <a
+                href={`mailto:${profile.email.primary}`}
+                className="group inline-flex items-center gap-3 font-display text-[clamp(1.125rem,0.8rem+1.6vw,2.125rem)] [overflow-wrap:anywhere] font-bold tracking-[-0.03em] text-ink transition-colors hover:text-amber"
+              >
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber/10 text-amber ring-1 ring-amber/30">
+                  <Mail size={18} aria-hidden="true" />
+                </span>
                 {profile.email.primary}
               </a>
               {profile.email.secondary && (
-                <p className="mt-3 text-sm text-ink2">
+                <p className="mt-4 text-sm text-ink2">
                   {t.contact.emailSecondary}:{' '}
                   <a href={`mailto:${profile.email.secondary}`} className="link-quiet">
                     {profile.email.secondary}
@@ -166,43 +180,43 @@ export function Component() {
                 </p>
               )}
             </div>
-            <div>
-              <p className="label mb-2">{t.contact.address}</p>
-              <address className="flex gap-2 not-italic text-ink2">
-                <MapPin size={18} className="mt-1 shrink-0 text-ink3" aria-hidden="true" />
+            <div className="glass rounded-[1.75rem] p-6 md:p-8">
+              <p className="eyebrow mb-4">{t.contact.address}</p>
+              <address className="flex gap-3 not-italic text-ink2">
+                <MapPin size={18} className="mt-1 shrink-0 text-amber" aria-hidden="true" />
                 <span>{pick(profile.address)}</span>
               </address>
-              <p className="mt-2 pl-[26px] text-sm">
+              <p className="mt-4 pl-[30px] text-sm">
                 <Ext href={profile.mapUrl}>{t.contact.map}</Ext>
               </p>
             </div>
-            <div>
-              <p className="label mb-2">{t.contact.elsewhere}</p>
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                <li>
-                  <Ext href={profile.links.scholar}>Google Scholar</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.orcid}>ORCID</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.linkedin}>LinkedIn</Ext>
-                </li>
-                {profile.links.instagram && (
-                  <li>
-                    <Ext href={profile.links.instagram}>Instagram</Ext>
+            <div className="glass rounded-[1.75rem] p-6 md:p-8">
+              <p className="eyebrow mb-4">{t.contact.elsewhere}</p>
+              <ul className="flex flex-wrap gap-2 text-sm">
+                {[
+                  ['Google Scholar', profile.links.scholar],
+                  ['ORCID', profile.links.orcid],
+                  ['LinkedIn', profile.links.linkedin],
+                  ...(profile.links.instagram ? [['Instagram', profile.links.instagram]] : []),
+                ].map(([label, href]) => (
+                  <li key={href}>
+                    <Ext href={href} className="btn-small text-ink">
+                      {label}
+                    </Ext>
                   </li>
-                )}
+                ))}
               </ul>
             </div>
           </div>
 
-          <div className="relative border-t border-ink pt-6 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
-            <h2 className="mb-6 font-serif text-h3 font-normal">{t.contact.form}</h2>
+          <div className="glass rounded-[2rem] p-6 sm:p-8 md:p-10">
+            <h2 className="display mb-8 text-[clamp(2.25rem,1.4rem+2.6vw,3.5rem)] leading-[0.95] tracking-[-0.04em]">
+              {t.contact.form}
+            </h2>
             <ContactForm />
           </div>
         </div>
-      </Section>
+      </section>
     </>
   );
 }

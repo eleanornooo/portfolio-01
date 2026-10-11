@@ -34,8 +34,16 @@ New art direction: dark, cinematic, premium (depth, glass, glow). It replaces th
 - ✅ Reveals on every section; reduced motion: everything visible, timeline fully lit
 - Shared: `components/SectionHeading.tsx` (numbered label + giant masked title), now used by Home and About
 
+### Teaching, Publications, Talks, Contact ✅
+- ✅ Shared: `components/PageHero.tsx` (dark hero, giant title rising line by line, sized so the longest word fits; header floats over it), `components/FilterChips.tsx` (glass track, amber pill that slides between options via framer-motion `layoutId`, `aria-pressed`), list items animate in/out on filter change (framer-motion `AnimatePresence` + `layout`, reduced motion respected via `MotionConfig`)
+- ✅ Restyled shared classes: `.btn-solid` / `.btn-line` / `.btn-small` / `.chip` / `.field` / `.tag` (pill shapes, amber focus), `TimingTag` = glowing "Upcoming" badge, glass-style `Dialog`. The timetable picks these up; its logic is unchanged
+- ✅ Publications: count-up metric glass cards in the hero, sticky glass filter bar (type chips, search, year), light reading area with giant year labels and hovering entries
+- ✅ Talks: type chips in the hero; dark timeline whose rail draws itself on scroll, outlined giant years, glowing diamonds for upcoming talks, keynotes and panels as large cards
+- ✅ Teaching: teaching statement as a serif-italic intro; courses in a light section (glass filter bar, list/grid toggle with animated layout, course dialog unchanged); timetable in a framed panel
+- ✅ Contact: glass cards (email, address + map, profiles) and the form in a glass panel over a glow; magnetic glow "Send" button. EmailJS, cooldown and honeypot code untouched
+
 ### Next ⬜
-- Teaching, Publications, Talks, Contact in the same system
+- Research page in the same system (not yet requested; it still uses the old layout)
 - Then sections 5–9 below, in the new style
 
 ---
