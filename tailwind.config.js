@@ -15,13 +15,16 @@ export default {
         rule: v('rule'),
         accent: v('accent'),
         vivid: v('accent-vivid'),
+        amber: v('amber'),
       },
       fontFamily: {
         serif: ['"Fraunces Variable"', 'Iowan Old Style', 'Georgia', 'serif'],
         sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Arial Narrow"', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         label: ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.12em' }],
+        eyebrow: ['0.6875rem', { lineHeight: '1rem', letterSpacing: '0.28em' }],
         sm: ['0.875rem', { lineHeight: '1.35rem' }],
         base: ['1.0625rem', { lineHeight: '1.7rem' }],
         lead: ['1.25rem', { lineHeight: '1.9rem' }],
@@ -29,6 +32,8 @@ export default {
         h2: ['clamp(1.75rem, 1.35rem + 1.3vw, 2.5rem)', { lineHeight: '1.15' }],
         h1: ['clamp(2.5rem, 1.7rem + 2.8vw, 4.25rem)', { lineHeight: '1.04' }],
         display: ['clamp(3.1rem, 1.6rem + 5.4vw, 6.5rem)', { lineHeight: '0.96' }],
+        mega: ['clamp(3.25rem, 1rem + 9vw, 10rem)', { lineHeight: '0.88', letterSpacing: '-0.045em' }],
+        big: ['clamp(2.5rem, 1.4rem + 4.2vw, 5.25rem)', { lineHeight: '0.95', letterSpacing: '-0.035em' }],
       },
       maxWidth: {
         measure: '68ch',

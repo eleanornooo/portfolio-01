@@ -5,6 +5,7 @@ import { places as allPlaces, type Place } from '../../lib/places';
 import { isLiteDevice, prefersReducedMotion, whenNear } from '../../lib/motion';
 import { useLang } from '../../i18n/useLang';
 import { arc, facing, rotate, toScreen, toVec, visible } from './globe-math';
+import MaskText from '../MaskText';
 
 const GlobeCanvas = lazy(() => import('./GlobeCanvas'));
 
@@ -35,13 +36,13 @@ function GlobeFallback({ places, className = '' }: { places: Place[]; className?
   const parallels = [-60, -30, 0, 30, 60].map((lat) => path(Array.from({ length: 73 }, (_, k) => toVec(lat, k * 5 - 180))));
   return (
     <svg viewBox={`0 0 ${S} ${S}`} className={className} aria-hidden="true" focusable="false">
-      <circle cx={50} cy={50} r={40} className="fill-paper2 stroke-rule" strokeWidth={0.3} />
+      <circle cx={50} cy={50} r={40} className="fill-paper2 stroke-amber/30" strokeWidth={0.3} />
       <g fill="none" className="stroke-rule" strokeWidth={0.25}>
         {[...meridians, ...parallels].map((d, i) => (
           <path key={i} d={d} />
         ))}
       </g>
-      <g fill="none" className="stroke-ink/40" strokeWidth={0.35} strokeDasharray="1 1.2">
+      <g fill="none" className="stroke-amber/60" strokeWidth={0.35} strokeDasharray="1 1.2">
         {places
           .filter((p) => p !== home)
           .map((p) => (
@@ -52,7 +53,7 @@ function GlobeFallback({ places, className = '' }: { places: Place[]; className?
         const v = rotate(toVec(p.lat, p.lon), START.phi, START.theta);
         if (v[2] <= 0) return null;
         const [x, y] = toScreen(v, S);
-        return <circle key={p.id} cx={x.toFixed(2)} cy={y.toFixed(2)} r={p.home ? 1.4 : 1} className="fill-vivid" />;
+        return <circle key={p.id} cx={x.toFixed(2)} cy={y.toFixed(2)} r={p.home ? 1.4 : 1} className="fill-amber" />;
       })}
     </svg>
   );
@@ -82,24 +83,36 @@ export default function GlobeSection({ index }: { index: string }) {
   const kinds = t.world.kinds;
 
   return (
-    <section ref={root} id="world" aria-labelledby="world-title" className="page">
-      <div className="grid-12 border-t border-rule pt-6">
-        <p className="label num col-span-4 mb-6 md:col-span-3 md:mb-0">
-          <span className="text-accent" aria-hidden="true">
-            {index} —{' '}
+    <section ref={root} id="world" aria-labelledby="world-title" className="tone-dark relative overflow-hidden pb-20 pt-12 md:pb-28 md:pt-16">
+      {/* deep glow behind the globe */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_50%_at_30%_58%,rgb(226_87_43/0.22),transparent_70%),radial-gradient(30%_30%_at_75%_30%,rgb(245_158_59/0.08),transparent_70%)]"
+      />
+      <div className="page relative">
+      <div className="grid-12 gap-y-6">
+        <p className="eyebrow num col-span-4 md:col-span-3 md:pt-4">
+          <span className="text-amber" aria-hidden="true">
+            {index} ·{' '}
           </span>
           {t.world.label}
         </p>
         <div className="col-span-4 md:col-span-9">
-          <h2 id="world-title" className="text-h2 font-normal">
-            {t.world.title}
+          <h2 id="world-title" data-reveal="mask" className="display text-big">
+            <MaskText lines={[t.world.title]} />
           </h2>
-          <p className="prose-measure mt-4 text-lead text-ink2">{t.world.intro}</p>
+          <p data-reveal="up" className="prose-measure mt-6 text-lead text-ink2">
+            {t.world.intro}
+          </p>
         </div>
       </div>
 
-      <div className="mt-10 grid items-center gap-10 pb-16 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:pb-24">
-        <div className="relative mx-auto aspect-square w-full max-w-[34rem]">
+      <div className="mt-10 grid items-center gap-10 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <div className="relative mx-auto aspect-square w-full max-w-[36rem]">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-[6%] rounded-full shadow-[0_0_120px_30px_rgb(226_87_43/0.22),inset_0_0_60px_rgb(245_158_59/0.12)]"
+          />
           <GlobeFallback
             places={places}
             className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${ready ? 'opacity-0' : 'opacity-100'}`}
@@ -122,8 +135,8 @@ export default function GlobeSection({ index }: { index: string }) {
           </p>
         </div>
 
-        <div>
-          <ul className="divide-y divide-rule border-y border-rule" onMouseLeave={() => setHover(null)}>
+        <div data-reveal="up" className="glass rounded-[1.75rem] p-3 md:p-4">
+          <ul className="divide-y divide-ink/10" onMouseLeave={() => setHover(null)}>
             {places.map((p) => {
               const on = p.id === selected;
               return (
@@ -139,8 +152,8 @@ export default function GlobeSection({ index }: { index: string }) {
                       setSelected(on ? null : p.id);
                       setAll(false);
                     }}
-                    className={`group grid w-full grid-cols-[1fr_auto] items-baseline gap-x-4 px-2 py-3.5 text-left transition-colors hover:bg-paper2/70 ${
-                      on ? 'bg-paper2/70' : ''
+                    className={`group grid w-full grid-cols-[1fr_auto] items-baseline gap-x-4 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-ink/[0.06] ${
+                      on ? 'bg-ink/[0.08]' : ''
                     }`}
                   >
                     <span>
@@ -148,7 +161,7 @@ export default function GlobeSection({ index }: { index: string }) {
                         className={`block font-serif text-[1.1875rem] leading-snug transition-colors group-hover:text-accent ${on ? 'text-accent' : ''}`}
                       >
                         {p.name}
-                        {p.home && <span className="label ml-2 align-middle text-[0.625rem] text-vivid">{t.world.home}</span>}
+                        {p.home && <span className="eyebrow ml-2 align-middle text-[0.625rem] text-amber">{t.world.home}</span>}
                       </span>
                       <span className="text-sm text-ink3">{pick(p.country)}</span>
                     </span>
@@ -159,10 +172,10 @@ export default function GlobeSection({ index }: { index: string }) {
             })}
           </ul>
 
-          <div id={detailsId} aria-live="polite" className="mt-6 min-h-[9rem]">
+          <div id={detailsId} aria-live="polite" className="mt-4 min-h-[9rem] px-3 pb-2">
             {current ? (
               <div key={current.id} className="place-details">
-                <h3 className="label mb-3 font-sans text-accent">
+                <h3 className="eyebrow mb-3 font-sans text-amber">
                   {current.name} · {pick(current.country)}
                 </h3>
                 <ul className="space-y-2.5">
@@ -199,6 +212,7 @@ export default function GlobeSection({ index }: { index: string }) {
             )}
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

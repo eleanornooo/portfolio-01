@@ -4,23 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Aziz Mimoudi" />
-    <meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0E1524" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0A0B0F" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <script>
-      // Before first paint: apply the saved (or system) colour theme, so dark mode never flashes.
+      // Before first paint: apply the saved colour theme (dark by default), so it never flashes.
       (function () {
         var d = document.documentElement;
         var t = null;
         try {
           t = localStorage.getItem('theme');
         } catch (e) {}
-        if (t !== 'dark' && t !== 'light') {
-          t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
+        if (t !== 'dark' && t !== 'light') t = 'dark';
         d.setAttribute('data-theme', t);
       })();
     </script>

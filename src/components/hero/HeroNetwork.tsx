@@ -67,7 +67,7 @@ export default function HeroNetwork({
       } catch {
         return; // keep the poster
       }
-      renderer.setPalette(readPalette());
+      renderer.setPalette(readPalette(hero));
       const sizeScale = lite ? 0.85 : 1;
       for (const p of sim.particles) p.size *= sizeScale;
 
@@ -76,12 +76,16 @@ export default function HeroNetwork({
       let cy = 0;
       let scale = 300;
       let heroRect = hero.getBoundingClientRect();
+      // Mouse parallax (−1 … 1, eased): the network slides against the cursor, while the
+      // word and portrait follow it through --px / --py (see .hero-depth).
+      const par = { x: 0, y: 0, tx: 0, ty: 0 };
       const measure = () => {
         heroRect = hero.getBoundingClientRect();
         const a = anchor.getBoundingClientRect();
-        cx = a.left + a.width / 2 - heroRect.left;
-        cy = a.top + a.height / 2 - heroRect.top;
+        cx = a.left + a.width / 2 - heroRect.left - par.x * 26;
+        cy = a.top + a.height / 2 - heroRect.top - par.y * 16;
         scale = a.width * RADIUS;
+        sim.scroll = Math.min(1, Math.max(0, -heroRect.top / heroRect.height));
       };
       const resize = () => {
         const r = hero.getBoundingClientRect();
@@ -104,14 +108,26 @@ export default function HeroNetwork({
         hero.style.cursor = i >= 0 ? 'pointer' : '';
       };
       const local = (e: PointerEvent) => ({ x: e.clientX - heroRect.left, y: e.clientY - heroRect.top });
+      let parRaf = 0;
       const onMove = (e: PointerEvent) => {
         if (e.pointerType === 'touch') return;
         const { x, y } = local(e);
+        par.tx = (x / heroRect.width) * 2 - 1;
+        par.ty = (y / heroRect.height) * 2 - 1;
+        if (!parRaf)
+          parRaf = requestAnimationFrame(() => {
+            parRaf = 0;
+            hero.style.setProperty('--px', par.tx.toFixed(3));
+            hero.style.setProperty('--py', par.ty.toFixed(3));
+          });
         sim.setPointer((x - cx) / scale, -(y - cy) / scale);
         const overUi = (e.target as Element).closest('a, button, input, [data-no-network]');
         setHovered(overUi ? -1 : sim.hitTest(x, y, sizeScale));
       };
       const onLeave = () => {
+        par.tx = par.ty = 0;
+        hero.style.setProperty('--px', '0');
+        hero.style.setProperty('--py', '0');
         sim.setPointer(null);
         setHovered(-1);
       };
@@ -134,7 +150,7 @@ export default function HeroNetwork({
       hero.addEventListener('click', onClick);
 
       // ---- theme changes
-      const mo = new MutationObserver(() => renderer.setPalette(readPalette()));
+      const mo = new MutationObserver(() => renderer.setPalette(readPalette(hero)));
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
       // ---- loop, paused when off-screen or hidden
@@ -146,6 +162,9 @@ export default function HeroNetwork({
         raf = 0;
         const dt = last ? (now - last) / 1000 : 0.016;
         last = now;
+        const ease = Math.min(1, dt * 2.5);
+        par.x += (par.tx - par.x) * ease;
+        par.y += (par.ty - par.y) * ease;
         measure();
         sim.update(dt);
         sim.project(cx, cy, scale);
@@ -182,6 +201,7 @@ export default function HeroNetwork({
 
       teardown = () => {
         cancelAnimationFrame(raf);
+        cancelAnimationFrame(parRaf);
         window.clearTimeout(tapTimer);
         io.disconnect();
         ro.disconnect();
@@ -215,8 +235,8 @@ export default function HeroNetwork({
         className={`pointer-events-none absolute left-0 top-0 z-30 transition-opacity duration-200 ${text ? 'opacity-100' : 'opacity-0'}`}
       >
         {text && (
-          <div className="-translate-y-1/2 whitespace-nowrap rounded-[3px] border border-rule bg-paper/95 px-3 py-2 shadow-[0_12px_30px_-14px_rgb(0_0_0/0.35)] backdrop-blur-sm">
-            <p className="label text-[0.625rem] text-accent">{text.kind}</p>
+          <div className="glass -translate-y-1/2 whitespace-nowrap rounded-2xl px-4 py-2.5">
+            <p className="eyebrow text-[0.625rem] text-amber">{text.kind}</p>
             <p className="max-w-[18rem] truncate font-serif text-[0.9375rem] leading-snug text-ink">{text.title}</p>
             {text.detail && <p className="num text-[0.8125rem] text-ink2">{text.detail}</p>}
           </div>

@@ -5,17 +5,20 @@ import { arc, facing, nearestAngle, rotate, toScreen, toVec, visible, type Vec3 
 
 type RGB = [number, number, number];
 
-function themeColors() {
-  const css = getComputedStyle(document.documentElement);
+/** Colours in effect on `el` (the globe section is always dark): a deep warm-grey globe,
+ *  amber dots and arcs, and a terracotta atmosphere. */
+function themeColors(el: Element) {
+  const css = getComputedStyle(el);
   const get = (n: string): RGB => css.getPropertyValue(`--${n}`).trim().split(/\s+/).map((v) => Number(v) / 255) as RGB;
-  const dark = document.documentElement.dataset.theme === 'dark';
+  const paper = get('paper');
+  const dark = paper[0] + paper[1] + paper[2] < 1.2;
   return {
     dark,
-    base: dark ? get('ink-3') : get('paper-2'),
-    glow: dark ? get('paper-2') : get('paper'),
-    marker: get('accent-vivid'),
+    base: dark ? ([0.32, 0.27, 0.24] as RGB) : get('paper-2'),
+    glow: dark ? ([0.55, 0.22, 0.1] as RGB) : get('paper'),
+    marker: get('amber'),
     ink: get('ink'),
-    accent: get('accent-vivid'),
+    accent: get('amber'),
   };
 }
 
@@ -64,7 +67,7 @@ export default function GlobeCanvas({
     const start = facing(40, -38);
     let phi = start.phi;
     let theta = start.theta;
-    let colors = themeColors();
+    let colors = themeColors(el);
     let drag: { x: number; y: number; phi: number; theta: number } | null = null;
     let manual = false; // the visitor turned the globe: stop auto-rotation until a place is focused
     let lastFocus: string | null = null;
@@ -85,10 +88,6 @@ export default function GlobeCanvas({
       arcs.forEach((a, i) => {
         const hot = a.id === f;
         const view = a.pts.map((p) => rotate(p, phi, theta));
-        ctx.lineWidth = hot ? 1.8 : 1;
-        ctx.strokeStyle = hot ? rgba(colors.accent, 0.95) : rgba(colors.ink, colors.dark ? 0.45 : 0.32);
-        ctx.setLineDash(hot || reduced ? [] : [3, 4]);
-        ctx.lineDashOffset = reduced ? 0 : -time * 18;
         ctx.beginPath();
         let pen = false;
         view.forEach((v) => {
@@ -101,6 +100,15 @@ export default function GlobeCanvas({
           else ctx.moveTo(x, y);
           pen = true;
         });
+        // A wide faint stroke under a thin bright one reads as a glowing arc.
+        ctx.setLineDash([]);
+        ctx.lineWidth = hot ? 7 : 4;
+        ctx.strokeStyle = rgba(colors.accent, hot ? 0.22 : 0.08);
+        ctx.stroke();
+        ctx.lineWidth = hot ? 1.8 : 1;
+        ctx.strokeStyle = hot ? rgba(colors.accent, 1) : rgba(colors.accent, colors.dark ? 0.55 : 0.4);
+        ctx.setLineDash(hot || reduced ? [] : [3, 4]);
+        ctx.lineDashOffset = reduced ? 0 : -time * 18;
         ctx.stroke();
         // A pulse travels from home to the place.
         if (!reduced) {
@@ -113,7 +121,12 @@ export default function GlobeCanvas({
           if (visible(p)) {
             const [x, y] = toScreen(p, size);
             ctx.setLineDash([]);
-            ctx.fillStyle = rgba(colors.accent, Math.sin(Math.PI * t));
+            const a = Math.sin(Math.PI * t);
+            ctx.fillStyle = rgba(colors.accent, a * 0.25);
+            ctx.beginPath();
+            ctx.arc(x, y, hot ? 8 : 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = rgba([1, 0.9, 0.75], a);
             ctx.beginPath();
             ctx.arc(x, y, hot ? 3 : 2.2, 0, Math.PI * 2);
             ctx.fill();
@@ -140,9 +153,9 @@ export default function GlobeCanvas({
       phi,
       theta,
       dark: colors.dark ? 1 : 0,
-      diffuse: colors.dark ? 1.4 : 1.1,
+      diffuse: colors.dark ? 1.2 : 1.1,
       mapSamples: lite ? 9000 : 16000,
-      mapBrightness: colors.dark ? 4.5 : 7,
+      mapBrightness: colors.dark ? 5 : 7,
       mapBaseBrightness: 0,
       baseColor: colors.base,
       markerColor: colors.marker,
@@ -174,7 +187,7 @@ export default function GlobeCanvas({
         state.baseColor = colors.base;
         state.glowColor = colors.glow;
         state.markerColor = colors.marker;
-        state.mapBrightness = colors.dark ? 4.5 : 7;
+        state.mapBrightness = colors.dark ? 5 : 7;
         state.markers = places.map((p) => ({
           location: [p.lat, p.lon] as [number, number],
           size: p.id === f ? 0.1 : p.home ? 0.075 : 0.05,
@@ -217,7 +230,7 @@ export default function GlobeCanvas({
     });
     io.observe(el);
     document.addEventListener('visibilitychange', sync);
-    const mo = new MutationObserver(() => (colors = themeColors()));
+    const mo = new MutationObserver(() => (colors = themeColors(el)));
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     const ro = new ResizeObserver(sizeCanvases);
     ro.observe(el);
@@ -252,7 +265,7 @@ export default function GlobeCanvas({
         className="pointer-events-none absolute left-0 top-0 whitespace-nowrap opacity-0 transition-opacity duration-300"
       >
         {focused && (
-          <span className="ml-3 inline-block -translate-y-1/2 rounded-[3px] bg-ink px-2 py-1 text-[0.8125rem] text-paper shadow-sm">
+          <span className="glass ml-3 inline-block -translate-y-1/2 rounded-full px-3 py-1 text-[0.8125rem] text-ink">
             {focused.name}
           </span>
         )}

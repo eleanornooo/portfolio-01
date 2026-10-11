@@ -1,4 +1,3 @@
-import type { NodeKind } from '../../lib/graph';
 import type { NetworkSim } from './network-sim';
 
 export type RGB = [number, number, number];
@@ -8,34 +7,18 @@ export interface Palette {
   ink3: RGB;
   accent: RGB;
   vivid: RGB;
+  amber: RGB;
 }
 
-/** Reads the site's colour tokens (light or dark theme) as 0–1 RGB. */
-export function readPalette(): Palette {
-  const css = getComputedStyle(document.documentElement);
+/** Reads the colour tokens in effect on `el` (the hero is always dark) as 0–1 RGB. */
+export function readPalette(el: Element = document.documentElement): Palette {
+  const css = getComputedStyle(el);
   const get = (name: string): RGB => {
     const [r, g, b] = css.getPropertyValue(`--${name}`).trim().split(/\s+/).map(Number);
     return [r / 255, g / 255, b / 255];
   };
-  return { ink: get('ink'), ink3: get('ink-3'), accent: get('accent'), vivid: get('accent-vivid') };
+  return { ink: get('ink'), ink3: get('ink-3'), accent: get('accent'), vivid: get('accent-vivid'), amber: get('amber') };
 }
-
-export function kindColor(kind: NodeKind | 'dust', p: Palette): RGB {
-  switch (kind) {
-    case 'core':
-      return p.vivid;
-    case 'theme':
-    case 'coauthor':
-      return p.accent;
-    case 'talk':
-    case 'dust':
-      return p.ink3;
-    default:
-      return p.ink;
-  }
-}
-
-export const kindAlpha = (kind: NodeKind | 'dust') => (kind === 'dust' ? 0.42 : kind === 'talk' ? 0.8 : 1);
 
 /** Edge opacity: the backbone (core and themes) reads a little stronger. */
 export function edgeBase(sim: NetworkSim, e: number) {

@@ -31,3 +31,6 @@ dist-ssr
 # Private source documents (contain personal data: date of birth, home address, phone)
 CV_Aziz_2026.md
 *.docx
+
+# Hero cut-out source (≈16 MB); the optimised WebPs in public/img/hero are committed
+public/hero/

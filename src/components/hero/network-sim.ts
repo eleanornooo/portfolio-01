@@ -26,8 +26,9 @@ const KIND_DELAY: Record<NodeKind | 'dust', number> = {
   dust: 0.7,
 };
 
-const HOLD = 0.55; // seconds on the star before organising
-const MORPH = 1.15; // seconds each particle takes to reach its place
+const HOLD = 0.35; // seconds on the star before organising
+const MORPH = 0.95; // seconds each particle takes to reach its place
+const STAGGER = 0.75; // spread of the per-kind delays: the whole intro takes ≈1.5 s
 export const CAMERA_Z = 1000; // px — shared perspective for both renderers
 
 export interface SimParticle {
@@ -68,6 +69,8 @@ export class NetworkSim {
   /** 0 → 1: how far the star has turned into the network. */
   formed = 0;
   hovered = -1;
+  /** 0 → 1 as the hero scrolls away: the network turns and tilts with it. */
+  scroll = 0;
 
   private target: Float32Array;
   private start: Float32Array;
@@ -177,7 +180,7 @@ export class NetworkSim {
 
     let formed = 0;
     for (let i = 0; i < n; i++) {
-      const p = Math.min(1, Math.max(0, (t - HOLD - this.delay[i] * 1.4) / MORPH));
+      const p = Math.min(1, Math.max(0, (t - HOLD - this.delay[i] * STAGGER) / MORPH));
       this.progress[i] = easeInOut(p);
       formed += p;
     }
@@ -188,7 +191,7 @@ export class NetworkSim {
     this.rotY += dt * 0.085 * spin + dt * 0.05 * ptr.active * ptr.x * spin;
     const wantX = 0.22 * spin + ptr.active * ptr.y * 0.18;
     this.rotX += (wantX - this.rotX) * Math.min(1, dt * 2);
-    this.place(this.rotY * spin, this.rotX, t * 0.05);
+    this.place(this.rotY * spin + this.scroll * 0.9, this.rotX + this.scroll * 0.35, t * 0.05);
     for (let i = 0; i < n; i++) this.flash[i] = Math.max(0, this.flash[i] - dt * 1.6);
     this.updateEdgesAndSignals(dt);
   }

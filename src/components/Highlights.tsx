@@ -1,0 +1,107 @@
+import type { NewsItem } from '../content/types';
+import { useLang } from '../i18n/useLang';
+import { formatDate, timing } from '../lib/dates';
+import { photoSrc, photoSrcSet, photos, type Photo } from '../lib/photos';
+import { ArrowUpRight } from 'lucide-react';
+
+/** Bento layout: which highlights get a bigger tile, and which carry a photo. */
+const FEATURES: Record<string, { span: string; photo?: Photo; big?: boolean }> = {
+  'unu-macau': { span: 'sm:col-span-2 lg:row-span-2', photo: photos.scienceWeekSpeaking, big: true },
+  'qs-judge': { span: 'sm:col-span-2', photo: photos.scienceWeekPanelC },
+  phd: { span: 'sm:col-span-2' },
+};
+
+/**
+ * The year's highlights as a bento grid: one large feature tile with a photo, a few wide
+ * tiles and small ones. Dark cards with a glow that follows the cursor; "Upcoming" glows.
+ */
+export default function Highlights({ items, now }: { items: NewsItem[]; now: number }) {
+  const { t, pick, lang } = useLang();
+
+  return (
+    <ol
+      data-reveal="stagger"
+      className="grid grid-flow-row-dense auto-rows-[minmax(12.5rem,auto)] grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4"
+    >
+      {items.map((n) => {
+        const f = FEATURES[n.id];
+        const when = timing(n.date, n.endDate, now);
+        const title = pick(n.title);
+        return (
+          <li
+            key={n.id}
+            className={`card-dark spot group flex min-h-[12.5rem] flex-col hover:-translate-y-1 ${f?.span ?? ''} ${
+              f?.big ? 'min-h-[26rem]' : ''
+            }`}
+          >
+            {f?.photo && (
+              <>
+                <img
+                  src={photoSrc(f.photo)}
+                  srcSet={photoSrcSet(f.photo)}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  width={f.photo.w}
+                  height={f.photo.h}
+                  alt={pick(f.photo.alt)}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover object-[50%_80%] opacity-70 grayscale transition-[transform,filter] duration-[1.4s] ease-out group-hover:scale-[1.05] group-hover:grayscale-0"
+                />
+                {/* Warm duotone: the grey photo is tinted by an amber glow, then fades into the card. */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[radial-gradient(80%_70%_at_70%_20%,rgb(226_87_43/0.35),transparent_70%)] mix-blend-color"
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-paper via-paper/80 to-paper/25"
+                />
+              </>
+            )}
+            <div className="relative z-10 flex flex-1 flex-col p-5 md:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <span className="eyebrow">{n.kind}</span>
+                {when !== 'past' && (
+                  <span className="badge-glow rounded-full bg-amber px-2.5 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#160b05]">
+                    {when === 'upcoming' ? t.common.upcoming : t.common.ongoing}
+                  </span>
+                )}
+              </div>
+              <div className="mt-auto pt-8">
+                <p className="num text-sm text-ink3">{formatDate(n.date, lang, n.endDate)}</p>
+                <h3
+                  className={`mt-2 font-serif font-normal leading-[1.12] tracking-[-0.015em] ${
+                    f?.big ? 'text-[1.75rem] md:text-[2.375rem]' : f ? 'text-[1.5rem]' : 'text-[1.1875rem]'
+                  }`}
+                >
+                  {n.url ? (
+                    // The whole tile is the link (stretched); the arrow shows it.
+                    <a
+                      href={n.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="outline-none after:absolute after:inset-0 after:rounded-3xl focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-amber"
+                    >
+                      {title}
+                      <ArrowUpRight
+                        size="0.8em"
+                        aria-hidden="true"
+                        className="ml-1 inline-block align-[-0.05em] text-amber transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                      <span className="sr-only"> {t.common.opensNewTab}</span>
+                    </a>
+                  ) : (
+                    title
+                  )}
+                </h3>
+                {n.detail && (
+                  <p className={`mt-2 text-ink2 ${f?.big ? 'max-w-[44ch] text-base' : 'text-sm'}`}>{pick(n.detail)}</p>
+                )}
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

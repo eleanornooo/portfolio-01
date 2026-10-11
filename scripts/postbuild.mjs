@@ -2,18 +2,22 @@
 //  1. moves <meta charset> and viewport to the very top of <head> (react-helmet puts the
 //     page <title> and meta tags before them; browsers want charset in the first 1 KB);
 //  2. replaces the SSG's preload of *every* font file with preloads of the three faces
-//     needed for the first paint (the others load on demand via unicode-range);
+//     needed for the first paint (incl. the hero's display face) (the others load on demand via unicode-range);
 //  3. inlines the stylesheet (≈9 KB gzipped) so the first paint needs no extra request;
-//  4. writes dist/sitemap.xml from the pre-rendered pages.
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+//  4. writes dist/sitemap.xml from the pre-rendered pages;
+//  5. drops the hero cut-out's 16 MB source PNG (public/hero), which only feeds `npm run images:hero`.
+import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SITE = 'https://www.mimoudi.com';
 const dist = path.resolve(import.meta.dirname, '..', 'dist');
 
+await rm(path.join(dist, 'hero'), { recursive: true, force: true });
+
 const assets = await readdir(path.join(dist, 'assets'));
 const criticalFonts = [
   /^fraunces-latin-opsz-normal-.*\.woff2$/,
+  /^bricolage-grotesque-latin-wght-normal-.*\.woff2$/,
   /^ibm-plex-sans-latin-400-normal-.*\.woff2$/,
   /^ibm-plex-sans-latin-500-normal-.*\.woff2$/,
 ]

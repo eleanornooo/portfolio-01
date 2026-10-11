@@ -65,26 +65,33 @@ export function CountUp({ value, suffix = '', delay = 0 }: { value: number; suff
   );
 }
 
-/** The key-figures band: big tabular numerals with a hairline that draws as they count. */
+/**
+ * Key figures: a row of glass cards floating over a slowly drifting glow. Numbers count up
+ * in the display face; hovering a card lifts it and its glow follows the cursor (.spot).
+ */
 export default function Figures({ figures, note }: { figures: Figure[]; note?: string }) {
   return (
-    <>
-      <dl className="grid grid-cols-2 gap-px border-y border-rule bg-rule md:grid-cols-3 xl:grid-cols-6">
+    <div className="relative isolate">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="glow-field" />
+      </div>
+      <dl data-reveal="stagger" className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-6">
         {figures.map((f, i) => (
           <div
             key={f.label}
             data-count
-            className="relative flex flex-col-reverse justify-end gap-2 overflow-hidden bg-paper px-4 py-7 md:px-6 md:py-10"
+            className="glass spot group relative flex flex-col-reverse justify-end gap-3 overflow-hidden rounded-3xl p-5 transition-transform duration-500 ease-out hover:-translate-y-2 md:p-6"
           >
-            <dt className="max-w-[16ch] text-sm leading-snug text-ink2">{f.label}</dt>
-            <dd className="num font-serif text-[3rem] font-light leading-none tracking-[-0.02em] md:text-[4rem]">
-              <CountUp value={f.value} suffix={f.suffix} delay={i * 90} />
+            <dt className="relative z-10 max-w-[18ch] text-sm leading-snug text-ink2">{f.label}</dt>
+            <dd className="num display relative z-10 text-[3.25rem] leading-[0.9] tracking-[-0.04em] md:text-[4.25rem]">
+              <span className="text-glow">
+                <CountUp value={f.value} suffix={f.suffix} delay={i * 90} />
+              </span>
             </dd>
-            <span aria-hidden="true" className="figure-line absolute bottom-0 left-0 h-[2px] w-full bg-vivid" />
           </div>
         ))}
       </dl>
-      {note && <p className="mt-3 text-sm text-ink3">{note}</p>}
-    </>
+      {note && <p className="mt-4 text-sm text-ink3">{note}</p>}
+    </div>
   );
 }

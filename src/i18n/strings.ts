@@ -63,6 +63,7 @@ export const strings = {
       allResearch: 'Research and projects',
       contactTitle: 'Collaborations, invitations, supervision enquiries.',
       contactCta: 'Write to Aziz',
+      contactBig: ['Let’s work', 'together'],
     },
     hero: {
       explore: 'Explore the research',
@@ -329,6 +330,7 @@ export const strings = {
       allResearch: 'Recherche et projets',
       contactTitle: 'Collaborations, invitations, demandes d’encadrement.',
       contactCta: 'Écrire à Aziz',
+      contactBig: ['Travaillons', 'ensemble'],
     },
     hero: {
       explore: 'Découvrir la recherche',

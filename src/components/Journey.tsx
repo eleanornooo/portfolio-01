@@ -4,6 +4,7 @@ import { useGsap } from '../lib/gsap';
 import { milestones } from '../lib/journey';
 import { photoSrc, photoSrcSet } from '../lib/photos';
 import { StarMark } from './Zellige';
+import MaskText from './MaskText';
 
 /**
  * Career story, 1999 → 2026. Desktop: the section pins and the milestones slide past
@@ -45,8 +46,13 @@ export default function Journey({ index }: { index: string }) {
               const inView = { trigger: panel, containerAnimation: slide, scrub: true };
               gsap.fromTo(
                 panel.querySelector('.journey-year'),
-                { scale: 0.55, opacity: 0.25 },
+                { scale: 0.6, opacity: 0.4 },
                 { scale: 1, opacity: 1, ease: 'none', scrollTrigger: { ...inView, start: 'left 98%', end: 'left 45%' } },
+              );
+              gsap.fromTo(
+                panel.querySelector('.journey-year-fill'),
+                { clipPath: 'inset(0% 100% 0% 0%)' },
+                { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', scrollTrigger: { ...inView, start: 'left 70%', end: 'left 30%' } },
               );
               gsap.fromTo(
                 panel.querySelector('.journey-copy'),
@@ -76,6 +82,16 @@ export default function Journey({ index }: { index: string }) {
               ease: 'power3.out',
               scrollTrigger: { trigger: panel, start: 'top 88%' },
             });
+            gsap.fromTo(
+              panel.querySelector('.journey-year-fill'),
+              { clipPath: 'inset(0% 100% 0% 0%)' },
+              {
+                clipPath: 'inset(0% 0% 0% 0%)',
+                duration: 1.2,
+                ease: 'power2.inOut',
+                scrollTrigger: { trigger: panel, start: 'top 65%' },
+              },
+            );
           });
         },
       );
@@ -84,20 +100,33 @@ export default function Journey({ index }: { index: string }) {
   );
 
   return (
-    <section ref={root} id="journey" aria-labelledby="journey-title" className="journey relative">
+    <section
+      ref={root}
+      id="journey"
+      aria-labelledby="journey-title"
+      className="journey tone-dark blend-y relative pb-16 pt-36 md:pb-20 md:pt-44"
+    >
       <div className="page">
-        <div className="grid-12 border-t border-rule pb-10 pt-6 md:pb-4">
-          <p className="label num col-span-4 mb-6 md:col-span-3 md:mb-0">
-            <span className="text-accent" aria-hidden="true">
-              {index} —{' '}
+        <div className="grid-12 gap-y-6 pb-10 md:pb-6">
+          <p className="eyebrow num col-span-4 md:col-span-3 md:pt-4">
+            <span className="text-amber" aria-hidden="true">
+              {index} ·{' '}
             </span>
             {t.journey.label}
           </p>
           <div className="col-span-4 md:col-span-9">
-            <h2 id="journey-title" className="num text-h2 font-normal">
-              {first} <span className="text-vivid">→</span> {last}
+            <h2 id="journey-title" data-reveal="mask" className="num display whitespace-nowrap text-[clamp(3rem,0.5rem+8.4vw,8.75rem)] leading-[0.9] tracking-[-0.045em]">
+              <MaskText
+                lines={[
+                  <>
+                    {first} <span className="text-glow">→</span> {last}
+                  </>,
+                ]}
+              />
             </h2>
-            <p className="prose-measure mt-4 text-lead text-ink2">{t.journey.intro}</p>
+            <p data-reveal="up" className="prose-measure mt-6 text-lead text-ink2">
+              {t.journey.intro}
+            </p>
           </div>
         </div>
       </div>
@@ -105,7 +134,7 @@ export default function Journey({ index }: { index: string }) {
       <div ref={pin} className="journey-pin relative md:flex md:h-[100svh] md:flex-col md:justify-center">
         {/* phone timeline rail */}
         <span aria-hidden="true" className="absolute bottom-0 left-[calc(1.25rem+3px)] top-0 w-px bg-rule sm:left-[calc(2rem+3px)] md:hidden">
-          <span className="journey-progress-v absolute inset-0 origin-top bg-vivid" />
+          <span className="journey-progress-v absolute inset-0 origin-top bg-amber shadow-[0_0_12px_rgb(245_158_59/0.8)]" />
         </span>
 
         <ol
@@ -121,18 +150,19 @@ export default function Journey({ index }: { index: string }) {
             >
               <StarMark className="absolute -left-[2.15rem] top-[1.4rem] h-4 w-4 text-vivid sm:-left-[2.65rem] md:hidden" />
               <div className={`flex flex-col md:h-full md:justify-between ${m.photo ? 'md:w-[52%] md:pr-10' : 'md:w-full'}`}>
-                <p className="label num">
-                  <span className="text-accent">{String(i + 1).padStart(2, '0')}</span>
+                <p className="eyebrow num">
+                  <span className="text-amber">{String(i + 1).padStart(2, '0')}</span>
                   <span className="text-ink3"> / {String(items.length).padStart(2, '0')} · </span>
                   {pick(m.chapter)}
                 </p>
                 <p
-                  className="journey-year num mt-4 origin-bottom-left font-serif text-[clamp(4.5rem,3rem+9vw,11rem)] font-light leading-[0.85] tracking-[-0.04em] text-ink"
+                  className="journey-year num display relative mt-4 origin-bottom-left text-[clamp(4.75rem,3rem+10vw,12.5rem)] leading-[0.82] tracking-[-0.05em]"
                   aria-hidden="true"
                 >
-                  {m.year}
+                  <span className="year-outline">{m.year}</span>
+                  <span className="journey-year-fill text-glow absolute inset-0">{m.year}</span>
                 </p>
-                <div className="journey-copy mt-6 border-t border-rule pt-5">
+                <div className="journey-copy mt-6 border-t border-ink/10 pt-5">
                   <h3 className="font-serif text-[1.5rem] font-normal leading-snug md:text-[1.75rem]">
                     <span className="sr-only">{m.period ?? m.year}: </span>
                     {m.title}
@@ -149,8 +179,8 @@ export default function Journey({ index }: { index: string }) {
                 </div>
               </div>
               {m.photo && (
-                <figure className="mt-6 md:mt-0 md:w-[48%]">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-paper2 md:aspect-auto md:h-[calc(100%-2rem)]">
+                <figure className={`mt-6 md:mt-0 md:w-[48%] ${i % 2 ? 'md:rotate-[2deg]' : 'md:-rotate-[2.5deg]'}`}>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper2 shadow-[0_50px_90px_-40px_rgb(0_0_0/0.9),0_0_0_1px_rgb(255_255_255/0.08)] md:aspect-auto md:h-[calc(100%-2rem)]">
                     <img
                       src={photoSrc(m.photo)}
                       srcSet={photoSrcSet(m.photo)}
@@ -174,8 +204,8 @@ export default function Journey({ index }: { index: string }) {
         <div aria-hidden="true" className="page hidden md:mt-10 md:block">
           <div className="num flex items-center gap-4 text-sm text-ink3">
             <span>{first}</span>
-            <span className="relative h-px flex-1 bg-rule">
-              <span className="journey-progress absolute inset-0 origin-left bg-vivid" />
+            <span className="relative h-px flex-1 bg-ink/15">
+              <span className="journey-progress absolute inset-0 origin-left bg-amber shadow-[0_0_14px_rgb(245_158_59/0.9)]" />
             </span>
             <span>{last}</span>
           </div>

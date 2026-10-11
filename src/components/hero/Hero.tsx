@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Download } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Download } from 'lucide-react';
 import { profile } from '../../content/profile';
 import { publications } from '../../content/publications';
 import { projects } from '../../content/projects';
@@ -13,16 +13,51 @@ import Magnetic from '../Magnetic';
 import HeroNetwork from './HeroNetwork';
 import NetworkPoster from './NetworkPoster';
 
-export const PORTRAIT_SRCSET = '/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w';
-export const PORTRAIT_SIZES = '(min-width: 1248px) 260px, (min-width: 768px) 22vw, 46vw';
+// Cut-out portrait (transparent WebP, from public/hero/aziz-cutout.png via `npm run images:hero`).
+export const CUTOUT_SRC = '/img/hero/aziz-cutout-760.webp';
+export const CUTOUT_SRCSET =
+  '/img/hero/aziz-cutout-480.webp 480w, /img/hero/aziz-cutout-760.webp 760w, /img/hero/aziz-cutout-1100.webp 1100w';
+// The portrait's height is ≈86% of the hero (≤ 70rem) on desktop, so its width tracks vh.
+export const CUTOUT_SIZES = '(min-width: 768px) min(72vh, 820px), 96vw';
+const CUTOUT_W = 1100;
+const CUTOUT_H = 1332;
 
 /** Entrance delay for the CSS-driven hero animation (see .kin-* in index.css). */
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
+const depth = (px: number) => ({ '--depth': px }) as CSSProperties;
 
-/** Moorish pointed arch, in object-bounding-box units (0–1). */
-const ARCH = 'M0,1 V0.36 C0,0.17 0.22,0.05 0.5,0 C0.78,0.05 1,0.17 1,0.36 V1 Z';
-/** The same arch in a 100 × 125 box (4:5), for the outline drawn around the portrait. */
-const ARCH_OUTLINE = 'M0,125 V45 C0,21.25 22,6.25 50,0 C78,6.25 100,21.25 100,45 V125';
+/** The giant surname, as SVG so it spans the width exactly and can fade top → bottom. */
+function GiantWord({ word, outline = false }: { word: string; outline?: boolean }) {
+  const id = outline ? undefined : 'hero-word-fade';
+  return (
+    <svg
+      viewBox="0 0 1000 206"
+      className={`block w-full overflow-visible ${outline ? 'hero-word-outline' : 'hero-word'}`}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {id && (
+        <defs>
+          <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#F4EEE6" stopOpacity="0.97" />
+            <stop offset="0.5" stopColor="#EBC9A2" stopOpacity="0.55" />
+            <stop offset="1" stopColor="#E2572B" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      )}
+      <text
+        x="0"
+        y="203"
+        fontSize="282"
+        textLength="1000"
+        lengthAdjust="spacingAndGlyphs"
+        fill={id ? `url(#${id})` : undefined}
+      >
+        {word}
+      </text>
+    </svg>
+  );
+}
 
 export default function Hero() {
   const { t, pick, lang } = useLang();
@@ -34,157 +69,182 @@ export default function Hero() {
   const { graph } = researchGraph();
   const themes = graph.nodes.filter((n) => n.kind === 'theme');
   const coauthors = graph.nodes.filter((n) => n.kind === 'coauthor').length;
-  const [first, ...rest] = profile.name.split(' ');
+  const surname = profile.name.split(' ').slice(-1)[0].toUpperCase();
 
-  // Scroll parallax: portrait and text drift at different speeds; the cue fades out.
+  // Scroll depth: the farther a layer, the slower it leaves. The word drifts and grows,
+  // the network sinks behind, the portrait lags a little, the card leaves first.
   useGsap(({ gsap }) => {
     const mm = gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       const st = { trigger: hero.current, start: 'top top', end: 'bottom top', scrub: true };
-      gsap.to('.hero-portrait', { yPercent: -9, ease: 'none', scrollTrigger: st });
-      gsap.to('.hero-text', { y: 60, ease: 'none', scrollTrigger: st });
-      gsap.to('.hero-cue', { autoAlpha: 0, ease: 'none', scrollTrigger: { ...st, end: '15% top' } });
+      gsap.to('.hero-word-layer', { yPercent: 70, scale: 1.12, opacity: 0.35, ease: 'none', scrollTrigger: st });
+      gsap.to(anchor.current, { yPercent: 28, ease: 'none', scrollTrigger: st });
+      gsap.to('.hero-portrait-layer', { yPercent: 14, ease: 'none', scrollTrigger: st });
+      gsap.to('.hero-card-layer', { yPercent: -22, ease: 'none', scrollTrigger: st });
+      gsap.to('.hero-glow', { opacity: 0.25, ease: 'none', scrollTrigger: st });
+      gsap.to('.hero-cue', { autoAlpha: 0, ease: 'none', scrollTrigger: { ...st, end: '12% top' } });
     });
   }, hero);
+
+  const Primary = __HAS_CV__ ? (
+    <a href={profile.cvPdf} className="btn-glow" download>
+      <Download size={16} aria-hidden="true" />
+      {t.common.downloadCv}
+      <span className="sr-only"> (PDF)</span>
+    </a>
+  ) : (
+    <Link to="/research" className="btn-glow">
+      {t.hero.explore} <ArrowRight size={16} aria-hidden="true" />
+    </Link>
+  );
+  const Secondary = __HAS_CV__ ? (
+    <Link to="/research" className="btn-ghost">
+      {t.hero.explore} <ArrowRight size={16} aria-hidden="true" />
+    </Link>
+  ) : (
+    <Link to="/contact" className="btn-ghost">
+      {t.home.contactCta} <ArrowUpRight size={16} aria-hidden="true" />
+    </Link>
+  );
 
   return (
     <section
       ref={hero}
-      className="hero relative overflow-hidden"
+      className="hero tone-dark relative isolate overflow-hidden"
       data-live={live || undefined}
       aria-labelledby="hero-name"
     >
-      <HeroNetwork heroRef={hero} anchorRef={anchor} onLive={onLive} />
-      <div aria-hidden="true" className="hero-veil pointer-events-none absolute inset-0" />
+      {/* 1 · back glow */}
+      <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-0 -z-10" />
 
-      <div className="page relative flex min-h-[inherit] flex-col justify-center pb-24 pt-10 md:pt-14">
-        <div className="grid-12 items-center gap-y-10 md:gap-y-16">
-          <div className="hero-text relative z-10 order-2 col-span-4 md:order-none md:col-span-7">
-            <p className="label kin-fade" style={delay(80)}>
-              {pick(profile.institute)} · UM6P · {pick(profile.location)}
-            </p>
-            <h1 id="hero-name" className="mt-8 font-serif font-light tracking-[-0.035em]">
-              <span
-                className="kin-fade block font-sans text-lead font-normal tracking-normal text-ink2"
-                style={delay(120)}
-              >
-                {profile.honorific}
-              </span>
-              <span className="block text-display" aria-label={profile.name}>
-                <span className="kin-line" aria-hidden="true">
-                  <span style={delay(180)}>{first}</span>
-                </span>
-                <span className="kin-line" aria-hidden="true">
-                  <span style={delay(300)}>{rest.join(' ')}</span>
-                </span>
-              </span>
-              <span className="sr-only">, {profile.postnominal}</span>
+      {/* 2 · the giant word, behind everything else */}
+      <div aria-hidden="true" className="hero-word-layer pointer-events-none absolute inset-x-0 top-[21%] z-0 md:top-[19%]">
+        <div className="hero-depth px-3 md:px-5" style={depth(14)}>
+          <div className="hero-word-in">
+            <GiantWord word={surname} />
+          </div>
+        </div>
+      </div>
+
+      {/* 3 · the network floats around and behind the portrait */}
+      <HeroNetwork heroRef={hero} anchorRef={anchor} onLive={onLive} />
+      <div
+        ref={anchor}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[54%] z-10 xl:left-[47%] aspect-square w-[min(110vw,56svh)] -translate-x-1/2 -translate-y-1/2 md:w-[min(80vw,78svh)]"
+      >
+        <NetworkPoster formed={false} className="hero-poster hero-poster-star" />
+        <NetworkPoster formed className="hero-poster hero-poster-final" />
+      </div>
+
+      {/* 4 · the cut-out portrait, in front of the word */}
+      <div className="hero-portrait-layer pointer-events-none absolute inset-0 z-20">
+        <div
+          className="hero-depth absolute bottom-0 left-1/2 h-[70%] -translate-x-1/2 md:h-[84%] xl:left-[47%]"
+          style={{ ...depth(-8), aspectRatio: `${CUTOUT_W} / ${CUTOUT_H}` }}
+          data-no-network
+        >
+          <div aria-hidden="true" className="hero-rim absolute inset-x-[-25%] top-[2%] h-[70%]" />
+          <img
+            src={CUTOUT_SRC}
+            srcSet={CUTOUT_SRCSET}
+            sizes={CUTOUT_SIZES}
+            width={CUTOUT_W}
+            height={CUTOUT_H}
+            alt={t.home.portraitAlt}
+            {...{ fetchpriority: 'high' }}
+            decoding="async"
+            className="hero-portrait-img relative h-full w-full object-contain object-bottom"
+          />
+        </div>
+      </div>
+
+      {/* 5 · a faint outline of the word passes in front of him (magazine-cover depth) */}
+      <div aria-hidden="true" className="hero-word-layer pointer-events-none absolute inset-x-0 top-[21%] z-20 md:top-[19%]">
+        <div className="hero-depth px-3 md:px-5" style={depth(14)}>
+          <div className="hero-word-in">
+            <GiantWord word={surname} outline />
+          </div>
+        </div>
+      </div>
+
+      {/* top line */}
+      <div className="page pointer-events-none absolute inset-x-0 top-[4.75rem] z-30 flex justify-between gap-6 md:top-24">
+        <p className="eyebrow kin-fade" style={delay(200)}>
+          {pick(profile.institute)}
+        </p>
+        <p className="eyebrow kin-fade hidden text-right sm:block" style={delay(260)}>
+          UM6P · {pick(profile.location)}
+        </p>
+      </div>
+
+      {/* 6 · the glass card, overlapping the bottom of the portrait */}
+      <div className="hero-card-layer absolute inset-x-0 bottom-0 z-30">
+        <div className="page flex items-end justify-between gap-10 pb-5 md:pb-12">
+          <div
+            className="glass kin-rise w-full max-w-[29rem] rounded-[1.75rem] p-5 sm:p-6 md:ml-[max(0px,calc(50%-35rem))] md:p-7"
+            style={delay(650)}
+          >
+            <p className="eyebrow text-amber">{pick(profile.role)}</p>
+            <h1 id="hero-name" className="mt-3 font-serif text-[1.75rem] font-normal leading-[1.05] tracking-[-0.02em] md:text-[2.25rem]">
+              {profile.honorific} {profile.name},{' '}
+              <span className="font-light italic text-ink2">{profile.postnominal}</span>
             </h1>
-            <p className="kin-fade mt-6 max-w-[40ch] text-lead text-ink" style={delay(520)}>
-              {profile.postnominal} — {pick(profile.title)} · {pick(profile.role)}, {profile.institutionShort}
+            <p className="mt-2 text-sm text-ink2">
+              {pick(profile.title)} · {profile.institutionShort}
             </p>
-            <p
-              className="kin-fade mt-8 max-w-[36ch] border-l-2 border-vivid pl-5 font-serif text-[1.375rem] font-light italic leading-snug text-ink2 md:text-[1.5rem]"
-              style={delay(640)}
-            >
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <Magnetic>{Primary}</Magnetic>
+              <Magnetic strength={0.2}>{Secondary}</Magnetic>
+            </div>
+          </div>
+
+          <div className="kin-fade hidden max-w-[16.5rem] pb-2 xl:block" style={delay(900)}>
+            <p aria-hidden="true" className="font-serif text-[1.0625rem] font-light italic leading-snug text-ink2">
               {pick(profile.statement)}
             </p>
-            <div className="kin-fade mt-10 flex flex-wrap items-center gap-x-6 gap-y-4" style={delay(760)}>
-              <Magnetic>
-                <Link to="/research" className="btn-solid">
-                  {t.hero.explore} <ArrowRight size={16} aria-hidden="true" />
-                </Link>
-              </Magnetic>
-              {__HAS_CV__ && (
-                <a href={profile.cvPdf} className="btn-line" download>
-                  <Download size={16} aria-hidden="true" />
-                  {t.common.downloadCv}
-                  <span className="sr-only"> (PDF)</span>
-                </a>
-              )}
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                <li>
-                  <Ext href={profile.links.scholar}>Google Scholar</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.orcid}>ORCID</Ext>
-                </li>
-                <li>
-                  <Ext href={profile.links.linkedin}>LinkedIn</Ext>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="order-1 col-span-4 md:order-none md:col-span-5">
-            {/* The stage: the network is centred on it; the portrait sits at its lower right. */}
-            <div ref={anchor} className="hero-stage relative mx-auto aspect-square w-[82%] max-w-[22rem] md:w-full md:max-w-none">
-              {/* Stand-ins for the canvas: the star it starts from, or the finished network. */}
-              <NetworkPoster formed={false} className="hero-poster hero-poster-star" />
-              <NetworkPoster formed className="hero-poster hero-poster-final" />
-
-              <figure className="hero-portrait absolute bottom-[-4%] right-0 w-[50%] md:right-[-6%] md:w-[52%]" data-no-network>
-                <svg width="0" height="0" className="absolute" aria-hidden="true" focusable="false">
-                  <clipPath id="hero-arch" clipPathUnits="objectBoundingBox">
-                    <path d={ARCH} />
-                  </clipPath>
-                </svg>
-                <div className="relative">
-                  <svg
-                    viewBox="0 0 100 125"
-                    aria-hidden="true"
-                    className="arch-outline pointer-events-none absolute -inset-[5%] h-[110%] w-[110%] overflow-visible"
-                  >
-                    <path d={ARCH_OUTLINE} pathLength={1} fill="none" />
-                  </svg>
-                  <div className="arch relative aspect-[4/5] overflow-hidden bg-ink">
-                    <img
-                      src="/img/portrait-400.webp"
-                      srcSet={PORTRAIT_SRCSET}
-                      sizes={PORTRAIT_SIZES}
-                      width={736}
-                      height={920}
-                      alt={t.home.portraitAlt}
-                      {...{ fetchpriority: 'high' }}
-                      decoding="async"
-                      className="arch-img h-full w-full object-cover"
-                    />
-                    <span aria-hidden="true" className="arch-curtain absolute inset-0 bg-vivid" />
-                  </div>
-                </div>
-                <figcaption className="kin-fade mt-3 text-sm text-ink3" style={delay(900)}>
-                  {t.home.portraitCaption}
-                </figcaption>
-              </figure>
-            </div>
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <li>
+                <Ext href={profile.links.scholar} className="link-quiet">
+                  Google Scholar
+                </Ext>
+              </li>
+              <li>
+                <Ext href={profile.links.orcid} className="link-quiet">
+                  ORCID
+                </Ext>
+              </li>
+              <li>
+                <Ext href={profile.links.linkedin} className="link-quiet">
+                  LinkedIn
+                </Ext>
+              </li>
+            </ul>
+            <a href="#figures" className="hero-cue mt-8 flex items-center gap-3 text-sm text-ink3 hover:text-ink">
+              <span className="cue-track" aria-hidden="true">
+                <span />
+              </span>
+              {t.hero.scroll}
+              <span className="hidden text-ink3/80 2xl:inline">· {t.hero.networkHint}</span>
+            </a>
           </div>
         </div>
+      </div>
 
-        <div className="sr-only">
-          <h2>{t.hero.networkTitle}</h2>
-          <p>{t.hero.networkSummary(publications.length, projects.length, talks.length, coauthors)}</p>
-          <ul>
-            {themes.map((n) => {
-              const x = nodeText(n, lang);
-              return (
-                <li key={n.id}>
-                  {x.title} — {x.detail}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        <a
-          href="#figures"
-          className="hero-cue absolute bottom-6 left-5 hidden items-center gap-3 text-sm text-ink3 hover:text-accent sm:left-8 md:flex lg:left-12"
-        >
-          <span className="cue-track" aria-hidden="true">
-            <span />
-          </span>
-          {t.hero.scroll}
-          <span className="hidden text-ink3/80 lg:inline">· {t.hero.networkHint}</span>
-        </a>
+      <div className="sr-only">
+        <p>{pick(profile.statement)}</p>
+        <h2>{t.hero.networkTitle}</h2>
+        <p>{t.hero.networkSummary(publications.length, projects.length, talks.length, coauthors)}</p>
+        <ul>
+          {themes.map((n) => {
+            const x = nodeText(n, lang);
+            return (
+              <li key={n.id}>
+                {x.title} — {x.detail}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );

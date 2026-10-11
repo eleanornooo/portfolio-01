@@ -1,4 +1,7 @@
 @import '@fontsource-variable/fraunces/opsz.css';
+@import '@fontsource-variable/fraunces/opsz-italic.css';
+/* Display face for the giant words (weight axis only, ≈41 KB for Latin). */
+@import '@fontsource-variable/bricolage-grotesque/wght.css';
 /* Latin + Latin Extended only (French, Turkish names…); no Cyrillic/Greek/Vietnamese. */
 @import '@fontsource/ibm-plex-sans/latin-400.css';
 @import '@fontsource/ibm-plex-sans/latin-ext-400.css';
@@ -12,18 +15,60 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------ tokens */
-/* Colours are RGB triplets so Tailwind can apply opacity (bg-ink/10 …). */
-:root {
-  --paper: 246 242 234;
-  --paper-2: 237 231 219;
-  --ink: 23 32 51;
-  --ink-2: 62 71 89;
-  --ink-3: 91 98 115;
-  --rule: 214 205 189;
-  --accent: 168 64 31; /* terracotta, AA on paper (5.4:1) */
-  --accent-vivid: 200 81 43; /* UM6P terracotta, decorative only */
+/* Colours are RGB triplets so Tailwind can apply opacity (bg-ink/10 …).
+   Dark is the default theme. Sections can force a palette with .tone-dark / .tone-light,
+   or flip it with .tone-inverse (light sections inside the dark theme, and vice versa). */
+:root,
+.tone-light,
+[data-theme='dark'] .tone-inverse {
+  --paper: 244 240 233;
+  --paper-2: 233 227 217;
+  --ink: 17 18 23;
+  --ink-2: 62 60 58;
+  --ink-3: 96 92 88;
+  --rule: 216 208 195;
+  --accent: 172 62 24; /* terracotta, AA on paper */
+  --accent-vivid: 226 87 43; /* #E2572B, glow and decoration */
+  --amber: 245 158 59; /* #F59E3B, glow and decoration */
+  --glass: 255 255 255;
+  --glass-a: 0.5;
+  --glass-line: 30 22 14;
+  --glass-line-a: 0.1;
+  --glass-hi: 0.7;
+  --shadow-a: 0.18;
+  color-scheme: light;
+}
 
-  /* timetable session types: fill / line */
+[data-theme='dark'],
+.tone-dark,
+[data-theme='light'] .tone-inverse {
+  --paper: 10 11 15; /* #0A0B0F */
+  --paper-2: 21 22 28;
+  --ink: 243 238 230;
+  --ink-2: 201 195 186;
+  --ink-3: 152 147 140;
+  --rule: 44 45 53;
+  --accent: 245 158 59; /* amber reads as text on ink (9:1) */
+  --accent-vivid: 226 87 43;
+  --amber: 245 158 59;
+  --glass: 255 255 255;
+  --glass-a: 0.045;
+  --glass-line: 255 255 255;
+  --glass-line-a: 0.1;
+  --glass-hi: 0.09;
+  --shadow-a: 0.55;
+  color-scheme: dark;
+}
+
+.tone-light,
+.tone-dark,
+.tone-inverse {
+  background-color: rgb(var(--paper));
+  color: rgb(var(--ink));
+}
+
+/* Timetable session types: fill / line */
+:root {
   --tt-lecture: 223 228 238;
   --tt-lecture-line: 52 70 110;
   --tt-seminar: 244 222 211;
@@ -32,20 +77,8 @@
   --tt-office-line: 63 107 83;
   --tt-supervision: 242 231 200;
   --tt-supervision-line: 128 98 16;
-
-  color-scheme: light;
 }
-
 [data-theme='dark'] {
-  --paper: 14 21 36;
-  --paper-2: 22 30 48;
-  --ink: 236 230 218;
-  --ink-2: 201 195 183;
-  --ink-3: 161 156 145;
-  --rule: 43 52 72;
-  --accent: 238 138 99;
-  --accent-vivid: 226 105 63;
-
   --tt-lecture: 33 45 72;
   --tt-lecture-line: 140 163 214;
   --tt-seminar: 66 36 28;
@@ -54,8 +87,6 @@
   --tt-office-line: 129 186 152;
   --tt-supervision: 58 48 20;
   --tt-supervision-line: 222 186 92;
-
-  color-scheme: dark;
 }
 
 /* -------------------------------------------------------------------- base */
@@ -99,6 +130,20 @@
   }
   [hidden] {
     display: none !important;
+  }
+  /* Film grain over everything (a static tile; no blend mode, so scrolling stays cheap). */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  [data-theme='light'] body::after {
+    opacity: 0.035;
+    filter: invert(1);
   }
 }
 
@@ -150,6 +195,109 @@
   .chip {
     @apply rounded-[3px] border border-rule px-3 py-1.5 text-sm text-ink2 transition-colors hover:border-ink/40 hover:text-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper;
   }
+  /* Small refined UI label with wide tracking. */
+  .eyebrow {
+    @apply font-sans text-eyebrow font-medium uppercase text-ink3;
+  }
+  /* Primary call to action: a terracotta → amber glow. Dark text keeps it AA (5.8:1). */
+  .btn-glow {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold;
+    color: #160b05;
+    background: linear-gradient(120deg, #e2572b 0%, #f08a3a 55%, #f59e3b 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 34px -10px rgb(226 87 43 / 0.85),
+      0 0 60px -18px rgb(245 158 59 / 0.75);
+    transition:
+      box-shadow 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.4s;
+  }
+  .btn-glow:hover {
+    filter: brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      0 14px 44px -10px rgb(226 87 43 / 1),
+      0 0 90px -14px rgb(245 158 59 / 0.9);
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-ink;
+    border: 1px solid rgb(var(--ink) / 0.22);
+    background: rgb(var(--ink) / 0.03);
+    transition:
+      border-color 0.3s,
+      background-color 0.3s,
+      color 0.3s;
+  }
+  .btn-ghost:hover {
+    border-color: rgb(var(--amber) / 0.7);
+    background: rgb(var(--amber) / 0.08);
+  }
+  /* Frosted glass, for layers that float over glow or 3D (not for flat content). */
+  .glass {
+    background: linear-gradient(
+      160deg,
+      rgb(var(--glass) / calc(var(--glass-a) * 1.8)) 0%,
+      rgb(var(--glass) / var(--glass-a)) 60%
+    );
+    border: 1px solid rgb(var(--glass-line) / var(--glass-line-a));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / var(--glass-hi)),
+      0 30px 70px -34px rgb(0 0 0 / var(--shadow-a));
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+  .glass-nav {
+    background: rgb(var(--paper) / 0.72);
+    border: 1px solid rgb(var(--glass-line) / var(--glass-line-a));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / var(--glass-hi)),
+      0 18px 50px -24px rgb(0 0 0 / var(--shadow-a));
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
+  /* Dark card with a glow that follows the cursor (see lib/spotlight.ts). */
+  .card-dark {
+    @apply relative overflow-hidden rounded-3xl;
+    background: linear-gradient(170deg, rgb(var(--ink) / 0.06), rgb(var(--ink) / 0.02));
+    border: 1px solid rgb(var(--ink) / 0.09);
+    transition:
+      border-color 0.4s,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .card-dark:hover {
+    border-color: rgb(var(--amber) / 0.35);
+  }
+  .spot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.4s;
+    background: radial-gradient(
+      26rem circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent-vivid) / 0.2),
+      rgb(var(--amber) / 0.06) 40%,
+      transparent 70%
+    );
+  }
+  .spot:hover::before {
+    opacity: 1;
+  }
+  /* Display type for giant words. */
+  .display {
+    @apply font-display font-extrabold;
+    font-kerning: normal;
+  }
+  /* Amber gradient text. */
+  .text-glow {
+    background: linear-gradient(100deg, #e2572b, #f59e3b 70%, #f7c27a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   /* Bibliography entry: hanging indent like a printed reference list. */
   .hanging {
     padding-left: 1.75em;
@@ -174,91 +322,90 @@ html.lenis body {
 }
 
 /* -------------------------------------------------------------------- hero */
+/* The page background at the root (not the nearest .tone-* scope), for fades between sections. */
+html {
+  --page: var(--paper);
+}
 .hero {
-  min-height: calc(100svh - 3.5rem);
+  height: 100svh;
+  min-height: 40rem;
+  max-height: 70rem;
 }
-@media (min-width: 768px) {
-  .hero {
-    min-height: min(calc(100svh - 4rem), 62rem);
+/* Bottom fade: the portrait sinks into the dark band that follows (the numbers). */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 9rem;
+  z-index: 25;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(var(--paper) / 0), rgb(var(--paper)));
+}
+.hero-glow {
+  background:
+    radial-gradient(42% 46% at 50% 56%, rgb(226 87 43 / 0.34), transparent 72%),
+    radial-gradient(30% 32% at 58% 34%, rgb(245 158 59 / 0.2), transparent 70%),
+    radial-gradient(38% 40% at 8% 92%, rgb(226 87 43 / 0.16), transparent 70%),
+    radial-gradient(30% 30% at 94% 8%, rgb(245 158 59 / 0.08), transparent 70%);
+  animation: glow-breathe 10s ease-in-out infinite alternate;
+}
+@keyframes glow-breathe {
+  to {
+    opacity: 0.72;
+    transform: scale(1.07);
   }
 }
 
-/* Entrance: pure CSS so it starts with the first paint, before any JavaScript. */
-.kin-line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.06em;
-  margin-bottom: -0.06em;
-}
-.kin-line > span {
-  display: block;
-  animation: kin-rise 1.05s cubic-bezier(0.19, 0.8, 0.22, 1) both;
-  animation-delay: var(--d, 0ms);
-}
-.kin-fade {
-  animation: kin-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  animation-delay: var(--d, 0ms);
-}
-@keyframes kin-rise {
-  from {
-    transform: translateY(108%) rotate(2deg);
-  }
-}
-@keyframes kin-fade {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
+/* Mouse parallax: --px / --py (−1 … 1) are set on .hero by HeroNetwork; the CSS `translate`
+   property composes with the GSAP scroll transforms. */
+.hero-depth {
+  translate: calc(var(--px, 0) * var(--depth, 0) * 1px) calc(var(--py, 0) * var(--depth, 0) * 0.6px);
+  transition: translate 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* Portrait: a Moorish arch. The image is painted at once (it is the LCP element); a
-   terracotta curtain lifts off it, then the outline draws itself. */
-.arch {
-  clip-path: url(#hero-arch);
-  border-radius: 50% 50% 0 0 / 30% 30% 0 0; /* fallback shape */
+/* The giant word: solid at the top, fading out toward the bottom. */
+.hero-word-in {
+  animation: word-in 1.5s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.1s;
 }
-@supports (clip-path: url(#a)) {
-  .arch {
-    border-radius: 0;
-  }
-}
-.arch-img {
-  animation: arch-settle 1.6s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
-}
-.arch-curtain {
-  transform-origin: top;
-  animation: arch-lift 1.05s cubic-bezier(0.77, 0, 0.18, 1) both 0.25s;
-}
-.arch-outline path {
-  stroke: rgb(var(--accent-vivid));
-  stroke-width: 0.28;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  animation: draw-in 1.8s cubic-bezier(0.65, 0, 0.35, 1) both 0.9s;
-}
-@keyframes arch-settle {
+@keyframes word-in {
   from {
-    transform: scale(1.14);
-  }
-}
-@keyframes arch-lift {
-  from {
-    transform: scaleY(1);
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(18%);
   }
   to {
-    transform: scaleY(0);
+    clip-path: inset(-20% 0 -20% 0);
   }
 }
-@keyframes draw-in {
-  from {
-    stroke-dashoffset: 1;
-  }
+.hero-word text,
+.hero-word-outline text {
+  font-family: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
+  font-weight: 800;
+}
+.hero-word-outline text {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.13);
+  stroke-width: 1.1;
 }
 
-/* Network: SVG stand-ins until the canvas has drawn its first frame. */
+/* Cut-out portrait: painted at once (it is the LCP), rises into place without fading. */
+.hero-portrait-img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 99%);
+  animation: portrait-in 1.7s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
+}
+@keyframes portrait-in {
+  from {
+    transform: translateY(6%) scale(1.035);
+  }
+}
+.hero-rim {
+  background: radial-gradient(closest-side, rgb(245 158 59 / 0.38), rgb(226 87 43 / 0.16) 55%, transparent);
+}
+
+/* Network canvas: SVG stand-ins until it has drawn its first frame. */
 .hero-canvas {
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.9s ease;
 }
 .hero[data-live] .hero-canvas {
   opacity: 1;
@@ -267,11 +414,12 @@ html.lenis body {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 162%; /* 2 × 1.62 × 0.5 — the network radius is half the stage */
+  width: 162%; /* 2 × 1.62 × 0.5 — the network radius is half the anchor */
   max-width: none;
   translate: -50% -50%;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  opacity: 0.55;
+  transition: opacity 0.6s ease;
 }
 .hero-poster-final {
   display: none;
@@ -279,18 +427,26 @@ html.lenis body {
 .hero[data-live] .hero-poster {
   opacity: 0;
 }
-.hero-veil {
-  background: linear-gradient(0deg, rgb(var(--paper)) 0%, rgb(var(--paper) / 0.9) 45%, rgb(var(--paper) / 0) 62%);
+
+/* Entrance for the small text: pure CSS so it starts with the first paint. */
+.kin-fade {
+  animation: kin-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
 }
-@media (min-width: 768px) {
-  .hero-veil {
-    background: linear-gradient(
-      90deg,
-      rgb(var(--paper)) 0%,
-      rgb(var(--paper) / 0.9) 36%,
-      rgb(var(--paper) / 0.35) 52%,
-      rgb(var(--paper) / 0) 62%
-    );
+.kin-rise {
+  animation: kin-rise-card 1.2s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes kin-fade {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes kin-rise-card {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.97);
   }
 }
 
@@ -300,7 +456,7 @@ html.lenis body {
   width: 1px;
   height: 2.5rem;
   overflow: hidden;
-  background: rgb(var(--rule));
+  background: rgb(var(--ink) / 0.2);
 }
 .cue-track > span {
   position: absolute;
@@ -308,7 +464,7 @@ html.lenis body {
   top: 0;
   width: 1px;
   height: 40%;
-  background: rgb(var(--accent-vivid));
+  background: rgb(var(--amber));
   animation: cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite 1.6s;
   transform: translateY(-100%);
 }
@@ -319,15 +475,16 @@ html.lenis body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kin-line > span,
+  .hero-glow,
+  .hero-word-in,
+  .hero-portrait-img,
   .kin-fade,
-  .arch-img,
-  .arch-outline path,
+  .kin-rise,
   .cue-track > span {
     animation: none;
   }
-  .arch-curtain {
-    display: none;
+  .hero-depth {
+    translate: none;
   }
   .hero-poster-star {
     display: none;
@@ -335,6 +492,125 @@ html.lenis body {
   .hero-poster-final {
     display: block;
   }
+}
+
+/* -------------------------------------------------- section rhythm & blends */
+/* Sections with a fixed palette (.tone-dark / .tone-light) fade in from, and out to, the
+   page background (--page) instead of starting with a hard edge. When the page already has
+   the same palette, the gradient is invisible. */
+/* Eased (not linear) fade over 16rem, layered over the section's own background colour. */
+.blend-t,
+.blend-b,
+.blend-y {
+  --fade: rgb(var(--page)) 0, rgb(var(--page) / 0.82) 2rem, rgb(var(--page) / 0.6) 4.5rem,
+    rgb(var(--page) / 0.36) 7.5rem, rgb(var(--page) / 0.16) 11rem, rgb(var(--page) / 0.04) 15rem,
+    rgb(var(--page) / 0) 18rem;
+}
+/* A faint terracotta glow rides on each seam, so the fade reads as light, not fog. */
+.blend-t,
+.blend-b,
+.blend-y {
+  --seam: rgb(226 87 43 / 0.14);
+}
+.blend-t {
+  background-image:
+    radial-gradient(60% 9rem at 50% 0, var(--seam), transparent), linear-gradient(to bottom, var(--fade));
+}
+.blend-b {
+  background-image:
+    radial-gradient(60% 9rem at 50% 100%, var(--seam), transparent), linear-gradient(to top, var(--fade));
+}
+.blend-y {
+  background-image:
+    radial-gradient(60% 9rem at 50% 0, var(--seam), transparent),
+    radial-gradient(60% 9rem at 50% 100%, var(--seam), transparent), linear-gradient(to bottom, var(--fade)),
+    linear-gradient(to top, var(--fade));
+}
+/* Slow glow fields behind glass. Radial gradients (no blur filter), moved with transforms. */
+.glow-field {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(28% 34% at 30% 45%, rgb(226 87 43 / 0.28), transparent 70%),
+    radial-gradient(26% 30% at 70% 55%, rgb(245 158 59 / 0.2), transparent 70%);
+  animation: glow-drift 16s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  0% {
+    transform: translate3d(-6%, -3%, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(6%, 4%, 0) rotate(8deg);
+  }
+}
+.badge-glow {
+  box-shadow:
+    0 0 0 1px rgb(245 158 59 / 0.4),
+    0 0 18px -2px rgb(245 158 59 / 0.75);
+  animation: badge-pulse 2.6s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  50% {
+    box-shadow:
+      0 0 0 1px rgb(245 158 59 / 0.6),
+      0 0 28px 0 rgb(245 158 59 / 0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-field,
+  .badge-glow {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------------- cursor */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor :is(input, textarea, select, [contenteditable]) {
+  cursor: auto !important;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  pointer-events: none;
+  border-radius: 9999px;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: #fff;
+}
+.cursor-ring {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -1.125rem 0 0 -1.125rem;
+  border: 1px solid #fff;
+  transition:
+    width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    margin 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 0.35s,
+    opacity 0.3s;
+}
+.cursor-ring[data-hover] {
+  width: 4rem;
+  height: 4rem;
+  margin: -2rem 0 0 -2rem;
+  background: #fff;
+}
+.cursor-ring[data-down] {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -0.75rem;
 }
 
 /* --------------------------------------------------------- reveal on scroll */
@@ -351,13 +627,64 @@ html.lenis body {
   transform: none;
 }
 
+/* [data-reveal] (lib/reveal.ts): armed below the fold only, never with reduced motion.
+   "mask": each .rv-line slides up from behind its own edge; "up": fade-up;
+   "stagger": the children fade up one after another; "clip": the box opens from its centre. */
+.rv-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.rv-line > span {
+  display: block;
+}
+.rv-armed[data-reveal='mask'] .rv-line > span {
+  transition: transform 1.15s cubic-bezier(0.19, 0.8, 0.22, 1);
+  transition-delay: calc(var(--l, 0) * 90ms);
+}
+.rv-armed[data-reveal='mask']:not(.rv-in) .rv-line > span {
+  transform: translateY(112%) rotate(1.5deg);
+}
+.rv-armed[data-reveal='up'] {
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rv-armed[data-reveal='up']:not(.rv-in) {
+  opacity: 0;
+  transform: translateY(36px);
+}
+.rv-armed[data-reveal='stagger'] > * {
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 1s cubic-bezier(0.19, 0.8, 0.22, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.rv-armed[data-reveal='stagger']:not(.rv-in) > * {
+  opacity: 0;
+  transform: translateY(44px) scale(0.97);
+}
+.rv-armed[data-reveal='clip'] {
+  transition:
+    clip-path 1.3s cubic-bezier(0.19, 0.8, 0.22, 1),
+    opacity 0.6s;
+}
+.rv-armed[data-reveal='clip']:not(.rv-in) {
+  clip-path: inset(14% 10% 14% 10% round 2rem);
+  opacity: 0;
+}
+
 /* ------------------------------------------------------------------- print */
 @media print {
   @page {
     margin: 14mm;
   }
   :root,
-  [data-theme='dark'] {
+  [data-theme='dark'],
+  .tone-dark,
+  .tone-light,
+  .tone-inverse {
     --paper: 255 255 255;
     --paper-2: 255 255 255;
     --ink: 0 0 0;
@@ -370,9 +697,17 @@ html.lenis body {
   footer[role='contentinfo'] {
     display: none !important;
   }
-  .reveal-armed {
+  .reveal-armed,
+  .rv-armed,
+  .rv-armed * {
     opacity: 1 !important;
     transform: none !important;
+    clip-path: none !important;
+  }
+  body::after,
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
   }
   /* Timetable: always print the week grid, never the phone agenda. */
   .tt-grid {
@@ -391,22 +726,15 @@ html.lenis body {
   }
 }
 
-/* ------------------------------------------------------------ key figures */
-.figure-line {
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 1.6s cubic-bezier(0.19, 0.8, 0.22, 1);
-}
-[data-counting] .figure-line {
-  transform: scaleX(1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .figure-line {
-    display: none;
-  }
-}
-
 /* ---------------------------------------------------------------- journey */
+/* Giant outlined years; the amber fill sweeps in as each one becomes active. */
+.year-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(var(--ink) / 0.35);
+}
+.journey-year-fill {
+  will-change: clip-path;
+}
 @media (min-width: 768px) {
   /* Without the scroll-driven version (reduced motion), the row scrolls sideways. */
   .journey-pin {
