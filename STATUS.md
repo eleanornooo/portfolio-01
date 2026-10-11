@@ -49,7 +49,7 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 |---|---|---|---|
 | Research | Interactive knowledge graph | Pinned split-screen case studies | ✅ awaiting review |
 | Publications | Giant count-up + two journal marquees | Cursor-following preview on a typographic index | ✅ |
-| Talks | Tour-poster stack of city names | Hover a city → photo + talks; ticket cards | ⬜ |
+| Talks | Tour-poster stack of city names | Hover a city → photo + talks; ticket cards | ✅ |
 | Teaching | Statement revealed word by word on scroll | Flip cards; timetable as a framed app | ⬜ |
 | About | Magazine split: portrait + pull quote, drop cap | Horizontal draggable timeline or chapters | ⬜ |
 | Contact | (kept as is) | Glass form over glow | ✅ |
@@ -66,8 +66,13 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 - Index (`components/publications/PubIndex.tsx`): one large row per work (number · year · title · venue); the row under the cursor stays bright while the others recede and the title slides; a dark glass preview card follows the cursor (type, year, venue, co-authors, DOI). Every row is a disclosure button that expands to the full APA reference with DOI, links and "Copy APA citation" (a card that follows the cursor can't hold a button, so copying is one click away in the row) — the touch, keyboard and screen-reader path too
 - Filters (type chips, search, year) unchanged in behaviour; sticky from tablet up; rows animate in/out on filter
 
+### Talks ✅
+- Opening: a tour poster (`components/talks/TourPoster.tsx`): every city stacked in huge uppercase display type with its dates beside it, most recent first; bigger = more talks, capped so a name never exceeds its column (container query units). Cities are read from each talk's location (`lib/talk-cities.ts`; "Benguerir"/"Ben Guérir" merged). Hovering or focusing a city fades the others and shows its talks on the right, with a photo only where one was really taken there (Ben Guerir, Montréal). Click pins a city; on phones the talks open under it. One talk with no location and not online (ICAIR 2024) is not on the poster, but is in the list
+- Keynotes and panels as tickets (`components/talks/Ticket.tsx`): amber date stub ("Admit one"), dashed tear line with two notches (CSS mask), talk on the main part; papers, workshops and sessions as compact rows. The type filter and animated filtering are kept. The vertical timeline is gone
+- Reduced motion: no poster entrance, no ticket tilt
+
 ### Next ⬜
-- Talks, Teaching, About (in this order), then sections 7, 9 and 8
+- Teaching, About (in this order), then sections 7, 9 and 8
 
 ---
 

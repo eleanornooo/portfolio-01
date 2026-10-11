@@ -779,6 +779,66 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
   }
 }
 
+/* ------------------------------------------------------------------ talks */
+/* Tour poster (components/talks/TourPoster.tsx): cities rise in one by one; hovering one
+   fades the others. */
+.poster-city {
+  transition: opacity 0.4s;
+  animation: poster-in 1s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+@keyframes poster-in {
+  from {
+    transform: translateY(45%);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.poster-list {
+  container-type: inline-size;
+}
+.poster-list[data-active] .poster-city:not(.is-active) {
+  opacity: 0.14;
+}
+/* Tickets (components/talks/Ticket.tsx): amber stub, dashed tear line, two notches. */
+.ticket {
+  --seam: 6.5rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  -webkit-mask:
+    radial-gradient(circle 0.75rem at var(--seam) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 0.75rem at var(--seam) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle 0.75rem at var(--seam) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 0.75rem at var(--seam) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+}
+@media (min-width: 640px) {
+  .ticket {
+    --seam: 9rem;
+  }
+}
+.ticket:hover {
+  transform: translateY(-4px) rotate(-0.4deg);
+}
+.ticket-stub {
+  background: linear-gradient(165deg, #e2572b, #f59e3b 85%);
+}
+.ticket-main {
+  background: rgb(255 255 255 / 0.78);
+  border-left: 2px dashed rgb(var(--ink) / 0.2);
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster-city {
+    animation: none;
+  }
+  .ticket:hover {
+    transform: none;
+  }
+}
+
 /* ----------------------------------------------------------- publications */
 /* Venue marquees (components/publications/Marquee.tsx). */
 .marquee {
