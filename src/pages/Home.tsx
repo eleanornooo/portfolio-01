@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
@@ -25,48 +25,10 @@ import { Ext } from '../components/Ext';
 import { StatusTag } from '../components/Tags';
 import Magnetic from '../components/Magnetic';
 import MaskText from '../components/MaskText';
+import Heading from '../components/SectionHeading';
 import Hero, { CUTOUT_SIZES, CUTOUT_SRC, CUTOUT_SRCSET } from '../components/hero/Hero';
 
 const sortYear = (y: number | 'in press') => (y === 'in press' ? 9999 : y);
-
-/** Section heading: a small numbered label and a giant display title that unmasks on scroll. */
-function Heading({
-  id,
-  index,
-  label,
-  lines,
-  intro,
-  aside,
-}: {
-  id: string;
-  index: string;
-  label: string;
-  lines: ReactNode[];
-  intro?: ReactNode;
-  aside?: ReactNode;
-}) {
-  return (
-    <div className="grid-12 mb-12 gap-y-6 md:mb-16">
-      <p className="eyebrow num col-span-4 md:col-span-3 md:pt-4">
-        <span className="text-amber" aria-hidden="true">
-          {index} ·{' '}
-        </span>
-        {label}
-      </p>
-      <div className="col-span-4 md:col-span-9">
-        <h2 id={`${id}-title`} data-reveal="mask" className="display text-big">
-          <MaskText lines={lines} />
-        </h2>
-        {intro && (
-          <p data-reveal="up" className="prose-measure mt-6 text-lead text-ink2">
-            {intro}
-          </p>
-        )}
-        {aside}
-      </div>
-    </div>
-  );
-}
 
 export function Component() {
   const { t, pick, lang } = useLang();

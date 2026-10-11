@@ -747,6 +747,32 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
   }
 }
 
+/* ------------------------------------------------------------------ about */
+/* Experience timeline: dots light up as the scroll reaches them (lit by default). */
+.xp-dot {
+  transition:
+    background-color 0.5s,
+    box-shadow 0.5s,
+    transform 0.5s;
+  background-color: rgb(var(--amber));
+  box-shadow: 0 0 14px 2px rgb(245 158 59 / 0.6);
+}
+.xp-armed .xp-item:not(.is-on) .xp-dot {
+  background-color: rgb(var(--paper));
+  box-shadow: none;
+  transform: scale(0.8);
+}
+/* "Show all" lists: rows slide in one after another. */
+.list-in > li {
+  animation: kin-fade 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 45ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .list-in > li {
+    animation: none;
+  }
+}
+
 /* ------------------------------------------------------------------ globe */
 .place-details > * {
   animation: kin-fade 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;

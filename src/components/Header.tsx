@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, Moon, Sun } from 'lucide-react';
 import { useLang } from '../i18n/useLang';
 import Dialog from './Dialog';
-import { NAV } from './nav';
+import { DARK_HERO_ROUTES, NAV } from './nav';
 
 export function Monogram({ className = '' }: { className?: string }) {
   return (
@@ -87,8 +87,8 @@ export default function Header() {
   const { pathname } = useLocation();
   const close = useCallback(() => setOpen(false), []);
   const scrolled = useScrolled();
-  // Over the home hero (always dark) the bar uses the dark palette, whatever the theme.
-  const overHero = pathname === '/' && !scrolled;
+  // Over a dark hero (always dark) the bar uses the dark palette, whatever the theme.
+  const overHero = DARK_HERO_ROUTES.includes(pathname) && !scrolled;
 
   useEffect(() => setOpen(false), [pathname]);
 

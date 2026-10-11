@@ -2,7 +2,7 @@
 
 New art direction: dark, cinematic, premium (depth, glass, glow). It replaces the earlier "paper / no glassmorphism / minimal" rules. Content, data files, routes, EmailJS, timetable logic, EN/FR and SEO pre-rendering are unchanged.
 
-## Step 1: Home page ✅ (awaiting review)
+## Step 1: Home page ✅ (approved)
 - ✅ Tokens: near-black ink `#0A0B0F`, lighter card surface, warm off-white text, terracotta `#E2572B` → amber `#F59E3B` used as glow. Dark is the default theme; the light toggle is kept. `.tone-dark` / `.tone-light` / `.tone-inverse` scopes; eased `blend-*` fades with a warm seam between dark and light sections
 - ✅ Film-grain overlay, `.glass` (blur, 1px light border, inner highlight), `.glass-nav`, `.card-dark` + `.spot` (glow follows the cursor), `.btn-glow` / `.btn-ghost`
 - ✅ Type: Bricolage Grotesque (display, weight axis only, ≈41 KB, preloaded) + Fraunces (now with real italics) + IBM Plex Sans; `.eyebrow` labels with wide tracking
@@ -18,11 +18,23 @@ New art direction: dark, cinematic, premium (depth, glass, glow). It replaces th
 - ✅ Reduced motion: static network poster, no reveals, no parallax, no cursor; content is never hidden without JS
 - ✅ Phones: Canvas 2D glass-bead network (no three.js), lighter visuals
 - Measured (throttled mobile: 4× CPU, slow 4G, Chrome): FCP ≈0.6 s, LCP ≈2.15 s (the cut-out), TBT ≈270 ms, CLS 0, 678 KB. The Lighthouse CLI does not run under the local Node 22.15, so this is a manual measurement, not an official score
-- Note: "Download CV" appears (as the primary button) only once `public/CV_Aziz_Mimoudi_2026.pdf` exists; until then the primary is "Explore the research" and the ghost is "Write to Aziz"
+- ✅ CV PDF added (`public/CV_Aziz_Mimoudi_2026.pdf`): "Download CV" is the hero's primary button (checked: the file downloads, 552 KB)
+- ✅ Review fixes: cursor hidden until the first mouse move and when the mouse leaves the window; dark scrim behind the hero quote; UNU Macau tile without photo (glow + giant "MACAU 2026"); Google Scholar 88 citations, October 2026 (single source: `content/profile.ts`, EN and FR); hero portrait alt text now describes the cut-out
 - Shared pieces (header, cursor, dark default, tokens) already apply site-wide; inner pages keep their old layout until step 2
 
-## Step 2: roll out to every page ⬜ (after Home is approved)
-- About redesign: statement hero + portrait, interactive experience timeline, education cards, supervision people cards, top-3 highlights with "Show all", "Beyond academia" bento
+## Step 2: roll out to every page 🟡
+### About ✅
+- ✅ Dark hero: giant "About", the statement as a large serif-italic quote, the cut-out portrait with a glow (the header floats over it: `DARK_HERO_ROUTES` in `components/nav.ts`)
+- ✅ Biography with researcher profiles as glass pills
+- ✅ Experience: vertical timeline (`components/about/ExperienceTimeline.tsx`), scroll-progress line, dots that light up, each role an accordion card (place, period + duration, link), "Current" badge, logos on white tiles that glow on hover; research affiliations as glass cards
+- ✅ Education (light section): Ph.D. featured with the thesis and DOI, Master's and Bachelor's cards, earlier diplomas small
+- ✅ Supervision: people cards with initials avatars, topic, cohort, status
+- ✅ Service (4 groups incl. peer review), Awards, Professional development: top 3 as highlight cards, "Show all (n)" reveals the rest as an animated list (`components/about/Showcase.tsx`)
+- ✅ Beyond academia: bento with icons (Taekwondo 2nd Dan as the large tile)
+- ✅ Reveals on every section; reduced motion: everything visible, timeline fully lit
+- Shared: `components/SectionHeading.tsx` (numbered label + giant masked title), now used by Home and About
+
+### Next ⬜
 - Teaching, Publications, Talks, Contact in the same system
 - Then sections 5–9 below, in the new style
 

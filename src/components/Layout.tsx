@@ -5,6 +5,7 @@ import { useLang } from '../i18n/useLang';
 import Header from './Header';
 import Footer from './Footer';
 import Cursor from './Cursor';
+import { DARK_HERO_ROUTES } from './nav';
 import { scrollToElement, scrollToTop, startSmoothScroll } from '../lib/smooth';
 
 function Shell() {
@@ -49,8 +50,8 @@ function Shell() {
         {t.skip}
       </a>
       <Header />
-      {/* The header is fixed: inner pages start below it; the home hero runs underneath. */}
-      <main id="main" ref={main} tabIndex={-1} className={`flex-1 outline-none ${pathname === '/' ? '' : 'pt-[4.5rem] md:pt-20'}`}>
+      {/* The header is fixed: inner pages start below it; pages with a dark hero run underneath it. */}
+      <main id="main" ref={main} tabIndex={-1} className={`flex-1 outline-none ${DARK_HERO_ROUTES.includes(pathname) ? '' : 'pt-[4.5rem] md:pt-20'}`}>
         <Outlet />
       </main>
       <Footer />
