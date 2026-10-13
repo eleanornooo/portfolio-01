@@ -2,24 +2,21 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Simulation } from 'd3-force';
 import { useLang } from '../../i18n/useLang';
 import { hasFinePointer, prefersReducedMotion } from '../../lib/motion';
-import { MAP_H, MAP_W, buildResearchMap, configure, neighbours, type MapNode } from '../../lib/research-map';
+import { MAP_H, MAP_W, buildResearchMap, clearTitle, configure, neighbours, projectLines, twoLines, type MapNode } from '../../lib/research-map';
 
-/** Splits a theme title into two balanced lines for the label under its node. */
-function twoLines(s: string): [string, string] {
-  const words = s.split(' ');
-  let best = 1;
-  let diff = Infinity;
-  for (let i = 1; i < words.length; i++) {
-    const d = Math.abs(words.slice(0, i).join(' ').length - words.slice(i).join(' ').length);
-    if (d < diff) {
-      diff = d;
-      best = i;
-    }
+/** A publication title on hover, in full, wrapped to lines of about 46 characters. */
+function wrap(s: string, n = 46): string[] {
+  const out: string[] = [];
+  let line = '';
+  for (const w of s.split(' ')) {
+    if (line && (line + ' ' + w).length > n) {
+      out.push(line);
+      line = w;
+    } else line = line ? `${line} ${w}` : w;
   }
-  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+  if (line) out.push(line);
+  return out;
 }
-
-const clip = (s: string, n = 46) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
 /**
  * The knowledge graph that opens the Research page (desktop). Themes are large glowing
@@ -57,7 +54,7 @@ export default function ResearchMap({
     const el = svg.current;
     if (!el || prefersReducedMotion() || !hasFinePointer()) return;
     const live = nodes.map((n) => ({ ...n }));
-    const sim: Simulation<MapNode, undefined> = configure(live, edges, MAP_W * 0.6);
+    const sim: Simulation<MapNode, undefined> = configure(live, edges, MAP_W * 0.62);
     const phase = live.map((_, i) => i * 1.7);
     const ptr = { x: -9999, y: -9999 };
     let time = 0;
@@ -89,6 +86,7 @@ export default function ResearchMap({
         live.forEach((d, i) => {
           d.x = Math.max(d.r + 6, Math.min(MAP_W - d.r - 6, d.x));
           d.y = Math.max(d.r + 6, Math.min(MAP_H - d.r - 6, d.y));
+          clearTitle(d);
           pos.current[i].x = d.x;
           pos.current[i].y = d.y;
           groups.current[i]?.setAttribute('transform', `translate(${d.x.toFixed(1)} ${d.y.toFixed(1)})`);
@@ -213,16 +211,29 @@ export default function ResearchMap({
           >
             <circle r={n.r} />
             {n.kind === 'project' && (
-              <text x={n.r + 6} y="4" className="rmap-label-project">
-                {clip(label, 24)}
+              <text
+                x={n.labelLeft ? -n.r - 6 : n.r + 6}
+                y={projectLines(label).length > 1 ? -3 : 4}
+                textAnchor={n.labelLeft ? 'end' : 'start'}
+                className="rmap-label-project"
+              >
+                {projectLines(label).map((l, k) => (
+                  <tspan key={k} x={n.labelLeft ? -n.r - 6 : n.r + 6} dy={k ? '1.2em' : 0}>
+                    {l}
+                  </tspan>
+                ))}
               </text>
             )}
             {n.kind === 'publication' && hover === i && (
               <g className="rmap-tip">
                 <text x={n.r + 8} y="-4" className="rmap-label-pub">
-                  {clip(label)}
+                  {wrap(label).map((l, k) => (
+                    <tspan key={k} x={n.r + 8} dy={k ? '1.25em' : 0}>
+                      {l}
+                    </tspan>
+                  ))}
                 </text>
-                <text x={n.r + 8} y="13" className="rmap-label-meta">
+                <text x={n.r + 8} y={13 + (wrap(label).length - 1) * 16} className="rmap-label-meta">
                   {t.research.mapLegend.publication} · {n.meta}
                 </text>
               </g>

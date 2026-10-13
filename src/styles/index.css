@@ -557,6 +557,21 @@ html {
     z-index: 30;
   }
 }
+/* A chip row that scrolls sideways on narrow screens: no scrollbar, soft right edge. */
+.chips-scroll {
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+}
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .chips-scroll {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
 /* Slow glow fields behind glass. Radial gradients (no blur filter), moved with transforms. */
 .glow-field {
   position: absolute;

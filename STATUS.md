@@ -82,7 +82,9 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
   - Journey: the year strip now starts right under the intro (top-aligned pin) instead of being centred in a full-height band
   - About: a classic portrait (UM6P Science Week, `public/img/portrait-*.webp`) instead of the Home cut-out, and a different pull quote: the opening of the bio's last paragraph (twenty years in the classroom), not the research statement used on Home
   - About experience: numbered chapters (01–08) that light up on scroll, light rows on hairlines, a card look only on the open row; the "Less than a year" duration is gone (just "2026–present")
-- C. Research + Publications ⬜
+- C. Research + Publications ✅
+  - Research map: no more "…": project labels show in full (one line, or two balanced lines), publication titles show in full on hover (wrapped). A label that would cover a bubble on its right moves to the node's left. Themes sit on an arc that avoids the bottom-left, and a title force keeps every node and label out of the title/intro/legend box (`TITLE_ZONE`, measured from 1024×768 to 1920×1080), also while the map drifts live
+  - Publications: the type chips are one row that scrolls sideways when it doesn't fit (`FilterChips scroll`, no scrollbar, soft right edge), so "Thesis" no longer wraps alone
 - D. Talks ⬜
 - E. Teaching ⬜
 

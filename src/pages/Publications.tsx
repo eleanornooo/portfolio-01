@@ -127,10 +127,11 @@ export function Component() {
       {/* ------------------------------------------------------- the index */}
       <section aria-label={t.publications.index} className="tone-light blend-t pb-28 pt-8">
         <div className="page sticky-bar">
-          <div className="glass flex flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="glass flex min-w-0 flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
             <FilterChips
               id="pub-type"
               bare
+              scroll
               label={t.publications.filterType}
               value={type}
               onChange={setType}
