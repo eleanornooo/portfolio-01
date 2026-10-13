@@ -283,7 +283,7 @@ export const strings = {
     contact: {
       metaTitle: 'Contact — Dr. Aziz Mimoudi',
       metaDescription:
-        'Contact Dr. Aziz Mimoudi at the Institute of Education Sciences, Mohammed VI Polytechnic University (UM6P), Ben Guerir, Morocco.',
+        'Contact Dr. Aziz Mimoudi at the Institute of Education Sciences, Mohammed VI Polytechnic University (UM6P), Rabat Campus, Morocco.',
       title: 'Contact',
       intro:
         'For research collaborations, speaking invitations, peer-review requests or Ph.D. supervision enquiries.',
@@ -632,7 +632,7 @@ export const strings = {
     contact: {
       metaTitle: 'Contact — Dr Aziz Mimoudi',
       metaDescription:
-        'Contacter le Dr Aziz Mimoudi, Institut des sciences de l’éducation, Université Mohammed VI Polytechnique (UM6P), Ben Guerir, Maroc.',
+        'Contacter le Dr Aziz Mimoudi, Institut des sciences de l’éducation, Université Mohammed VI Polytechnique (UM6P), campus de Rabat, Maroc.',
       title: 'Contact',
       intro:
         'Pour les collaborations de recherche, les invitations, les demandes d’évaluation ou d’encadrement doctoral.',

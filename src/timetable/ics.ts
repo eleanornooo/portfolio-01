@@ -50,7 +50,7 @@ function event(sem: Semester, s: Session, stamp: string): string[] {
   for (let d = first; d <= sem.end; d = addDays(d, 7)) {
     if (exceptionFor(sem, s, d)) exdates.push(local(d, s.start));
   }
-  const where = s.mode === 'Online' ? 'Online' : (s.room ?? 'UM6P, Ben Guerir');
+  const where = s.mode === 'Online' ? 'Online' : (s.room ?? 'UM6P Rabat Campus');
   const description = [s.programme && `Programme: ${s.programme}`, `Type: ${s.type}`, `Mode: ${s.mode}`, s.link]
     .filter(Boolean)
     .join('\n');

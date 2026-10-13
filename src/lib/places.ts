@@ -40,14 +40,25 @@ interface PlaceDef {
 
 const DEFS: PlaceDef[] = [
   {
-    id: 'morocco',
-    name: 'Ben Guerir · Rabat',
+    // Home base: UM6P Rabat Campus (current position, talks in Rabat, current projects).
+    id: 'rabat',
+    name: 'Rabat',
+    country: { en: 'Morocco', fr: 'Maroc' },
+    lat: 34.03,
+    lon: -6.8,
+    home: true,
+    match: /Rabat/i,
+    projects: ['volcanic', 'sustaineur', 'inclusive-at', 'core-curriculum'],
+  },
+  {
+    // UM6P's Ben Guerir campus: earlier roles held there and the events that took place there.
+    id: 'ben-guerir',
+    name: 'Ben Guerir',
     country: { en: 'Morocco', fr: 'Maroc' },
     lat: 32.23,
     lon: -7.95,
-    home: true,
-    match: /Ben ?Gu[eé]rir|Benguerir|Rabat/i,
-    projects: ['volcanic', 'sustaineur', 'inclusive-at', 'core-curriculum', 'sil', 'd4r'],
+    match: /Ben ?Gu[eé]rir|Benguerir/i,
+    projects: ['sil', 'd4r'],
   },
   {
     id: 'quebec',

@@ -180,3 +180,7 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 
 ## Production deploy ⬜
 - Vercel project eleanornooos-projects/my-project, deploys `main` of github.com/eleanornooo/portfolio-01 (live = commit f97260e)
+
+## Location correction ✅ (13 Oct 2026)
+- Current workplace is the UM6P Rabat Campus (Rocade Rabat-Salé, Rabat 11103): profile location and address, bio (EN/FR), Contact card + Google Maps link, hero and Home labels, Contact meta descriptions, JSON-LD workLocation, the current role (Assistant Professor, 2026–present), the timetable .ics default place, and the globe home base (Rabat; Ben Guerir is now its own place)
+- Kept in Ben Guerir: Lecturer & Coordinator (2020–2026, to be confirmed with Aziz), E-learning Instructional Designer (2019–2020), Science Week 2025 (talk, service entry, gallery captions), CAES Science Days 2026, the 2023 ASU/USAID/UM6P conference, the 2021 Rencontres internationales, and the UM6P campus photo caption

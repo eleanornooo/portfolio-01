@@ -126,6 +126,7 @@ export const contentFr: Record<string, string> = {
   'Assistant Professor & Coordinator, Technopedagogy & AI Axis': 'Professeur assistant et coordonnateur, axe Technopédagogie et IA',
   'Institute of Education Sciences (ISE), UM6P': 'Institut des sciences de l’éducation (ISE), UM6P',
   'Ben Guerir, Morocco': 'Ben Guerir, Maroc',
+  'Rabat, Morocco': 'Rabat, Maroc',
   'Lecturer & Coordinator, Technopedagogy & AI Axis (formerly Digital & AI Axis)':
     'Chargé de cours et coordonnateur, axe Technopédagogie et IA (anciennement axe Numérique et IA)',
   'Replacement Teacher': 'Enseignant suppléant',

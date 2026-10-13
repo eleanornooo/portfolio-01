@@ -7,7 +7,7 @@ export const positions: Position[] = [
     id: 'ap-um6p',
     role: 'Assistant Professor & Coordinator, Technopedagogy & AI Axis',
     org: 'Institute of Education Sciences (ISE), UM6P',
-    place: 'Ben Guerir, Morocco',
+    place: 'Rabat, Morocco',
     start: '2026',
     logo: 'um6p',
   },
