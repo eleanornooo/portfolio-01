@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useMemo, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import type { Project } from '../../content/types';
 import { useLang } from '../../i18n/useLang';
 import { prefersReducedMotion } from '../../lib/motion';
 import { outputsOf } from '../../lib/related';
+import { txDeep } from '../../lib/tx';
 import { scrollToElement } from '../../lib/smooth';
 import { Ext, LinkRow } from '../Ext';
 import { StatusTag } from '../Tags';
@@ -59,8 +60,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * through each case study (context → role → outputs → partners). Every case has an anchor
  * `#case-<id>` (the globe and the research map link to it). Phones: stacked sections.
  */
-export default function ProjectCases({ items, groupLabel }: { items: Project[]; groupLabel: (p: Project) => string }) {
-  const { t } = useLang();
+export default function ProjectCases({ items: raw, groupLabel }: { items: Project[]; groupLabel: (p: Project) => string }) {
+  const { t, tx } = useLang();
+  // French site: roles, summaries and partners translated (ids and links unchanged).
+  const items = useMemo(() => txDeep(raw, tx), [raw, tx]);
   const [active, setActive] = useState(0);
   const [run, setRun] = useState(0);
   const refs = useRef<(HTMLElement | null)[]>([]);

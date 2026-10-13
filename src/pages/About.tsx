@@ -1,11 +1,12 @@
-import { useRef, type CSSProperties } from 'react';
+import { useMemo, useRef, type CSSProperties } from 'react';
 import { Compass, Medal, Users, Vote, type LucideIcon } from 'lucide-react';
 import { profile } from '../content/profile';
-import { affiliations, positions } from '../content/experience';
-import { certifications, degrees } from '../content/education';
-import { service } from '../content/service';
-import { awards } from '../content/awards';
-import { students } from '../content/students';
+import * as experience from '../content/experience';
+import * as education from '../content/education';
+import * as serviceData from '../content/service';
+import * as awardsData from '../content/awards';
+import * as studentsData from '../content/students';
+import { txDeep } from '../lib/tx';
 import { beyondAcademia } from '../content/beyond';
 import { useLang } from '../i18n/useLang';
 import { doiUrl } from '../lib/apa';
@@ -36,7 +37,24 @@ const initials = (name: string) => {
 const BEYOND_ICONS: LucideIcon[] = [Medal, Users, Vote, Compass];
 
 export function Component() {
-  const { t, pick, lang } = useLang();
+  const { t, pick, lang, tx } = useLang();
+  // French site: the English-only content text, translated (i18n/content-fr.ts).
+  const { positions, affiliations, degrees, certifications, service, awards, students } = useMemo(
+    () =>
+      txDeep(
+        {
+          positions: experience.positions,
+          affiliations: experience.affiliations,
+          degrees: education.degrees,
+          certifications: education.certifications,
+          service: serviceData.service,
+          awards: awardsData.awards,
+          students: studentsData.students,
+        },
+        tx,
+      ),
+    [tx],
+  );
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);
   useSpotlight(root);

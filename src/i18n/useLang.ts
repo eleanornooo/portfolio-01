@@ -8,6 +8,8 @@ export interface LangContextValue {
   setLang: (l: Lang) => void;
   /** Picks the right language from a Localized value. */
   pick: (v: Localized) => string;
+  /** French for English-only content text (see i18n/content-fr.ts); the text itself in English. */
+  tx: (s: string) => string;
 }
 
 export const LangContext = createContext<LangContextValue | null>(null);

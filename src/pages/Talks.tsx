@@ -27,7 +27,7 @@ const featured = (e: TalkEntry) => e.talks[0].type === 'Keynote' || e.talks[0].t
  * listed with its date, event, place and links) or several roles at one event.
  */
 function Row({ entry, now }: { entry: TalkEntry; now: number }) {
-  const { t, lang } = useLang();
+  const { t, lang, tx } = useLang();
   const [main] = entry.talks;
   const others = main.authors?.filter((a) => a !== SELF) ?? [];
   const types = entryTypes(entry);
@@ -92,7 +92,7 @@ function Row({ entry, now }: { entry: TalkEntry; now: number }) {
             {t.talks.withAuthors} {others.join('; ')}
           </p>
         )}
-        {main.note && <p className="mt-1 text-sm text-ink2">{main.note}</p>}
+        {main.note && <p className="mt-1 text-sm text-ink2">{tx(main.note)}</p>}
         {entry.kind !== 'venues' && <LinkRow links={entry.talks.flatMap((x) => x.links ?? [])} className="mt-2" />}
       </div>
       <p className="flex flex-wrap items-start gap-2 md:justify-end" lang={lang}>

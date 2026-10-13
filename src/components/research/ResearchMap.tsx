@@ -34,7 +34,7 @@ export default function ResearchMap({
   onTheme: (i: number) => void;
   onProject: (id: string) => void;
 }) {
-  const { lang, pick, t } = useLang();
+  const { lang, pick, t, tx } = useLang();
   const { nodes, edges } = useMemo(() => buildResearchMap(), []);
   const svg = useRef<SVGSVGElement>(null);
   const groups = useRef<(SVGGElement | null)[]>([]);
@@ -45,7 +45,7 @@ export default function ResearchMap({
   const pos = useRef(nodes.map((n) => ({ x: n.x, y: n.y })));
   const P = (i: number) => pos.current[i];
 
-  const text = (n: MapNode) => (typeof n.label === 'string' ? n.label : n.label[lang]);
+  const text = (n: MapNode) => (typeof n.label === 'string' ? (n.kind === 'project' ? tx(n.label) : n.label) : n.label[lang]);
   const lit = useMemo(() => (hover === null ? null : neighbours(edges, hover)), [hover, edges]);
   const inActive = (n: MapNode) => active === null || n.themes.includes(active);
 

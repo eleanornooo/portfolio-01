@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Lang } from '../content/types';
+import { contentFr } from './content-fr';
 import { strings, type Strings } from './strings';
 import { LangContext, type LangContextValue } from './useLang';
 
@@ -37,7 +38,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<LangContextValue>(
-    () => ({ lang, t: strings[lang] as Strings, setLang, pick: (v) => v[lang] }),
+    () => ({ lang, t: strings[lang] as Strings, setLang, pick: (v) => v[lang], tx: (s) => (lang === 'fr' ? (contentFr[s] ?? s) : s) }),
     [lang, setLang],
   );
 

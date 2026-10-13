@@ -27,7 +27,7 @@ export function Ext({
 
 /** A row of small secondary links; links that need a UM6P login are marked with a lock (tooltip on hover/focus). */
 export function LinkRow({ links, className = '' }: { links: Link[]; className?: string }) {
-  const { t } = useLang();
+  const { t, tx } = useLang();
   if (!links.length) return null;
   return (
     <ul className={`flex flex-wrap gap-x-4 gap-y-1 text-sm ${className}`}>
@@ -40,7 +40,7 @@ export function LinkRow({ links, className = '' }: { links: Link[]; className?: 
                 <Lock size="0.85em" aria-hidden="true" className="inline-block align-[-0.05em]" />
               </span>
             )}
-            {l.label}
+            {tx(l.label)}
           </Ext>
         </li>
       ))}

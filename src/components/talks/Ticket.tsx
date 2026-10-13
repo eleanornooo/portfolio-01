@@ -13,7 +13,7 @@ import { Place } from './Place';
  * The stub always uses one centred layout: day / month / year, or month / year.
  */
 export default function Ticket({ talk, now }: { talk: Talk; now: number }) {
-  const { t, lang } = useLang();
+  const { t, lang, tx } = useLang();
   const [y, m, d] = talk.date.split('-');
   const month = m ? new Intl.DateTimeFormat(lang, { month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(+y, +m - 1, 1))) : '';
   const others = talk.authors?.filter((a) => a !== SELF) ?? [];
@@ -49,7 +49,7 @@ export default function Ticket({ talk, now }: { talk: Talk; now: number }) {
             {t.talks.withAuthors} {others.join('; ')}
           </p>
         )}
-        {talk.note && <p className="mt-2 text-sm text-ink2">{talk.note}</p>}
+        {talk.note && <p className="mt-2 text-sm text-ink2" lang={lang}>{tx(talk.note)}</p>}
         {talk.links && <LinkRow links={talk.links} className="mt-3" />}
       </div>
     </article>

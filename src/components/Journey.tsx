@@ -13,7 +13,7 @@ import MaskText from './MaskText';
  * scrolls sideways (desktop) or a list (phones), with nothing animated.
  */
 export default function Journey({ index }: { index: string }) {
-  const { t, pick } = useLang();
+  const { t, pick, tx } = useLang();
   const root = useRef<HTMLElement>(null);
   const pin = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLOListElement>(null);
@@ -165,11 +165,11 @@ export default function Journey({ index }: { index: string }) {
                 <div className="journey-copy mt-6 border-t border-ink/10 pt-5">
                   <h3 className="font-serif text-[1.5rem] font-normal leading-snug md:text-[1.75rem]">
                     <span className="sr-only">{m.period ?? m.year}: </span>
-                    {m.title}
+                    {tx(m.title)}
                   </h3>
                   <p className="mt-2 text-ink2">
-                    {m.org}
-                    {m.place && <span className="text-ink3"> · {m.place}</span>}
+                    {tx(m.org)}
+                    {m.place && <span className="text-ink3"> · {tx(m.place)}</span>}
                   </p>
                   {m.period && (
                     <p className="num mt-2 text-sm text-ink3" aria-hidden="true">

@@ -1,11 +1,12 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { profile } from '../content/profile';
 import { news } from '../content/news';
 import { publications } from '../content/publications';
-import { projects } from '../content/projects';
+import { projects as projectsData } from '../content/projects';
+import { txDeep } from '../lib/tx';
 import { students } from '../content/students';
 import { talks } from '../content/talks';
 import { positions } from '../content/experience';
@@ -31,7 +32,8 @@ import Hero, { CUTOUT_SIZES, CUTOUT_SRC, CUTOUT_SRCSET } from '../components/her
 const sortYear = (y: number | 'in press') => (y === 'in press' ? 9999 : y);
 
 export function Component() {
-  const { t, pick, lang } = useLang();
+  const { t, pick, lang, tx } = useLang();
+  const projects = useMemo(() => txDeep(projectsData, tx), [tx]);
   const now = useNow();
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);

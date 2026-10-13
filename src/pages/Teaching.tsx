@@ -1,7 +1,8 @@
 import { useCallback, useId, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { ArrowUpRight, Search } from 'lucide-react';
-import { courses, teachingStatement } from '../content/courses';
+import { courses as coursesData, teachingStatement } from '../content/courses';
+import { txDeep } from '../lib/tx';
 import type { Course } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { photoSrc, photoSrcSet, photos } from '../lib/photos';
@@ -73,7 +74,8 @@ function CourseDetails({ course }: { course: Course }) {
 }
 
 function Courses() {
-  const { t } = useLang();
+  const { t, tx } = useLang();
+  const courses = useMemo(() => txDeep(coursesData, tx), [tx]);
   const [query, setQuery] = useState('');
   const [year, setYear] = useState('all');
   const [sort, setSort] = useState<Sort>('recent');
@@ -83,7 +85,7 @@ function Courses() {
   const ids = { search: useId(), year: useId(), sort: useId() };
 
   // Filter options come from the data, so they always match what is listed.
-  const years = useMemo(() => [...new Set(courses.flatMap((c) => c.years))].sort().reverse(), []);
+  const years = useMemo(() => [...new Set(courses.flatMap((c) => c.years))].sort().reverse(), [courses]);
 
   const list = useMemo(() => {
     const q = fold(query.trim());
@@ -97,7 +99,7 @@ function Courses() {
             ? b.title.localeCompare(a.title)
             : latestYear(b) - latestYear(a) || a.title.localeCompare(b.title),
       );
-  }, [query, year, sort]);
+  }, [courses, query, year, sort]);
 
   return (
     <>
@@ -259,6 +261,7 @@ function Photos() {
 
 export function Component() {
   const { t, lang, pick } = useLang();
+  const courses = coursesData;
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);
   useSpotlight(root);
