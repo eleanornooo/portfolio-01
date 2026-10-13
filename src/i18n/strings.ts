@@ -245,7 +245,7 @@ export const strings = {
       duration: (n: number) => (n < 1 ? 'Less than a year' : `${n} year${n > 1 ? 's' : ''}`),
       timelineHint: 'Select a role to see the details.',
       bio: 'Biography',
-      portraitAlt: 'Aziz Mimoudi speaking into a microphone at a press table, UM6P Science Week',
+      portraitAlt: 'Portrait of Aziz Mimoudi in a navy suit, seated in a wooden armchair',
       place: 'Place',
     },
     contact: {
@@ -561,7 +561,7 @@ export const strings = {
       duration: (n: number) => (n < 1 ? 'Moins d’un an' : `${n} an${n > 1 ? 's' : ''}`),
       timelineHint: 'Sélectionnez un poste pour en voir le détail.',
       bio: 'Biographie',
-      portraitAlt: 'Aziz Mimoudi au micro à une table de presse, UM6P Science Week',
+      portraitAlt: 'Portrait d’Aziz Mimoudi en costume bleu marine, assis dans un fauteuil en bois',
       place: 'Lieu',
     },
     contact: {

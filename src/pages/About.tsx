@@ -19,9 +19,9 @@ import ExperienceTimeline from '../components/about/ExperienceTimeline';
 import Showcase, { type Entry } from '../components/about/Showcase';
 import Logo from '../components/about/Logo';
 
-/** A classic portrait (not the Home hero cut-out). */
-const PORTRAIT = '/img/portrait-560.webp';
-const PORTRAIT_SRCSET = '/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w';
+/** The About portrait: its own cut-out (not the Home hero's), see scripts/build-hero.mjs. */
+const PORTRAIT = '/img/about/aziz-about-cutout-760.webp';
+const PORTRAIT_SRCSET = [480, 760, 1100].map((w) => `/img/about/aziz-about-cutout-${w}.webp ${w}w`).join(', ');
 
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 
@@ -115,21 +115,21 @@ export function Component() {
               </blockquote>
             </figure>
           </div>
-          <figure className="kin-rise relative mb-10 md:col-span-5 md:mb-24 md:self-end" style={delay(200)}>
-            <div aria-hidden="true" className="hero-rim absolute inset-x-[-12%] top-[-6%] h-[80%]" />
+          <div className="relative md:col-span-5 md:self-end">
+            {/* Warm glow behind the cut-out, so its edges melt into the dark. */}
+            <div aria-hidden="true" className="about-glow absolute inset-x-[-25%] bottom-[-10%] top-[2%]" />
             <img
               src={PORTRAIT}
               srcSet={PORTRAIT_SRCSET}
-              sizes="(min-width: 768px) 36vw, 90vw"
-              width={560}
-              height={700}
+              sizes="(min-width: 768px) 50vw, 92vw"
+              width={1100}
+              height={1091}
               alt={t.about.portraitAlt}
               decoding="async"
               {...{ fetchpriority: 'high' }}
-              className="relative mx-auto aspect-[4/5] max-h-[56svh] w-auto rotate-[1.5deg] rounded-[2rem] object-cover shadow-[0_60px_100px_-40px_rgb(0_0_0/0.95),0_0_0_1px_rgb(255_255_255/0.1)] md:max-h-[68svh]"
+              className="about-cutout relative mx-auto h-auto w-full max-w-[40rem] md:-ml-[4%] md:w-[122%] md:max-w-none"
             />
-            <figcaption className="relative mt-4 text-center text-sm text-ink3">{t.home.portraitCaption}</figcaption>
-          </figure>
+          </div>
         </div>
       </section>
 

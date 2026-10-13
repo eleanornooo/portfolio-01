@@ -1052,6 +1052,29 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
 }
 
 /* ------------------------------------------------------------------ about */
+/* About opener: the cut-out portrait over a warm glow; its bottom fades into the page. */
+.about-glow {
+  background:
+    radial-gradient(48% 46% at 50% 42%, rgb(245 158 59 / 0.3), transparent 70%),
+    radial-gradient(60% 55% at 50% 60%, rgb(226 87 43 / 0.26), transparent 72%);
+  filter: blur(8px);
+}
+.about-cutout {
+  /* Fade the bottom and the right edge, where the photo crops the armchair. */
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 78%, transparent 99%), linear-gradient(to left, transparent 1%, #000 12%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, #000 78%, transparent 99%), linear-gradient(to left, transparent 1%, #000 12%);
+  mask-composite: intersect;
+  filter: drop-shadow(0 0 1px rgb(245 158 59 / 0.25)) drop-shadow(0 30px 60px rgb(0 0 0 / 0.55));
+  animation: portrait-in 1.7s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-cutout {
+    animation: none;
+  }
+}
 /* Experience chapters: the number lights up as the scroll reaches its row (lit by default). */
 .xp-num {
   color: rgb(var(--amber));
