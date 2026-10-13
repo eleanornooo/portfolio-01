@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Search, Sparkles, X } from 'lucide-react';
+import { ArrowUpRight, Download, Search, Sparkles, X } from 'lucide-react';
 import { useLang } from '../i18n/useLang';
 import { prefersReducedMotion } from '../lib/motion';
 import { lockScroll } from '../lib/smooth';
@@ -259,26 +259,42 @@ export default function ResearchGuide() {
                         <div className={`mt-6 transition-opacity duration-500 ${done ? 'opacity-100' : 'opacity-0'}`}>
                           <h3 className="eyebrow text-[0.625rem]">{t.guide.results}</h3>
                           <ul className="mt-3 space-y-2.5">
-                            {answer.results.map((r) => (
-                              <li key={r.id}>
-                                <Link
-                                  to={r.href}
-                                  onClick={hide}
-                                  className="group block rounded-2xl border border-ink/10 bg-ink/[0.03] p-4 transition-colors hover:border-amber/40"
-                                >
+                            {answer.results.map((r) => {
+                              const cls =
+                                'group block rounded-2xl border border-ink/10 bg-ink/[0.03] p-4 transition-colors hover:border-amber/40';
+                              const body = (
+                                <>
                                   <span className="eyebrow block text-[0.625rem] text-amber">{t.guide.kinds[r.kind]}</span>
                                   <span className="mt-1.5 flex items-start justify-between gap-3">
                                     <span className="font-serif text-[1.0625rem] leading-snug text-ink">{r.title}</span>
-                                    <ArrowUpRight
-                                      size={16}
-                                      aria-hidden="true"
-                                      className="mt-1 shrink-0 text-ink3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-amber"
-                                    />
+                                    {r.download ? (
+                                      <Download size={16} aria-hidden="true" className="mt-1 shrink-0 text-ink3 group-hover:text-amber" />
+                                    ) : (
+                                      <ArrowUpRight
+                                        size={16}
+                                        aria-hidden="true"
+                                        className="mt-1 shrink-0 text-ink3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-amber"
+                                      />
+                                    )}
                                   </span>
                                   {r.meta && <span className="mt-1 block text-xs text-ink3">{r.meta}</span>}
-                                </Link>
-                              </li>
-                            ))}
+                                </>
+                              );
+                              return (
+                                <li key={r.id}>
+                                  {/* The CV is a file (download), everything else a page of the site. */}
+                                  {r.download ? (
+                                    <a href={r.href} download className={cls}>
+                                      {body}
+                                    </a>
+                                  ) : (
+                                    <Link to={r.href} onClick={hide} className={cls}>
+                                      {body}
+                                    </Link>
+                                  )}
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       )}

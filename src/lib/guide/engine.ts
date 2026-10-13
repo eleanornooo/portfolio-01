@@ -8,6 +8,7 @@ import { projects, researchInterests } from '../../content/projects';
 import { talks } from '../../content/talks';
 import { courses } from '../../content/courses';
 import { students } from '../../content/students';
+import { news } from '../../content/news';
 import { positions } from '../../content/experience';
 import type { Lang } from '../../content/types';
 import { byDateDesc, formatDate, timing } from '../dates';
@@ -22,23 +23,23 @@ interface Doc extends GuideResult {
 
 const T = {
   en: {
-    noMatch: (q: string) =>
-      `I couldn’t find anything about “${q}” on this site. Try a topic (generative AI, inclusion, teacher education), a project name or a year.`,
     intro: (q: string) => `Here is what this site says about “${q}”.`,
     alsoSee: (parts: string[]) => `Related on the site: ${parts.join(', ')}.`,
-    count: { publication: ['publication', 'publications'], project: ['project', 'projects'], talk: ['talk', 'talks'], course: ['course', 'courses'], theme: ['research theme', 'research themes'], profile: ['profile entry', 'profile entries'], supervision: ['doctoral student', 'doctoral students'] } as Record<ResultKind, [string, string]>,
+    count: { publication: ['publication', 'publications'], project: ['project', 'projects'], talk: ['talk', 'talks'], course: ['course', 'courses'], theme: ['research theme', 'research themes'], profile: ['profile entry', 'profile entries'], supervision: ['doctoral student', 'doctoral students'], highlight: ['highlight', 'highlights'], cv: ['CV', 'CVs'] } as Record<ResultKind, [string, string]>,
     upcoming: (n: number, list: string) =>
       n ? `${n === 1 ? 'One upcoming talk' : `${n} upcoming talks`}: ${list}.` : 'No upcoming talks are listed right now; the latest ones are below.',
     supervision: (n: number, list: string) => `He co-supervises ${n} Ph.D. students at ISE – UM6P: ${list}.`,
     defined: (title: string, venue: string) => `${title}${venue ? ` (${venue})` : ''}.`,
     fromBio: 'From the biography:',
+    start: (q: string) => `Nothing on this site matches “${q}” closely. Here’s where to start:`,
+    latest: (list: string) => `Latest highlights: ${list}.`,
+    about: 'About — biography, experience, education',
+    cv: 'Curriculum vitae (PDF)',
   },
   fr: {
-    noMatch: (q: string) =>
-      `Je n’ai rien trouvé sur « ${q} » dans ce site. Essayez un thème (IA générative, inclusion, formation des enseignants), un nom de projet ou une année.`,
     intro: (q: string) => `Voici ce que ce site dit de « ${q} ».`,
     alsoSee: (parts: string[]) => `À voir aussi sur le site : ${parts.join(', ')}.`,
-    count: { publication: ['publication', 'publications'], project: ['projet', 'projets'], talk: ['conférence', 'conférences'], course: ['cours', 'cours'], theme: ['thème de recherche', 'thèmes de recherche'], profile: ['élément du profil', 'éléments du profil'], supervision: ['doctorant', 'doctorants'] } as Record<ResultKind, [string, string]>,
+    count: { publication: ['publication', 'publications'], project: ['projet', 'projets'], talk: ['conférence', 'conférences'], course: ['cours', 'cours'], theme: ['thème de recherche', 'thèmes de recherche'], profile: ['élément du profil', 'éléments du profil'], supervision: ['doctorant', 'doctorants'], highlight: ['fait marquant', 'faits marquants'], cv: ['CV', 'CV'] } as Record<ResultKind, [string, string]>,
     upcoming: (n: number, list: string) =>
       n
         ? `${n === 1 ? 'Une conférence à venir' : `${n} conférences à venir`} : ${list}.`
@@ -46,10 +47,15 @@ const T = {
     supervision: (n: number, list: string) => `Il codirige ${n} doctorants à l’ISE – UM6P : ${list}.`,
     defined: (title: string, venue: string) => `${title}${venue ? ` (${venue})` : ''}.`,
     fromBio: 'D’après la biographie :',
+    start: (q: string) => `Rien sur ce site ne correspond vraiment à « ${q} ». Voici par où commencer :`,
+    latest: (list: string) => `Faits marquants récents : ${list}.`,
+    about: 'À propos — biographie, parcours, formation',
+    cv: 'Curriculum vitae (PDF)',
   },
 };
 
-const firstSentence = (s: string) => s.split(/(?<=[.!?])\s/)[0];
+const sentences = (s: string) => s.split(/(?<=[.!?])\s/);
+const firstSentence = (s: string) => sentences(s)[0];
 
 function buildDocs(lang: Lang): Doc[] {
   const docs: Doc[] = [];
@@ -168,39 +174,131 @@ function index(lang: Lang) {
   return ix;
 }
 
-/** Words that carry no topic (EN/FR question words and fillers). */
+/**
+ * Words stripped before searching: question words and fillers (EN/FR), plus the name and
+ * "him/lui" (every page is about him, so they name no topic).
+ */
 const STOP = new Set(
-  'what which who whom whose when where why how is are was were the a an of on in on about for to and or with his he does do did any there tell me show list give site research aziz mimoudi dr que quoi qui quel quelle quels quelles est sont le la les un une des du de sur pour et ou avec ses il son sa dans au aux moi montre liste qu est-ce ce cest est-il quoi quels cela'.split(' '),
+  [
+    // EN
+    'who what which whom whose when where why how is are was were be the a an of on in at about for to and or with his him he does do did any there tell me us show list give find site research',
+    // FR
+    'qui quoi que qu où ou quand quel quelle quels quelles est sont était le la les un une des du de sur pour et avec ses il lui son sa dans au aux moi nous montre liste parle parlez parle-moi parlez-moi dis dites dis-moi dites-moi est-ce ce cest est-il cela',
+    // the person
+    'aziz mimoudi dr professor professeur',
+  ]
+    .join(' ')
+    .split(' '),
 );
-/** A kind word in the question favours results of that kind. */
+
+/** Words that ask for the profile itself ("biography", "background"…). */
+const PROFILE_WORDS = new Set('biography bio profile background cv résumé resume biographie profil parcours présentation propos'.split(' '));
+
+/**
+ * Synonym groups. Multi-word forms are folded into the group first ("artificial
+ * intelligence" → ai); a group is then searched under all its forms, and each document keeps
+ * its best form, so synonyms never add up. Kind synonyms ("talks" = "keynotes" =
+ * "conférences"…) are in KIND_WORDS; "students" = "supervision" = "doctorants" is the
+ * supervision intent in answerLocally.
+ */
+const SYNONYMS: Record<string, string[]> = {
+  ai: ['AI', 'IA', 'artificial intelligence', 'intelligence artificielle'],
+  genai: ['generative AI', 'IA générative', 'GenAI', 'ChatGPT', 'LLM'],
+  teachered: ['teacher education', 'teacher training', 'formation des enseignants', 'formation des maîtres', 'preservice teachers'],
+  inclusion: ['inclusion', 'inclusive', 'inclusif', 'accessibility', 'accessibilité', 'diverse abilities'],
+  ct: ['computational thinking', 'pensée computationnelle'],
+  distance: ['distance learning', 'online learning', 'distance education', 'formation à distance', 'enseignement à distance', 'e-learning'],
+  employability: ['employability', 'employabilité', 'entrepreneurship', 'entrepreneuriat'],
+  sustainability: ['sustainability', 'sustainable', 'durabilité', 'durable'],
+  its: ['intelligent tutoring system', 'intelligent tutoring', 'système tutoriel intelligent', 'systèmes tuteurs intelligents'],
+};
+/** Single words that stand for a whole group. */
+const WORD_TO_GROUP: Record<string, string> = {
+  ai: 'ai',
+  ia: 'ai',
+  genai: 'genai',
+  chatgpt: 'genai',
+  llm: 'genai',
+  llms: 'genai',
+  inclusion: 'inclusion',
+  inclusive: 'inclusion',
+  inclusif: 'inclusion',
+  accessibility: 'inclusion',
+  accessibilité: 'inclusion',
+  employability: 'employability',
+  employabilité: 'employability',
+  sustainability: 'sustainability',
+  durabilité: 'sustainability',
+};
+
+/** A kind word in the question favours results of that kind (talks = keynotes = conférences…). */
 const KIND_WORDS: [RegExp, ResultKind][] = [
   [/^(projects?|projets?)$/, 'project'],
-  [/^(publications?|articles?|papers?|chapters?|chapitres?)$/, 'publication'],
-  [/^(talks?|keynotes?|conferences?|conférences?|panels?)$/, 'talk'],
-  [/^(courses?|cours|teaching|enseignement)$/, 'course'],
-  [/^(themes?|thèmes?|topics?)$/, 'theme'],
+  [/^(publications?|articles?|papers?|chapters?|chapitres?|writings?|écrits?)$/, 'publication'],
+  [/^(talks?|keynotes?|conferences?|conférences?|panels?|presentations?|lectures?|communications?|interventions?|speeches?)$/, 'talk'],
+  [/^(courses?|cours|teaching|teaches|enseignement|enseigne|classes?)$/, 'course'],
+  [/^(themes?|thèmes?|topics?|interests?|intérêts?)$/, 'theme'],
 ];
 
-function search(fuse: Fuse<Doc>, q: string): Doc[] {
-  const words = q
-    .toLowerCase()
-    .replace(/[’']/g, ' ')
+const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const wordRe = (s: string, flags = 'u') => new RegExp(`(^|[^\\p{L}])${esc(s)}(?=[^\\p{L}]|$)`, flags);
+
+/** Splits a question into topic terms, synonym groups, the kinds it names, and profile words. */
+function parse(q: string) {
+  let text = ` ${q.toLowerCase().replace(/[’']/g, ' ')} `;
+  const groups = new Set<string>();
+  // Fold multi-word synonyms into their group.
+  for (const [key, forms] of Object.entries(SYNONYMS))
+    for (const f of forms.filter((x) => x.includes(' ')).map((x) => x.toLowerCase()))
+      if (wordRe(f).test(text)) {
+        groups.add(key);
+        text = text.split(f).join(' ');
+      }
+  const words = text
     .split(/[^\p{L}\p{N}+.-]+/u)
     .map((w) => w.replace(/^[.-]+|[.?-]+$/g, ''))
     .filter((w) => w.length >= 2 && !STOP.has(w));
   const kinds = new Set<ResultKind>();
   const terms: string[] = [];
+  let profileWords = 0;
   for (const w of words) {
     const k = KIND_WORDS.find(([re]) => re.test(w));
     if (k) kinds.add(k[1]);
+    else if (PROFILE_WORDS.has(w)) profileWords++;
+    else if (WORD_TO_GROUP[w]) groups.add(WORD_TO_GROUP[w]);
     else terms.push(w);
   }
-  if (!terms.length) return [];
+  return { terms, groups: [...groups], kinds, profileWords };
+}
+
+/** One search form: fuzzy for words, whole-word for short ones such as "AI" (so not "sustAInable"). */
+function scoreForm(fuse: Fuse<Doc>, docs: Doc[], form: string): Map<Doc, number> {
+  const out = new Map<Doc, number>();
+  if (form.length <= 3) {
+    const re = wordRe(form.toLowerCase(), 'iu');
+    for (const d of docs) {
+      if (re.test(d.title)) out.set(d, 1);
+      else if (re.test(d.text)) out.set(d, 0.85);
+    }
+    return out;
+  }
+  // Close matches only (a typo is fine; a random word must not match anything).
+  for (const h of fuse.search(form, { limit: 40 })) if ((h.score ?? 1) <= 0.22) out.set(h.item, 1 - (h.score ?? 1));
+  return out;
+}
+
+function search(fuse: Fuse<Doc>, docs: Doc[], { terms, groups, kinds }: ReturnType<typeof parse>): Doc[] {
+  if (!terms.length && !groups.length) {
+    // Only a kind ("talks", "publications"): the newest of that kind.
+    return docs.filter((d) => kinds.has(d.kind)).sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+  }
   const score = new Map<Doc, number>();
-  for (const term of terms) {
-    // Close matches only (a typo is fine; a random word must not match anything).
-    for (const h of fuse.search(term, { limit: 40 }))
-      if ((h.score ?? 1) <= 0.22) score.set(h.item, (score.get(h.item) ?? 0) + (1 - (h.score ?? 1)));
+  const add = (m: Map<Doc, number>) => m.forEach((v, d) => score.set(d, (score.get(d) ?? 0) + v));
+  for (const term of terms) add(scoreForm(fuse, docs, term));
+  for (const g of groups) {
+    const best = new Map<Doc, number>();
+    for (const form of SYNONYMS[g]) scoreForm(fuse, docs, form).forEach((v, d) => best.set(d, Math.max(best.get(d) ?? 0, v)));
+    add(best);
   }
   const ranked = [...score]
     .map(([d, s]) => [d, s + (kinds.has(d.kind) ? 0.75 : 0)] as const)
@@ -213,6 +311,21 @@ function search(fuse: Fuse<Doc>, q: string): Doc[] {
 }
 
 const strip = (d: Doc): GuideResult => ({ id: d.id, kind: d.kind, title: d.title, meta: d.meta, href: d.href, summary: d.summary });
+
+/** Two sentences from the start of the biography. */
+const intro = (lang: Lang) => sentences(profile.bio[lang][0]).slice(0, 2).join(' ');
+
+/** The About page, the CV (when it is on the site) and the current position. */
+function profileCards(lang: Lang, docs: Doc[]): GuideResult[] {
+  const L = T[lang];
+  const cards: GuideResult[] = [
+    { id: 'about', kind: 'profile', title: L.about, meta: `${profile.honorific} ${profile.name} · ${profile.title[lang]}`, href: '/about' },
+  ];
+  if (__HAS_CV__) cards.push({ id: 'cv', kind: 'cv', title: L.cv, meta: 'PDF', href: profile.cvPdf, download: true });
+  const current = docs.find((d) => d.id.startsWith('pos-'));
+  if (current) cards.push(strip(current));
+  return cards;
+}
 
 /** Answers a question from the site's content only. `now` decides what is "upcoming". */
 export function answerLocally(question: string, lang: Lang, now = Date.now()): GuideAnswer {
@@ -232,17 +345,44 @@ export function answerLocally(question: string, lang: Lang, now = Date.now()): G
     return { text: L.upcoming(upcoming.length, list), results, source: 'local' };
   }
 
-  // Intent: doctoral supervision.
-  if (/supervis|doctoral students?|ph\.?\s?d\.? students?|doctorant|encadr|codirect/i.test(q)) {
+  // Intent: doctoral supervision (students = supervision = doctorants).
+  if (/supervis|\bstudents?\b|doctoral|ph\.?\s?d\.? students?|doctorant|étudiants?|encadr|codirect/i.test(q)) {
     const list = students.map((s) => `${s.name} (${s.topic}, ${s.cohort})`).join('; ');
     const results = docs.filter((d) => d.kind === 'supervision').slice(0, 4).map(strip);
     return { text: L.supervision(students.length, list), results, source: 'local' };
   }
 
-  // Everything else: fuzzy search term by term (question words dropped), scores summed per
-  // document; a kind word ("projects", "talks"…) favours that kind. At most one result per title.
-  const hits = search(fuse, q);
-  if (!hits.length) return { text: L.noMatch(q), results: [], source: 'local' };
+  // Intent: the person ("Who is Aziz Mimoudi?", "about him", "biography", or just his name):
+  // nothing left to search once question words, the name and profile words are removed.
+  const parsed = parse(q);
+  const topicless = !parsed.terms.length && !parsed.groups.length && !parsed.kinds.size;
+  const aboutHim =
+    parsed.profileWords > 0 ||
+    /\bwho\s+is\b|\bwho's\b|\babout\s+(him|aziz|mimoudi|dr)\b|\bqui\s+est\b|à\s+propos|parle[sz]?-moi|\baziz\b|\bmimoudi\b|\bhim\b|\blui\b/i.test(q);
+  if (topicless && aboutHim) return { text: intro(lang), results: profileCards(lang, docs), source: 'local' };
+
+  // Everything else: fuzzy search term by term (question words dropped, synonyms folded),
+  // scores summed per document; a kind word ("projects", "talks"…) favours that kind.
+  // At most one result per title.
+  const hits = search(fuse, docs, parsed);
+  if (!hits.length) {
+    // Nothing close: don't stop there; offer a way in (the bio and the latest highlights).
+    const latest = [...news].sort(byDateDesc).slice(0, 3);
+    return {
+      text: [L.start(q), intro(lang), L.latest(latest.map((n) => n.title[lang]).join('; '))].join(' '),
+      results: [
+        profileCards(lang, docs)[0],
+        ...latest.map((n) => ({
+          id: `news-${n.id}`,
+          kind: 'highlight' as const,
+          title: n.title[lang],
+          meta: formatDate(n.date, lang, n.endDate),
+          href: '/#highlights',
+        })),
+      ],
+      source: 'local',
+    };
+  }
   const seen = new Set<string>();
   const top = hits.filter((d) => (seen.has(d.title) ? false : (seen.add(d.title), true)));
   const results = top.slice(0, 4).map(strip);

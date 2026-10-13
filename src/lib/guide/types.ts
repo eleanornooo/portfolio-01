@@ -1,15 +1,17 @@
 // Shapes shared by the research guide's providers (local search now, an LLM later).
 import type { Lang } from '../../content/types';
 
-export type ResultKind = 'publication' | 'project' | 'theme' | 'talk' | 'course' | 'profile' | 'supervision';
+export type ResultKind = 'publication' | 'project' | 'theme' | 'talk' | 'course' | 'profile' | 'supervision' | 'highlight' | 'cv';
 
 export interface GuideResult {
   id: string;
   kind: ResultKind;
   title: string;
   meta: string;
-  /** Internal link (route + optional #anchor). */
+  /** Internal link (route + optional #anchor), or a file when `download` is set. */
   href: string;
+  /** A file to download (the CV), not a page. */
+  download?: boolean;
   summary?: string;
 }
 
