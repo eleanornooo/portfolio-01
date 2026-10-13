@@ -131,7 +131,15 @@ export default function Journey({ index }: { index: string }) {
         </div>
       </div>
 
-      <div ref={pin} className="journey-pin relative md:flex md:h-[100svh] md:flex-col md:justify-start md:pt-24">
+      {/* Before the scroll-driven version starts (or with reduced motion) the row scrolls
+          sideways, so it is focusable for keyboard scrolling. */}
+      <div
+        ref={pin}
+        tabIndex={0}
+        role="region"
+        aria-label={t.journey.label}
+        className="journey-pin relative outline-none focus-visible:ring-2 focus-visible:ring-amber md:flex md:h-[100svh] md:flex-col md:justify-start md:pt-24"
+      >
         {/* phone timeline rail */}
         <span aria-hidden="true" className="absolute bottom-0 left-[calc(1.25rem+3px)] top-0 w-px bg-rule sm:left-[calc(2rem+3px)] md:hidden">
           <span className="journey-progress-v absolute inset-0 origin-top bg-amber shadow-[0_0_12px_rgb(245_158_59/0.8)]" />

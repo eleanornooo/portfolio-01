@@ -66,6 +66,7 @@
   --accent: 172 62 24; /* terracotta, AA on paper */
   --accent-vivid: 226 87 43; /* #E2572B, glow and decoration */
   --amber: 245 158 59; /* #F59E3B, glow and decoration */
+  --amber-ink: 150 78 8; /* amber as text on paper: 5.4:1 (AA) */
   --glass: 255 255 255;
   --glass-a: 0.5;
   --glass-line: 30 22 14;
@@ -87,6 +88,7 @@
   --accent: 245 158 59; /* amber reads as text on ink (9:1) */
   --accent-vivid: 226 87 43;
   --amber: 245 158 59;
+  --amber-ink: 245 158 59;
   --glass: 255 255 255;
   --glass-a: 0.045;
   --glass-line: 255 255 255;
@@ -1127,7 +1129,7 @@ html.modal-open :is(.cursor-dot, .cursor-ring) {
 }
 /* Experience chapters: the number lights up as the scroll reaches its row (lit by default). */
 .xp-num {
-  color: rgb(var(--amber));
+  color: rgb(var(--amber-ink));
   text-shadow: 0 0 24px rgb(245 158 59 / 0.45);
   transition:
     color 0.6s,
@@ -1387,6 +1389,39 @@ html.modal-open :is(.cursor-dot, .cursor-ring) {
   .guide-caret,
   .guide-dot {
     animation: none;
+  }
+}
+
+/* Amber used as text: bright on dark, a deep amber on light (AA). Glows and fills keep --amber. */
+.text-amber {
+  color: rgb(var(--amber-ink));
+}
+
+/* ------------------------------------------------------------ touch targets */
+/* Touch screens: every tap target reaches 44 px. Text links get a taller hit area without
+   moving anything (padding outside the text, the same negative margin back); controls get a
+   44 px minimum height. */
+@media (pointer: coarse) {
+  a.link,
+  a.link-quiet,
+  footer a,
+  li > a[target='_blank'],
+  main p > a {
+    padding-block: 0.875rem;
+    margin-block: -0.875rem;
+  }
+  header :is(a, button),
+  [role='group'] > button,
+  button.rounded-full,
+  .btn-small,
+  .field,
+  a.glass,
+  .poster-city > button {
+    min-height: 2.875rem;
+  }
+  button[aria-label]:not([class*='w-full']) {
+    min-width: 2.875rem;
+    min-height: 2.875rem;
   }
 }
 
