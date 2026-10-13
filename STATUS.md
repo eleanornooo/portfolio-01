@@ -50,7 +50,7 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 | Research | Interactive knowledge graph | Pinned split-screen case studies | ✅ awaiting review |
 | Publications | Giant count-up + two journal marquees | Cursor-following preview on a typographic index | ✅ |
 | Talks | Tour-poster stack of city names | Hover a city → photo + talks; ticket cards | ✅ |
-| Teaching | Statement revealed word by word on scroll | Flip cards; timetable as a framed app | ⬜ |
+| Teaching | Statement revealed word by word on scroll | Flip cards; timetable as a framed app | ✅ |
 | About | Magazine split: portrait + pull quote, drop cap | Horizontal draggable timeline or chapters | ⬜ |
 | Contact | (kept as is) | Glass form over glow | ✅ |
 
@@ -93,10 +93,16 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
   - One date format everywhere (poster, tickets, rows): "25–26 November 2026", "June 2026", "2–3 & 9 October 2020" (FR: "2–3 et 9 octobre 2020"; `dateLabel` is now localized)
   - "(UM6P login may be required)" is no longer text: links that may need a login show a lock with a tooltip (on hover and keyboard focus; the lock is labelled for screen readers), on every page
   - Phones: the poster shows the latest date and "+n" per city so names keep their size
-- E. Teaching ⬜
+- E. Teaching ✅ (Step 3 "Syllabus")
+  - Note: `docs/PROMPT_4` is not in the repo; the Teaching spec from the step-3 brief was used
+  - "Year not specified" is gone (nothing is shown when a course has no year)
+  - Opening (`components/teaching/StatementReveal.tsx`): the teaching statement in large italic serif, revealed word by word as you scroll (each word goes from dim to bright; one CSS variable per scroll, opacity computed in CSS). On desktop the stage sticks for an extra screen so the words light up in place; on phones they light up as the text passes; the first words are lit on arrival. Reduced motion: all bright, no sticky stage
+  - The right half of the opener: two photos of him teaching at UM6P, overlapping (the Now/Next chip was not used because the timetable still holds the sample schedule)
+  - Courses as flip cards (`components/teaching/FlipCard.tsx`), the default view: front = the course code in giant type (EDU 704, CAES-PD008; the course number in outline when there is no code) + title + term; back (dark) = programme, level, term, up to four key topics and a "Details" button (the existing dialog). Turns on hover (mouse), on tap, and with Enter/Space (front is a button with aria-expanded; focus moves to the visible side; the hidden side is inert). Reduced motion: cross-fade. The list view stays one click away ("Cards / List")
+  - Timetable as a dark framed app window (title bar with three dots, glow, deep shadow), dark in both themes (the `--tt-*` colours now also follow `.tone-dark`); the live "now" line glows and its dot breathes. Timetable logic unchanged (only class names added to the now-line)
 
 ### Next ⬜
-- Review fixes B–E (Teaching is E), then About, then sections 7, 9 and 8
+- About (magazine profile), then sections 7, 9 and 8
 
 ---
 

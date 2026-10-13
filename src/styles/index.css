@@ -78,7 +78,8 @@
   --tt-supervision: 242 231 200;
   --tt-supervision-line: 128 98 16;
 }
-[data-theme='dark'] {
+[data-theme='dark'],
+.tone-dark {
   --tt-lecture: 33 45 72;
   --tt-lecture-line: 140 163 214;
   --tt-seminar: 66 36 28;
@@ -1070,6 +1071,128 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
 }
 @media (prefers-reduced-motion: reduce) {
   .list-in > li {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------- teaching */
+/* Statement revealed word by word: --p (0–1) is the scroll progress on .ws-stage; each word
+   brightens as the progress passes its index. Bright by default without the variable. */
+.ws-word {
+  opacity: clamp(0.16, calc((var(--p, 1) * (var(--n) + 4) - var(--i)) / 4), 1);
+  transition: opacity 0.25s linear;
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .ws-stage {
+    height: 190svh;
+  }
+  .ws-sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 40rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws-word {
+    opacity: 1;
+  }
+}
+
+/* Course flip cards: front (light card) and back (dark), turned in 3D. */
+.flip {
+  perspective: 1600px;
+}
+.flip-inner {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.flip[data-flipped] .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.75rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.flip-front {
+  border: 1px solid rgb(var(--ink) / 0.1);
+  background:
+    radial-gradient(70% 55% at 85% 0%, rgb(245 158 59 / 0.14), transparent 70%),
+    rgb(255 255 255 / 0.6);
+  box-shadow: 0 30px 60px -40px rgb(120 50 20 / 0.45);
+}
+.flip-back {
+  transform: rotateY(180deg);
+  border: 1px solid rgb(245 158 59 / 0.3);
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgb(226 87 43 / 0.28), transparent 70%),
+    rgb(var(--paper));
+  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner,
+  .flip[data-flipped] .flip-inner {
+    transform: none;
+    transition: none;
+  }
+  .flip-back {
+    transform: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .flip[data-flipped] .flip-back {
+    opacity: 1;
+  }
+}
+
+/* The timetable as a framed app window. */
+.tt-app {
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.015)), rgb(var(--paper));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 60px 120px -50px rgb(0 0 0 / 0.95),
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 0 120px -40px rgb(226 87 43 / 0.35);
+}
+.tt-app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.03);
+}
+/* The live "now" line glows and breathes. */
+.tt-now-line {
+  box-shadow:
+    0 0 10px 1px rgb(245 158 59 / 0.85),
+    0 0 26px 3px rgb(226 87 43 / 0.5);
+}
+.tt-now-dot {
+  box-shadow: 0 0 12px 3px rgb(245 158 59 / 0.9);
+  animation: tt-pulse 2s ease-in-out infinite;
+}
+.tt-now-time {
+  box-shadow: 0 0 14px rgb(245 158 59 / 0.7);
+}
+@keyframes tt-pulse {
+  50% {
+    transform: scale(1.6);
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-now-dot {
     animation: none;
   }
 }

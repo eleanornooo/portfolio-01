@@ -4,8 +4,10 @@ import { ArrowUpRight, Search } from 'lucide-react';
 import { courses, teachingStatement } from '../content/courses';
 import type { Course } from '../content/types';
 import { useLang } from '../i18n/useLang';
+import { photoSrc, photoSrcSet, photos } from '../lib/photos';
 import Seo from '../components/Seo';
-import PageHero from '../components/PageHero';
+import StatementReveal from '../components/teaching/StatementReveal';
+import FlipCard from '../components/teaching/FlipCard';
 import Heading from '../components/SectionHeading';
 import FilterChips from '../components/FilterChips';
 import Dialog from '../components/Dialog';
@@ -75,7 +77,7 @@ function Courses() {
   const [query, setQuery] = useState('');
   const [year, setYear] = useState('all');
   const [sort, setSort] = useState<Sort>('recent');
-  const [grid, setGrid] = useState(false);
+  const [grid, setGrid] = useState(true);
   const [open, setOpen] = useState<Course | null>(null);
   const close = useCallback(() => setOpen(null), []);
   const ids = { search: useId(), year: useId(), sort: useId() };
@@ -143,8 +145,8 @@ function Courses() {
           value={grid ? 'grid' : 'list'}
           onChange={(v) => setGrid(v === 'grid')}
           options={[
-            { value: 'list', label: t.teaching.list },
             { value: 'grid', label: t.teaching.grid },
+            { value: 'list', label: t.teaching.list },
           ]}
         />
       </div>
@@ -154,8 +156,10 @@ function Courses() {
 
       {list.length === 0 && <p className="text-ink2">{t.common.noResults}</p>}
 
+      {grid && list.length > 0 && <p className="-mt-4 mb-6 px-3 text-sm text-ink3">{t.teaching.flipHint}</p>}
+
       <MotionConfig reducedMotion="user">
-        <motion.ul layout className={grid ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'space-y-3'}>
+        <motion.ul layout className={grid ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3' : 'space-y-3'}>
           <AnimatePresence initial={false} mode="popLayout">
             {list.map((c) => (
               <motion.li
@@ -166,32 +170,32 @@ function Courses() {
                 exit={{ opacity: 0, scale: 0.97 }}
                 transition={{ duration: 0.45, ease }}
               >
-                <button
-                  type="button"
-                  onClick={() => setOpen(c)}
-                  aria-haspopup="dialog"
-                  className={`group relative w-full overflow-hidden rounded-3xl border border-ink/10 bg-white/60 text-left transition-[transform,box-shadow,border-color] duration-500 hover:-translate-y-1 hover:border-accent/30 hover:shadow-[0_40px_70px_-40px_rgb(120_50_20/0.45)] ${
-                    grid
-                      ? 'flex h-full min-h-[14rem] flex-col p-6'
-                      : 'grid grid-cols-1 gap-x-6 gap-y-1 p-5 sm:grid-cols-[9rem_1fr_auto] sm:items-center md:px-7'
-                  }`}
-                >
-                  <span className="eyebrow num text-accent">{c.code ?? c.level}</span>
-                  <span className={grid ? 'mt-4 flex-1' : ''}>
-                    <span className="block font-serif text-[1.3125rem] leading-snug transition-colors group-hover:text-accent">
-                      {c.title}
+                {grid ? (
+                  <FlipCard course={c} index={courses.indexOf(c)} onDetails={() => setOpen(c)} />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setOpen(c)}
+                    aria-haspopup="dialog"
+                    className="group relative grid w-full grid-cols-1 gap-x-6 gap-y-1 overflow-hidden rounded-3xl border border-ink/10 bg-white/60 p-5 text-left transition-[transform,box-shadow,border-color] duration-500 hover:-translate-y-1 hover:border-accent/30 hover:shadow-[0_40px_70px_-40px_rgb(120_50_20/0.45)] sm:grid-cols-[9rem_1fr_auto] sm:items-center md:px-7"
+                  >
+                    <span className="eyebrow num text-accent">{c.code ?? c.level}</span>
+                    <span>
+                      <span className="block font-serif text-[1.3125rem] leading-snug transition-colors group-hover:text-accent">
+                        {c.title}
+                      </span>
+                      <span className="mt-1 block text-sm text-ink2">{c.programme}</span>
                     </span>
-                    <span className="mt-1 block text-sm text-ink2">{c.programme}</span>
-                  </span>
-                  <span className={`num flex items-center gap-3 text-sm text-ink3 ${grid ? 'mt-5 justify-between' : ''}`}>
-                    {c.term ?? (c.years.length ? c.years.join(', ') : t.teaching.yearUnknown)}
-                    <ArrowUpRight
-                      size={18}
-                      aria-hidden="true"
-                      className="text-accent transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
-                  </span>
-                </button>
+                    <span className="num flex items-center gap-3 text-sm text-ink3">
+                      {c.term ?? (c.years.length ? c.years.join(', ') : null)}
+                      <ArrowUpRight
+                        size={18}
+                        aria-hidden="true"
+                        className="text-accent transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                    </span>
+                  </button>
+                )}
               </motion.li>
             ))}
           </AnimatePresence>
@@ -216,19 +220,75 @@ function Courses() {
   );
 }
 
+/** Two photos taken while teaching, overlapping: the opener's right half. */
+function Photos() {
+  const { pick } = useLang();
+  const main = photos.teaching;
+  const room = photos.teachingRoom;
+  return (
+    <figure className="relative mx-auto max-w-[26rem] pb-14 md:max-w-none md:pb-20">
+      <div aria-hidden="true" className="hero-rim absolute inset-x-[-10%] top-[-8%] h-[85%]" />
+      <img
+        src={photoSrc(main)}
+        srcSet={photoSrcSet(main)}
+        sizes="(min-width: 768px) 34vw, 80vw"
+        width={main.w}
+        height={main.h}
+        alt={pick(main.alt)}
+        decoding="async"
+        {...{ fetchpriority: 'high' }}
+        className="relative aspect-square w-[82%] -rotate-[2deg] rounded-[2rem] object-cover shadow-[0_60px_100px_-40px_rgb(0_0_0/0.95),0_0_0_1px_rgb(255_255_255/0.1)]"
+      />
+      <img
+        src={photoSrc(room)}
+        srcSet={photoSrcSet(room)}
+        sizes="(min-width: 768px) 24vw, 60vw"
+        width={room.w}
+        height={room.h}
+        alt={pick(room.alt)}
+        loading="lazy"
+        decoding="async"
+        className="absolute bottom-0 right-0 w-[62%] rotate-[3deg] rounded-2xl border-4 border-paper object-cover shadow-[0_40px_80px_-30px_rgb(0_0_0/0.9)]"
+      />
+      <figcaption className="sr-only">
+        {pick(main.caption)} · {pick(room.caption)}
+      </figcaption>
+    </figure>
+  );
+}
+
 export function Component() {
-  const { t, pick } = useLang();
+  const { t, lang, pick } = useLang();
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);
   useSpotlight(root);
   return (
     <div ref={root}>
       <Seo title={t.teaching.metaTitle} description={t.teaching.metaDescription} path="/teaching" />
-      <PageHero
-        eyebrow={`${courses.length} · ${t.teaching.courses} · ${t.teaching.timetable}`}
-        title={t.teaching.title}
-        intro={<p className="font-serif text-[clamp(1.375rem,1rem+1vw,1.875rem)] font-light italic leading-snug text-ink">{pick(teachingStatement)}</p>}
-      />
+
+      {/* ------------------------------------- opening: the statement, word by word */}
+      <section aria-labelledby="page-title" className="tone-dark blend-b relative isolate overflow-x-clip">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(40%_45%_at_78%_45%,rgb(226_87_43/0.22),transparent_70%),radial-gradient(30%_30%_at_10%_20%,rgb(245_158_59/0.08),transparent_70%)]"
+        />
+        <StatementReveal
+          text={pick(teachingStatement)}
+          lang={lang}
+          header={
+            <div className="kin-fade">
+              <p className="eyebrow num text-amber">
+                {courses.length} · {t.teaching.courses} · {t.teaching.timetable}
+              </p>
+              <h1 id="page-title" className="display mt-3 text-[clamp(2.75rem,1.5rem+3.4vw,5rem)] leading-[0.9] tracking-[-0.045em]">
+                {t.teaching.title}
+              </h1>
+              <p className="eyebrow mt-8">{t.teaching.statement}</p>
+            </div>
+          }
+          aside={<Photos />}
+        />
+      </section>
 
       <section id="courses" aria-labelledby="courses-title" className="tone-light blend-y no-print py-28 md:py-36">
         <div className="page">
@@ -237,10 +297,28 @@ export function Component() {
         </div>
       </section>
 
-      <section id="timetable" aria-labelledby="timetable-title" className="page pb-28 pt-8 md:pb-36">
-        <Heading id="timetable" index="02" label={t.teaching.timetable} lines={[t.teaching.timetable]} intro={t.timetable.intro} />
-        <div data-reveal="up" className="rounded-[2rem] border border-ink/10 bg-ink/[0.025] p-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] md:p-6">
-          <Timetable />
+      {/* ------------------------------------- the timetable as a framed app */}
+      <section id="timetable" aria-labelledby="timetable-title" className="tone-dark blend-t relative isolate pb-28 pt-28 md:pb-36">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_30%,rgb(226_87_43/0.12),transparent_70%)]"
+        />
+        <div className="page">
+          <Heading id="timetable" index="02" label={t.teaching.timetable} lines={[t.teaching.timetable]} intro={t.timetable.intro} />
+          <div data-reveal="up" className="tt-app">
+            <div aria-hidden="true" className="tt-app-bar">
+              <span className="flex gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-vivid" />
+                <span className="h-2.5 w-2.5 rounded-full bg-amber" />
+                <span className="h-2.5 w-2.5 rounded-full bg-ink/25" />
+              </span>
+              <span className="num text-xs tracking-[0.08em] text-ink3">{t.teaching.timetable} — Aziz Mimoudi · ISE – UM6P</span>
+              <span className="w-10" />
+            </div>
+            <div className="p-4 md:p-6">
+              <Timetable />
+            </div>
+          </div>
         </div>
       </section>
     </div>

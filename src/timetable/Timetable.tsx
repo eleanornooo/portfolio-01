@@ -278,7 +278,7 @@ export default function Timetable() {
             ))}
             {showNowLine && (
               <span
-                className="num absolute right-1 -translate-y-1/2 rounded-sm bg-vivid px-1 text-[0.6875rem] font-medium text-paper"
+                className="tt-now-time num absolute right-1 -translate-y-1/2 rounded-sm bg-vivid px-1 text-[0.6875rem] font-medium text-paper"
                 style={{ top: nowTop }}
               >
                 {fmtMinutes(nowWall.minutes)}
@@ -327,9 +327,9 @@ export default function Timetable() {
                   );
                 })}
               {showNowLine && d === today && (
-                <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 z-20 h-0" style={{ top: nowTop }}>
-                  <span className="absolute -left-[4px] -top-[4px] h-2 w-2 rounded-full bg-vivid" />
-                  <span className="absolute inset-x-0 border-t-2 border-vivid" />
+                <span aria-hidden="true" className="tt-now pointer-events-none absolute inset-x-0 z-20 h-0" style={{ top: nowTop }}>
+                  <span className="tt-now-dot absolute -left-[4px] -top-[4px] h-2 w-2 rounded-full bg-vivid" />
+                  <span className="tt-now-line absolute inset-x-0 border-t-2 border-vivid" />
                 </span>
               )}
             </div>
