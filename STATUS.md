@@ -71,8 +71,19 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 - Keynotes and panels as tickets (`components/talks/Ticket.tsx`): amber date stub ("Admit one"), dashed tear line with two notches (CSS mask), talk on the main part; papers, workshops and sessions as compact rows. The type filter and animated filtering are kept. The vertical timeline is gone
 - Reduced motion: no poster entrance, no ticket tilt
 
+### Review fixes (desktop + mobile check)
+- A. Site-wide ✅
+  - Light↔dark seams: the long 18rem fade and its terracotta glow are gone; sections meet with a short 4.5rem (72px) eased fade
+  - Count-ups (Home figures, Publications total, Research budgets): the final value is the `aria-label`; animated digits are `aria-hidden`
+  - Sticky filter bars (Publications, Talks, Teaching) use `.sticky-bar`: `top: calc(var(--nav-h) + 12px)`, from tablet up, so they always sit below the nav pill
+  - `?noscroll` in the URL disables Lenis (native scroll) for automated checks; no visible change otherwise
+- B. Home + About ⬜
+- C. Research + Publications ⬜
+- D. Talks ⬜
+- E. Teaching ⬜
+
 ### Next ⬜
-- Teaching, About (in this order), then sections 7, 9 and 8
+- Review fixes B–E (Teaching is E), then About, then sections 7, 9 and 8
 
 ---
 

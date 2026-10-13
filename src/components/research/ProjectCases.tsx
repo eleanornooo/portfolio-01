@@ -41,14 +41,13 @@ function Amount({ text, run }: { text: string; run: number }) {
     ? Math.round(v).toLocaleString('en-US')
     : v.toFixed(a.decimals);
   return (
-    <>
+    <span role="img" aria-label={text}>
       <span aria-hidden="true">
         {a.pre}
         {shown}
         {a.post}
       </span>
-      <span className="sr-only">{text}</span>
-    </>
+    </span>
   );
 }
 

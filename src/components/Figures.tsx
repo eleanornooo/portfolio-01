@@ -11,7 +11,7 @@ const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-10 * t));
 
 /**
  * A number that counts up when it scrolls into view. The real value is rendered on the
- * server and is what screen readers get; only the visible digits animate.
+ * server; screen readers get it from aria-label, and the animated digits are aria-hidden.
  */
 export function CountUp({ value, suffix = '', delay = 0 }: { value: number; suffix?: string; delay?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -52,16 +52,13 @@ export function CountUp({ value, suffix = '', delay = 0 }: { value: number; suff
   }, [value, delay]);
 
   return (
-    <>
+    // Assistive tech gets the final value only (aria-label); the animated digits are hidden.
+    <span role="img" aria-label={`${value}${suffix}`}>
       <span ref={ref} aria-hidden="true">
         {shown}
         {suffix}
       </span>
-      <span className="sr-only">
-        {value}
-        {suffix}
-      </span>
-    </>
+    </span>
   );
 }
 

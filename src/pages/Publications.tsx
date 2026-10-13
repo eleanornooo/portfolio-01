@@ -41,7 +41,11 @@ function GiantCount({ value }: { value: number }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [value]);
-  return <span className="num">{n}</span>;
+  return (
+    <span role="img" aria-label={String(value)} className="num">
+      <span aria-hidden="true">{n}</span>
+    </span>
+  );
 }
 
 export function Component() {
@@ -121,8 +125,8 @@ export function Component() {
       </section>
 
       {/* ------------------------------------------------------- the index */}
-      <section aria-label={t.publications.index} className="tone-light blend-t pb-28">
-        <div className="page z-30 pt-8 md:sticky md:top-[5.25rem]">
+      <section aria-label={t.publications.index} className="tone-light blend-t pb-28 pt-8">
+        <div className="page sticky-bar">
           <div className="glass flex flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
             <FilterChips
               id="pub-type"

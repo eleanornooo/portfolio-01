@@ -99,7 +99,7 @@ function Courses() {
 
   return (
     <>
-      <div data-reveal="up" className="glass mb-4 flex flex-col gap-3 rounded-[2rem] p-3 sm:flex-row sm:flex-wrap sm:items-center">
+      <div data-reveal="up" className="glass sticky-bar mb-4 flex flex-col gap-3 rounded-[2rem] p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <div className="relative sm:w-64">
           <label htmlFor={ids.search} className="sr-only">
             {t.common.search}

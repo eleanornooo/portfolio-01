@@ -108,9 +108,10 @@ export function Component() {
       </section>
 
       {/* ------------------------------------------------- tickets and rows */}
-      <section aria-label={t.talks.title} className="tone-light blend-t pb-28 pt-10">
+      <section aria-label={t.talks.title} className="tone-light blend-t pb-28 pt-16">
         <div className="page">
           <FilterChips
+            className="sticky-bar"
             id="talk-type"
             label={t.talks.filter}
             value={type}

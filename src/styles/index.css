@@ -527,36 +527,35 @@ html {
 }
 
 /* -------------------------------------------------- section rhythm & blends */
-/* Sections with a fixed palette (.tone-dark / .tone-light) fade in from, and out to, the
-   page background (--page) instead of starting with a hard edge. When the page already has
-   the same palette, the gradient is invisible. */
-/* Eased (not linear) fade over 16rem, layered over the section's own background colour. */
+/* Sections with a fixed palette (.tone-dark / .tone-light) meet the page background (--page)
+   with a short, clean fade (4.5rem = 72px) instead of a hard edge. No glow and no long
+   ramp, so a light/dark change never reads as grey haze. When the page already has the same
+   palette, the gradient is invisible. */
 .blend-t,
 .blend-b,
 .blend-y {
-  --fade: rgb(var(--page)) 0, rgb(var(--page) / 0.82) 2rem, rgb(var(--page) / 0.6) 4.5rem,
-    rgb(var(--page) / 0.36) 7.5rem, rgb(var(--page) / 0.16) 11rem, rgb(var(--page) / 0.04) 15rem,
-    rgb(var(--page) / 0) 18rem;
-}
-/* A faint terracotta glow rides on each seam, so the fade reads as light, not fog. */
-.blend-t,
-.blend-b,
-.blend-y {
-  --seam: rgb(226 87 43 / 0.14);
+  --fade: rgb(var(--page)) 0, rgb(var(--page) / 0.4) 1.25rem, rgb(var(--page) / 0.1) 2.75rem, rgb(var(--page) / 0) 4.5rem;
 }
 .blend-t {
-  background-image:
-    radial-gradient(60% 9rem at 50% 0, var(--seam), transparent), linear-gradient(to bottom, var(--fade));
+  background-image: linear-gradient(to bottom, var(--fade));
 }
 .blend-b {
-  background-image:
-    radial-gradient(60% 9rem at 50% 100%, var(--seam), transparent), linear-gradient(to top, var(--fade));
+  background-image: linear-gradient(to top, var(--fade));
 }
 .blend-y {
-  background-image:
-    radial-gradient(60% 9rem at 50% 0, var(--seam), transparent),
-    radial-gradient(60% 9rem at 50% 100%, var(--seam), transparent), linear-gradient(to bottom, var(--fade)),
-    linear-gradient(to top, var(--fade));
+  background-image: linear-gradient(to bottom, var(--fade)), linear-gradient(to top, var(--fade));
+}
+/* Filter bars that stick while their list scrolls (md and up): always just below the
+   floating nav pill (header top padding + its 3.5rem height), never under it. */
+html {
+  --nav-h: 4.5rem;
+}
+@media (min-width: 768px) {
+  .sticky-bar {
+    position: sticky;
+    top: calc(var(--nav-h) + 12px);
+    z-index: 30;
+  }
 }
 /* Slow glow fields behind glass. Radial gradients (no blur filter), moved with transforms. */
 .glow-field {
