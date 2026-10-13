@@ -167,5 +167,16 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 - Placement: below the custom cursor (z 40 vs 90), inside the safe area; on phones hidden over the first screen and while scrolling down; it steps aside whenever the contact form's Send button (`data-guide-avoid`) is on screen
 - Also fixed: inside any modal dialog (course details, menu, lightbox, guide) the custom cursor was drawn under the top layer and the system cursor was hidden; the system cursor now returns while a modal is open
 
-## Final checks ⬜
-- `npm run build` (SSG), reduced motion, keyboard, Lighthouse mobile
+## Pre-launch check ✅ (13 Oct 2026)
+- Must-fixes: research guide panel sits below the header (header usable while open), Esc and outside click close it, compact icon on phones, no button on /contact; gallery without the two screen-capture photos (science-week-panel-a and -c); timetable hidden behind `timetableLive = false` ("coming soon"); contact email wraps only at "@"/"."
+- Content: FR translations for all English-only descriptive text (`src/i18n/content-fr.ts`); no TODO/sample/placeholder/lorem visible; only Aziz's own addresses on the site
+- Links: 62 external links checked; all resolve except bot-blocking (LinkedIn 999, Scopus/T&F/SSRN 403, Facebook 400) and the lock-marked SharePoint links (UM6P login). CV downloads (552 KB)
+- SEO: unique title + description per page, canonical https://www.mimoudi.com (the live domain redirects mimoudi.com → www), OG/Twitter image, JSON-LD Person, sitemap with the 7 routes, robots.txt, 404 noindex; pre-rendered HTML holds the page text (EN; FR switches client-side)
+- Lighthouse 12.8 (mobile, local preview): Accessibility 100 everywhere, Best Practices 100, SEO 100. Performance (varies ±10 between runs): Contact ~90, Talks ~84, Research ~78, Publications ~77, Teaching ~64–74, Home ~68, About ~60–63. Real throttled loads paint in < 0.7 s with LCP 0.8–2.2 s; the lab score is held back by main-thread style/layout of the long, effect-rich pages
+- Accessibility: keyboard pass on every page (visible focus at every stop, menu/dialogs/flip cards/filters/rows/cities by keyboard), reduced motion, axe WCAG 2 AA with no violations in dark and light
+- Mobile 360/390/768: no horizontal scroll; tap targets ≥ 44 px on touch screens
+- Contact form: honeypot, cooldown, success and error states verified (EmailJS stubbed)
+- Clean-up: no unused dependencies or files, build without warnings, README updated (content, FR, gallery, images, timetable flag, research guide, deploy, rollback)
+
+## Production deploy ⬜
+- Vercel project eleanornooos-projects/my-project, deploys `main` of github.com/eleanornooo/portfolio-01 (live = commit f97260e)

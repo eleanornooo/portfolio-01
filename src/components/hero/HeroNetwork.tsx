@@ -4,6 +4,7 @@ import { nodeText, type GraphNode } from '../../lib/graph';
 import { useLang } from '../../i18n/useLang';
 import { firstInteraction, isLiteDevice, prefersReducedMotion, whenIdle } from '../../lib/motion';
 import type { NetworkRenderer } from './palette';
+import { NetworkSim } from './network-sim';
 
 /** Network radius relative to the stage width. Mirrors .hero-poster in index.css. */
 const RADIUS = 0.5;
@@ -53,8 +54,8 @@ export default function HeroNetwork({
 
     const start = async () => {
       const lite = isLiteDevice() || !webglAvailable();
-      const [{ NetworkSim }, { readPalette }, mod] = await Promise.all([
-        import('./network-sim'),
+      // network-sim is already in the page bundle (the poster uses it), so it is imported statically.
+      const [{ readPalette }, mod] = await Promise.all([
         import('./palette'),
         lite ? import('./render-2d') : import('./render-three'),
       ]);

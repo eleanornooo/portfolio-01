@@ -17,7 +17,12 @@ npm run dev        # http://localhost:5173  (live reload)
 npm run build      # type-check, pre-render all pages to dist/, write sitemap.xml
 npm run preview    # serve dist/ at http://localhost:4173
 npm run lint
+npm run images     # after changing a photo in assets-src/ (see "Images")
+npm run images:hero  # after changing a cut-out portrait (Home hero / About)
 ```
+
+Add `?noscroll` to any URL (e.g. `/about?noscroll`) to turn off smooth scrolling, for automated
+checks.
 
 Node 20 or newer is required.
 
@@ -40,6 +45,9 @@ src/content/      ← all the text of the site (edit these files)
   beyond.ts         "Beyond academia"
   types.ts          the TypeScript types for all of the above
 src/i18n/strings.ts ← interface text in English and French
+src/i18n/content-fr.ts ← French for content text written only in English (roles, course
+                      descriptions, positions…), keyed by the English text
+src/lib/gallery.ts   ← the About "In the field" photo gallery (photos, captions, columns)
 src/pages/          one file per page (they only render the content files)
 src/timetable/      timetable component, time-zone logic, CSV parser, .ics export
 public/             static files (images, favicons, robots.txt, CV PDF)
@@ -60,7 +68,14 @@ Anything dated in the future is labelled **Upcoming** automatically and the labe
 the date has passed (no need to edit it again).
 
 Links that need a UM6P login (SharePoint / OneDrive) should be marked `restricted: true`; they are
-shown as small secondary links with a lock icon.
+shown with a small lock icon (the explanation is a tooltip).
+
+**French.** Text that is localized in the content file (`{ en: '…', fr: '…' }`) is shown in the
+right language directly. Fields written only in English (a project role, a course description, a
+position…) are translated through `src/i18n/content-fr.ts`: add a line
+`'English text': 'Texte français',`. If you change the English text in `src/content/`, change the
+key there too; a missing entry simply shows the English. Titles of publications, talks and events
+and proper names stay in their original language on purpose.
 
 ### Add a publication — `src/content/publications.ts`
 
@@ -178,6 +193,10 @@ end date, weekly sessions and exceptions (holidays or cancellations):
 },
 ```
 
+**Turning the timetable on.** While `timetableLive` (at the top of `src/content/timetable.ts`) is
+`false`, the Teaching page shows "Timetable for the current semester — coming soon" and nothing
+else. Once the real schedule is in, remove `sample: true` and set `timetableLive = true`.
+
 If several semesters are listed, a semester switcher appears; the current semester (or the next
 one) is selected automatically. With no sessions at all, the page shows "Timetable for the next
 semester coming soon". Remove `sample: true` once the data is real — it shows a "sample schedule"
@@ -243,6 +262,8 @@ for production.
 | `VITE_EMAILJS_TEMPLATE_ID` | `template_ivo607f` | EmailJS template |
 | `VITE_EMAILJS_PUBLIC_KEY` | `pd47JUs1ZBhhOIIan` | EmailJS public key (public by design) |
 | `VITE_TIMETABLE_SHEET_CSV` | — | Published Google Sheet CSV for the timetable |
+| `VITE_ASSISTANT_LLM` | `off` | `on` lets an LLM write the research guide's answers (see below) |
+| `VITE_ASSISTANT_ENDPOINT` | — | Your serverless function for that LLM (it holds the API key) |
 
 `VITE_` variables are embedded in the public JavaScript; never put a secret in them.
 
@@ -261,12 +282,42 @@ In the [EmailJS dashboard](https://dashboard.emailjs.com/):
    `https://mimoudi.com` (and `http://localhost:5173` while testing), so the public key cannot be
    reused from other sites.
 
+## Research guide ("Ask about the research")
+
+The floating button (and Ctrl/⌘+K) opens a panel that answers from the site's own content: a
+fuzzy search (fuse.js) over publications, projects, talks, courses and the bio, in
+`src/lib/guide/engine.ts` (synonyms and stop words are there; the suggestion chips are in
+`src/i18n/strings.ts`). Nothing leaves the browser. To let an LLM write the answers later, deploy
+a serverless function that receives `POST { question, lang, context }` and returns
+`{ answer }`, then set `VITE_ASSISTANT_LLM=on` and `VITE_ASSISTANT_ENDPOINT` in Vercel and
+redeploy (`src/lib/guide/provider.ts`). Never put an API key in a `VITE_` variable.
+
 ## Images
 
 Originals live in `assets-src/` (not deployed). After replacing one, run `npm run images` to
-regenerate the WebP files in `public/img/` (portrait in three widths, grayscale institution logos)
-and the monogram favicons. The share image `public/og-image.jpg` is designed in
-`scripts/og-image.html` (render it at 1200×630 in a browser and export as JPEG).
+regenerate the WebP files in `public/img/` (event photos in 640 and 1200 px, portrait crops,
+grayscale institution logos) and the monogram favicons. The share image `public/og-image.jpg` is
+designed in `scripts/og-image.html` (render it at 1200×630 in a browser and export as JPEG).
+
+### Gallery photos (About → "In the field")
+
+1. Put the original in `assets-src/events/` with a lowercase, no-space name
+   (e.g. `rabat-keynote-2024.jpg`; JPG or PNG, at least 1200 px wide, any proportions).
+2. Run `npm run images` → `public/img/events/<name>-640.webp` and `-1200.webp`.
+3. In `src/lib/photos.ts`, add an entry: `id` (the file name without extension), `w: 640`,
+   `h` = 640 × height ÷ width of the photo, and `alt` in English and French.
+4. In `src/lib/gallery.ts`, add or change an item in `fieldPhotos` (`photo`, `event` EN/FR,
+   `place`, `year`) and, if needed, its column in `fieldColumns`.
+
+Photos in `lib/photos.ts` are also used elsewhere (Journey, Highlights, Talks, Teaching): to change
+only the gallery, add a new photo rather than overwriting an existing file.
+
+### Cut-out portraits
+
+`npm run images:hero` turns `public/hero/aziz-cutout.png` (Home hero) into
+`public/img/hero/aziz-cutout-{480,760,1100}.webp`, and the pre-faded About portrait
+`public/about/aziz-about-cutout.webp` into 760/1100 px WebP plus a PNG fallback. The large source
+PNGs are git-ignored and removed from the build.
 
 ## CV PDF
 
@@ -278,31 +329,41 @@ home address, personal phone). See `docs/CV-PDF.md`.
 
 ## Deploying on Vercel
 
-The repository is ready for Vercel (`vercel.json`):
+Production is the Vercel project **eleanornooos-projects/my-project**, connected to the GitHub
+repository **eleanornooo/portfolio-01**: every push to `main` deploys to production
+(www.mimoudi.com), and every other branch gets a preview URL. `vercel.json`:
 
 - Framework preset **Vite**, build command `npm run build`, output directory `dist`.
 - `cleanUrls` serves `about.html` at `/about`; unknown URLs get `404.html`.
 - Old URLs redirect permanently: `/skills` and `/projects` → `/research`, `/courses` → `/teaching`,
   `/timetable` → `/teaching#timetable`.
-- Hashed assets in `/assets/` are cached for a year.
+- Hashed assets in `/assets/` are cached for a year; images for a week.
+- Domains: `www.mimoudi.com` is primary and `mimoudi.com` redirects to it (canonical URLs and the
+  sitemap use `https://www.mimoudi.com`).
 
-Steps:
+To publish a change: commit on a branch, push it, check the preview URL Vercel posts, then merge
+into `main` and push.
 
-1. Push the `redesign-2026` branch to the GitHub repository connected to Vercel. Note: the local
-   `origin` remote still points to the original template (`eleanornooo/portfolio-01`); point it to
-   your own repository first: `git remote set-url origin https://github.com/<you>/<repo>.git`.
-2. Vercel builds a **preview deployment** for the branch — review it with Aziz.
-3. Add the environment variables above if needed (Settings → Environment Variables).
-4. Merge into `main` to deploy to production. Domains: `www.mimoudi.com` as primary, with
-   `mimoudi.com` redirecting to it (the canonical URLs and sitemap use `https://www.mimoudi.com`).
-5. After the first production deploy, submit `https://www.mimoudi.com/sitemap.xml` in Google Search
-   Console and check the site with [PageSpeed Insights](https://pagespeed.web.dev/).
+After a production deploy: submit `https://www.mimoudi.com/sitemap.xml` in Google Search Console
+and check the site with [PageSpeed Insights](https://pagespeed.web.dev/).
+
+### Rolling back
+
+- **Fastest:** Vercel dashboard → project → **Deployments** → the previous Production deployment
+  → **⋯ → Instant Rollback** (or "Promote to Production"). The site switches back in seconds;
+  nothing in Git changes. Later pushes to `main` deploy again as usual.
+- **In Git:** the last version of the old site is tagged `pre-redesign-2026`. Revert the merge
+  commit (`git revert -m 1 <merge-commit>`, then push `main`), which keeps the history; or, to
+  reset `main` to the old site: `git checkout main && git reset --hard pre-redesign-2026 &&
+  git push --force-with-lease`.
 
 ## Accessibility and quality notes
 
 - Landmarks, a skip link, visible focus, keyboard-operable filters, tabs and dialogs (native
   `<dialog>`: focus stays inside, Esc closes, focus returns to the trigger).
-- Colours meet WCAG AA in light and dark themes; motion is limited to a short fade on scroll and is
-  disabled with `prefers-reduced-motion`.
+- Colours meet WCAG AA in light and dark themes (checked with axe on every page); every animation
+  has a `prefers-reduced-motion` fallback; tap targets are at least 44 px on touch screens.
+- Heavy extras start only when needed: GSAP and smooth scrolling on the first interaction, the
+  research map on tablet and up, the phone hero network on the first touch or scroll.
 - Language (EN/FR) and theme choices are stored in `localStorage` when available; pages are
   pre-rendered in English and switch after loading.

@@ -36,3 +36,6 @@ CV_Aziz_2026.md
 public/hero/
 # Original About cut-out (≈16 MB, unfaded); the pre-faded WebP and its sizes in public/about are committed
 public/about/aziz-about-cutout.png
+
+# TypeScript build caches
+*.tsbuildinfo
