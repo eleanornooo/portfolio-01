@@ -77,7 +77,11 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
   - Count-ups (Home figures, Publications total, Research budgets): the final value is the `aria-label`; animated digits are `aria-hidden`
   - Sticky filter bars (Publications, Talks, Teaching) use `.sticky-bar`: `top: calc(var(--nav-h) + 12px)`, from tablet up, so they always sit below the nav pill
   - `?noscroll` in the URL disables Lenis (native scroll) for automated checks; no visible change otherwise
-- B. Home + About ⬜
+- B. Home + About ✅
+  - Highlights 2026: the six strongest tiles first (UNU Macau, Innov'EnsSup'26 keynote, Assistant Professor, Ph.D., QS judge, Quality & Quantity article); "See all highlights (11)" expands the other five with an animated stagger (and collapses them again)
+  - Journey: the year strip now starts right under the intro (top-aligned pin) instead of being centred in a full-height band
+  - About: a classic portrait (UM6P Science Week, `public/img/portrait-*.webp`) instead of the Home cut-out, and a different pull quote: the opening of the bio's last paragraph (twenty years in the classroom), not the research statement used on Home
+  - About experience: numbered chapters (01–08) that light up on scroll, light rows on hairlines, a card look only on the open row; the "Less than a year" duration is gone (just "2026–present")
 - C. Research + Publications ⬜
 - D. Talks ⬜
 - E. Teaching ⬜

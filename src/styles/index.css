@@ -1006,19 +1006,17 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
 }
 
 /* ------------------------------------------------------------------ about */
-/* Experience timeline: dots light up as the scroll reaches them (lit by default). */
-.xp-dot {
+/* Experience chapters: the number lights up as the scroll reaches its row (lit by default). */
+.xp-num {
+  color: rgb(var(--amber));
+  text-shadow: 0 0 24px rgb(245 158 59 / 0.45);
   transition:
-    background-color 0.5s,
-    box-shadow 0.5s,
-    transform 0.5s;
-  background-color: rgb(var(--amber));
-  box-shadow: 0 0 14px 2px rgb(245 158 59 / 0.6);
+    color 0.6s,
+    text-shadow 0.6s;
 }
-.xp-armed .xp-item:not(.is-on) .xp-dot {
-  background-color: rgb(var(--paper));
-  box-shadow: none;
-  transform: scale(0.8);
+.xp-armed .xp-item:not(.is-on) .xp-num {
+  color: rgb(var(--ink) / 0.18);
+  text-shadow: none;
 }
 /* "Show all" lists: rows slide in one after another. */
 .list-in > li {

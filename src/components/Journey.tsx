@@ -107,7 +107,7 @@ export default function Journey({ index }: { index: string }) {
       className="journey tone-dark blend-y relative pb-16 pt-36 md:pb-20 md:pt-44"
     >
       <div className="page">
-        <div className="grid-12 gap-y-6 pb-10 md:pb-6">
+        <div className="grid-12 gap-y-6 pb-10 md:pb-0">
           <p className="eyebrow num col-span-4 md:col-span-3 md:pt-4">
             <span className="text-amber" aria-hidden="true">
               {index} ·{' '}
@@ -131,7 +131,7 @@ export default function Journey({ index }: { index: string }) {
         </div>
       </div>
 
-      <div ref={pin} className="journey-pin relative md:flex md:h-[100svh] md:flex-col md:justify-center">
+      <div ref={pin} className="journey-pin relative md:flex md:h-[100svh] md:flex-col md:justify-start md:pt-24">
         {/* phone timeline rail */}
         <span aria-hidden="true" className="absolute bottom-0 left-[calc(1.25rem+3px)] top-0 w-px bg-rule sm:left-[calc(2rem+3px)] md:hidden">
           <span className="journey-progress-v absolute inset-0 origin-top bg-amber shadow-[0_0_12px_rgb(245_158_59/0.8)]" />

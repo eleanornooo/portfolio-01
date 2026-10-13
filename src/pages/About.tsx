@@ -8,7 +8,6 @@ import { awards } from '../content/awards';
 import { students } from '../content/students';
 import { beyondAcademia } from '../content/beyond';
 import { useLang } from '../i18n/useLang';
-import { useNow } from '../hooks/useNow';
 import { doiUrl } from '../lib/apa';
 import { useReveals } from '../lib/reveal';
 import { useSpotlight } from '../lib/spotlight';
@@ -19,7 +18,10 @@ import Heading from '../components/SectionHeading';
 import ExperienceTimeline from '../components/about/ExperienceTimeline';
 import Showcase, { type Entry } from '../components/about/Showcase';
 import Logo from '../components/about/Logo';
-import { CUTOUT_SIZES, CUTOUT_SRC, CUTOUT_SRCSET } from '../components/hero/Hero';
+
+/** A classic portrait (not the Home hero cut-out). */
+const PORTRAIT = '/img/portrait-560.webp';
+const PORTRAIT_SRCSET = '/img/portrait-400.webp 400w, /img/portrait-560.webp 560w, /img/portrait-736.webp 736w';
 
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 
@@ -34,12 +36,15 @@ const BEYOND_ICONS: LucideIcon[] = [Medal, Users, Vote, Compass];
 
 export function Component() {
   const { t, pick, lang } = useLang();
-  const now = useNow();
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);
   useSpotlight(root);
 
   const [lead, ...rest] = profile.bio[lang];
+  // Pull quote: the opening of the bio's last paragraph (twenty years in the classroom), not
+  // the research statement used on Home.
+  const lastPara = profile.bio[lang][profile.bio[lang].length - 1];
+  const pull = lastPara.slice(0, lastPara.indexOf(')') + 1);
   const main = degrees.filter((d) => !d.minor);
   const minor = degrees.filter((d) => d.minor);
   const [phd, ...others] = main;
@@ -96,35 +101,35 @@ export function Component() {
                 {t.about.title}
               </span>
             </h1>
-            <blockquote className="kin-fade relative mt-16 md:mt-10" style={delay(420)}>
+            <figure className="kin-fade relative mt-16 md:mt-10" style={delay(420)}>
               <span
                 aria-hidden="true"
                 className="text-glow absolute -left-2 -top-10 font-serif text-[6rem] leading-none md:-left-10 md:-top-8"
               >
                 “
               </span>
-              <p className="max-w-[26ch] font-serif text-[clamp(1.5rem,1rem+1.7vw,2.5rem)] font-light italic leading-[1.22] tracking-[-0.01em]">
-                {pick(profile.statement)}
-              </p>
-              <footer className="mt-6 text-sm text-ink3">
-                — {profile.honorific} {profile.name}, {profile.postnominal}
-              </footer>
-            </blockquote>
+              <blockquote>
+                <p className="max-w-[26ch] font-serif text-[clamp(1.5rem,1rem+1.7vw,2.5rem)] font-light italic leading-[1.22] tracking-[-0.01em]">
+                  {pull}…
+                </p>
+              </blockquote>
+            </figure>
           </div>
-          <div className="relative md:col-span-5 md:self-end">
-            <div aria-hidden="true" className="hero-rim absolute inset-x-[-10%] top-[5%] h-[70%]" />
+          <figure className="kin-rise relative mb-10 md:col-span-5 md:mb-24 md:self-end" style={delay(200)}>
+            <div aria-hidden="true" className="hero-rim absolute inset-x-[-12%] top-[-6%] h-[80%]" />
             <img
-              src={CUTOUT_SRC}
-              srcSet={CUTOUT_SRCSET}
-              sizes={CUTOUT_SIZES}
-              width={1100}
-              height={1332}
-              alt={t.home.portraitAlt}
+              src={PORTRAIT}
+              srcSet={PORTRAIT_SRCSET}
+              sizes="(min-width: 768px) 36vw, 90vw"
+              width={560}
+              height={700}
+              alt={t.about.portraitAlt}
               decoding="async"
               {...{ fetchpriority: 'high' }}
-              className="hero-portrait-img relative mx-auto h-auto max-h-[48svh] w-auto md:max-h-[78svh]"
+              className="relative mx-auto aspect-[4/5] max-h-[56svh] w-auto rotate-[1.5deg] rounded-[2rem] object-cover shadow-[0_60px_100px_-40px_rgb(0_0_0/0.95),0_0_0_1px_rgb(255_255_255/0.1)] md:max-h-[68svh]"
             />
-          </div>
+            <figcaption className="relative mt-4 text-center text-sm text-ink3">{t.home.portraitCaption}</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -167,7 +172,7 @@ export function Component() {
       {/* --------------------------------------------------------- experience */}
       <section id="experience" aria-labelledby="experience-title" className="page pb-24 md:pb-32">
         <Heading id="experience" index="01" label={t.about.experience} lines={[t.about.experience]} intro={t.about.timelineHint} />
-        <ExperienceTimeline positions={positions} now={now} />
+        <ExperienceTimeline positions={positions} />
 
         <h3 className="eyebrow mb-5 mt-16 font-sans md:ml-[calc(8.5rem+2.5rem)]">{t.about.affiliations}</h3>
         <ul data-reveal="stagger" className="grid gap-3 sm:grid-cols-2 md:ml-[calc(8.5rem+2.5rem)]">

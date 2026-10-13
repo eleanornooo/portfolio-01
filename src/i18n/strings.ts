@@ -55,6 +55,8 @@ export const strings = {
       metricsSource: (src: string, when: string) => `Citations and h-index: ${src}, ${when}.`,
       highlights: 'Highlights',
       highlightsTitle: (y: number) => `${y} so far`,
+      allHighlights: (n: number) => `See all highlights (${n})`,
+      fewerHighlights: 'Show fewer highlights',
       selected: 'Selected publications',
       selectedTitle: 'Recent writing',
       allPublications: 'All publications',
@@ -232,6 +234,7 @@ export const strings = {
       duration: (n: number) => (n < 1 ? 'Less than a year' : `${n} year${n > 1 ? 's' : ''}`),
       timelineHint: 'Select a role to see the details.',
       bio: 'Biography',
+      portraitAlt: 'Aziz Mimoudi speaking into a microphone at a press table, UM6P Science Week',
       place: 'Place',
     },
     contact: {
@@ -357,6 +360,8 @@ export const strings = {
       metricsSource: (src: string, when: string) => `Citations et indice h : ${src}, ${when}.`,
       highlights: 'Faits marquants',
       highlightsTitle: (y: number) => `${y}, jusqu’ici`,
+      allHighlights: (n: number) => `Voir tous les faits marquants (${n})`,
+      fewerHighlights: 'Afficher moins de faits marquants',
       selected: 'Publications choisies',
       selectedTitle: 'Écrits récents',
       allPublications: 'Toutes les publications',
@@ -534,6 +539,7 @@ export const strings = {
       duration: (n: number) => (n < 1 ? 'Moins d’un an' : `${n} an${n > 1 ? 's' : ''}`),
       timelineHint: 'Sélectionnez un poste pour en voir le détail.',
       bio: 'Biographie',
+      portraitAlt: 'Aziz Mimoudi au micro à une table de presse, UM6P Science Week',
       place: 'Lieu',
     },
     contact: {
