@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { CalendarPlus, Printer } from 'lucide-react';
-import { semesters as localSemesters } from '../content/timetable';
+import { semesters as localSemesters, timetableLive } from '../content/timetable';
 import type { Semester, Session, SessionType, Weekday } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { useMounted, useNow } from '../hooks/useNow';
@@ -97,7 +97,16 @@ function useSemesters() {
   return state;
 }
 
+/** The timetable, or a "coming soon" state while `timetableLive` is false (content/timetable.ts). */
 export default function Timetable() {
+  const { t } = useLang();
+  if (!timetableLive) {
+    return <p className="py-14 text-center font-serif text-[1.375rem] font-light text-ink2 md:py-20">{t.timetable.comingSoon}</p>;
+  }
+  return <LiveTimetable />;
+}
+
+function LiveTimetable() {
   const { t, lang } = useLang();
   const now = useNow(30_000);
   const mounted = useMounted();

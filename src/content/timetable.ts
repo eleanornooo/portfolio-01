@@ -7,6 +7,13 @@ import type { Semester } from './types';
 //
 // Alternatively set VITE_TIMETABLE_SHEET_CSV to a Google Sheet published as CSV
 // (see README → "Timetable from a Google Sheet"); this file is then only the fallback.
+/**
+ * Show the weekly timetable on the site. While false, the Teaching page shows
+ * "Timetable for the current semester — coming soon" (the data below stays, unused).
+ * Set to true once the real schedule is in (and `sample: true` is removed).
+ */
+export const timetableLive = false;
+
 export const semesters: Semester[] = [
   {
     id: 'fall-2026',

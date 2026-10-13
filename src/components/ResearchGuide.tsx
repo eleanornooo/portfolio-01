@@ -3,25 +3,25 @@ import { Link, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Download, Search, Sparkles, X } from 'lucide-react';
 import { useLang } from '../i18n/useLang';
 import { prefersReducedMotion } from '../lib/motion';
-import { lockScroll } from '../lib/smooth';
 import { ask } from '../lib/guide/provider';
 import type { GuideAnswer } from '../lib/guide/types';
 
 const isMac = () => typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 
 /**
- * "Ask about the research": a floating button (bottom-right, clear of the page content) and
- * Ctrl/⌘+K open a slide-in glass panel. Questions are answered from the site's own content
- * (fuzzy search, see lib/guide), with a typed-out answer and 2–4 linked results. Built on the
- * native modal <dialog>: the page is inert behind it, Tab stays inside, Esc closes, focus
- * returns. Reduced motion: no slide, no typing. On phones the button stays off the first
- * screen and tucks away while you scroll down, and it steps aside whenever an element marked [data-guide-avoid] (the contact
- * form's send button) is on screen.
+ * "Ask about the research": a floating button (bottom-right; a compact icon on phones; not
+ * shown on /contact, where the form is) and Ctrl/⌘+K open a glass panel. Questions are
+ * answered from the site's own content (fuzzy search, see lib/guide), with a typed-out
+ * answer and 2–4 linked results. The panel is a non-modal <dialog> that sits below the
+ * header, so the header (language, theme, nav) stays usable while it is open. Esc or a
+ * click outside closes it; Tab cycles inside it; focus returns to the button.
+ * Reduced motion: no slide, no typing.
  */
 export default function ResearchGuide() {
   const { t, lang } = useLang();
   const { pathname } = useLocation();
   const ref = useRef<HTMLDialogElement>(null);
+  const fab = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
@@ -29,81 +29,62 @@ export default function ResearchGuide() {
   const [busy, setBusy] = useState(false);
   const [answer, setAnswer] = useState<GuideAnswer | null>(null);
   const [typed, setTyped] = useState('');
-  const [tucked, setTucked] = useState(false);
   const [mac, setMac] = useState(false);
   const titleId = useId();
   const inputId = useId();
   const asked = useRef(0);
+  const onContact = pathname.replace(/\/$/, '') === '/contact';
 
   const show = useCallback(() => {
     const d = ref.current;
     if (!d || d.open) return;
     opener.current = document.activeElement as HTMLElement | null;
-    d.showModal();
-    lockScroll(true);
+    d.show();
     setOpen(true);
     requestAnimationFrame(() => input.current?.focus());
   }, []);
-  const hide = useCallback(() => ref.current?.close(), []);
+  const hide = useCallback(() => {
+    const d = ref.current;
+    if (!d?.open) return;
+    // Give focus back only if it was inside the panel (not when the click went elsewhere).
+    const hadFocus = d.contains(document.activeElement);
+    d.close();
+    setOpen(false);
+    if (hadFocus) (opener.current ?? fab.current)?.focus?.();
+  }, []);
 
   useEffect(() => setMac(isMac()), []);
 
-  // Ctrl/⌘+K toggles the guide from anywhere.
+  // Ctrl/⌘+K toggles the guide from anywhere; Esc closes it.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         if (ref.current?.open) hide();
         else show();
+      } else if (e.key === 'Escape' && ref.current?.open) {
+        e.preventDefault();
+        hide();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [show, hide]);
 
+  // A click outside the panel closes it (the header still works: it is above the panel).
   useEffect(() => {
-    const d = ref.current;
-    if (!d) return;
-    const onClose = () => {
-      lockScroll(false);
-      setOpen(false);
-      opener.current?.focus?.();
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (ref.current?.contains(target) || fab.current?.contains(target)) return;
+      hide();
     };
-    d.addEventListener('close', onClose);
-    return () => d.removeEventListener('close', onClose);
-  }, []);
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [open, hide]);
 
-  // Phones: hide the button while scrolling down, bring it back on the way up.
-  // Everywhere: step aside while a [data-guide-avoid] element is visible.
-  useEffect(() => {
-    let last = window.scrollY;
-    let avoid = false;
-    let down = false;
-    const update = () => setTucked(avoid || down);
-    // Phones: hidden over the first screen (the hero's buttons are there) and while scrolling down.
-    const phone = () => window.innerWidth < 768;
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (Math.abs(y - last) > 8 || y < 8) {
-        down = phone() && ((y > last && y > 200) || y < window.innerHeight * 0.75);
-        last = y;
-        update();
-      }
-    };
-    down = phone() && last < window.innerHeight * 0.75;
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    const io = new IntersectionObserver((entries) => {
-      avoid = entries.some((e) => e.isIntersecting);
-      update();
-    });
-    document.querySelectorAll('[data-guide-avoid]').forEach((el) => io.observe(el));
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      io.disconnect();
-      setTucked(false);
-    };
-  }, [pathname]);
+  // Changing page closes the panel.
+  useEffect(() => hide(), [pathname, hide]);
 
   // Typing animation for each new answer (instant with reduced motion).
   useEffect(() => {
@@ -141,31 +122,32 @@ export default function ResearchGuide() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={show}
-        onPointerEnter={prefetch}
-        onFocus={prefetch}
-        aria-haspopup="dialog"
-        aria-keyshortcuts="Control+K Meta+K"
-        className={`guide-fab ${tucked && !open ? 'is-tucked' : ''}`}
-      >
-        <Sparkles size={17} aria-hidden="true" className="shrink-0 text-amber" />
-        <span className="hidden md:inline">{t.guide.button}</span>
-        <span className="sr-only md:hidden">{t.guide.button}</span>
-        <kbd className="num hidden rounded-md border border-ink/15 px-1.5 py-0.5 text-[0.6875rem] text-ink3 md:inline">
-          {mac ? '⌘' : 'Ctrl'} K
-        </kbd>
-      </button>
+      {!onContact && (
+        <button
+          ref={fab}
+          type="button"
+          onClick={() => (open ? hide() : show())}
+          onPointerEnter={prefetch}
+          onFocus={prefetch}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-keyshortcuts="Control+K Meta+K"
+          className="guide-fab"
+        >
+          <Sparkles size={18} aria-hidden="true" className="shrink-0 text-amber" />
+          <span className="hidden md:inline">{t.guide.button}</span>
+          <span className="sr-only md:hidden">{t.guide.button}</span>
+          <kbd className="num hidden rounded-md border border-ink/15 px-1.5 py-0.5 text-[0.6875rem] text-ink3 md:inline">
+            {mac ? '⌘' : 'Ctrl'} K
+          </kbd>
+        </button>
+      )}
 
       <dialog
         ref={ref}
         data-lenis-prevent
         aria-labelledby={titleId}
         className="guide-panel tone-dark"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) hide();
-        }}
         onKeyDown={(e) => {
           if (e.key !== 'Tab' || !ref.current) return;
           const items = [...ref.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled])')];
@@ -181,7 +163,7 @@ export default function ResearchGuide() {
         }}
       >
         <div className="guide-inner flex h-full flex-col">
-          <header className="flex items-start justify-between gap-4 border-b border-ink/10 px-5 pb-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-7">
+          <header className="flex items-start justify-between gap-4 border-b border-ink/10 px-5 pb-4 pt-5 sm:px-7">
             <div>
               {/* The honest label: "Research guide — answers from this site's content". */}
               <h2 id={titleId}>
@@ -219,7 +201,7 @@ export default function ResearchGuide() {
             </div>
           </form>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 sm:px-7">
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-5 sm:px-7">
             <h3 className="eyebrow text-[0.625rem]">{t.guide.suggestions}</h3>
             <ul className="mt-3 flex flex-wrap gap-2">
               {t.guide.chips.map((c) => (

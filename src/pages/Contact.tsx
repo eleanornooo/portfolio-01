@@ -20,6 +20,21 @@ const COOLDOWN_MS = 60_000;
 const MIN_FILL_MS = 3_000; // humans don't fill in a form in under three seconds
 const LAST_SENT_KEY = 'contact:lastSent';
 
+/** An e-mail address that may wrap only before "@" and ".", never mid-word. */
+function Address({ email }: { email: string }) {
+  const parts = email.split(/(?=[@.])/);
+  return (
+    <span className="min-w-0 break-normal">
+      {parts.map((p, i) => (
+        <span key={i}>
+          {i > 0 && <wbr />}
+          {p}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 type Status = 'idle' | 'sending' | 'success' | 'error' | 'cooldown';
 
 function lastSent(): number {
@@ -118,7 +133,7 @@ function ContactForm() {
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div data-guide-avoid className="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
         <Magnetic strength={0.25}>
           <button type="submit" className="btn-glow disabled:cursor-wait disabled:opacity-60" disabled={sending}>
             {sending ? t.contact.sending : t.contact.send}
@@ -164,18 +179,18 @@ export function Component() {
               </p>
               <a
                 href={`mailto:${profile.email.primary}`}
-                className="group inline-flex items-center gap-3 font-display text-[clamp(1.125rem,0.8rem+1.6vw,2.125rem)] [overflow-wrap:anywhere] font-bold tracking-[-0.03em] text-ink transition-colors hover:text-amber"
+                className="group inline-flex items-center gap-3 font-display text-[clamp(1.0625rem,0.7rem+1.25vw,1.75rem)] font-bold tracking-[-0.03em] text-ink transition-colors hover:text-amber"
               >
                 <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber/10 text-amber ring-1 ring-amber/30">
                   <Mail size={18} aria-hidden="true" />
                 </span>
-                {profile.email.primary}
+                <Address email={profile.email.primary} />
               </a>
               {profile.email.secondary && (
                 <p className="mt-4 text-sm text-ink2">
                   {t.contact.emailSecondary}:{' '}
                   <a href={`mailto:${profile.email.secondary}`} className="link-quiet">
-                    {profile.email.secondary}
+                    <Address email={profile.email.secondary} />
                   </a>
                 </p>
               )}

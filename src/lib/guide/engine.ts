@@ -54,7 +54,8 @@ const T = {
   },
 };
 
-const sentences = (s: string) => s.split(/(?<=[.!?])\s/);
+/** Sentences: a break needs a capital after it, so "Ph.D. in Education" stays whole. */
+const sentences = (s: string) => s.split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý])/);
 const firstSentence = (s: string) => sentences(s)[0];
 
 function buildDocs(lang: Lang): Doc[] {
