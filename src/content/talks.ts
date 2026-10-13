@@ -38,7 +38,7 @@ export const talks: Talk[] = [
     type: 'Keynote',
     title: 'Education 5.0 – How AI tools are changing education in Africa',
     event: 'CAES Science Days, UM6P',
-    location: 'Benguerir, Morocco',
+    location: 'Ben Guerir, Morocco',
     note: 'Digital transformation, inclusivity and innovation in higher education.',
     links: [
       {
@@ -77,7 +77,7 @@ export const talks: Talk[] = [
     type: 'Keynote',
     title: 'What should academic research in AI focus on?',
     event: 'Symposium of the Institute of Education Sciences (ISE), Science Week at UM6P',
-    location: 'Benguerir, Morocco',
+    location: 'Ben Guerir, Morocco',
     links: [
       {
         label: 'Programme',
@@ -133,6 +133,8 @@ export const talks: Talk[] = [
     title: 'Impact de l’usage des systèmes tuteurs intelligents en formation à distance',
     event: 'Congrès Cannexus 2023 (CERIC)',
     location: 'Canada',
+    // Cannexus23 was held online (cannexus23virtual).
+    virtual: true,
     links: [{ label: 'Programme', url: 'https://cannexus23virtual.sched.com/speaker/aziz_mimoudi.24fvwg6e' }],
     lang: 'fr',
   },
@@ -172,7 +174,7 @@ export const talks: Talk[] = [
     type: 'Oral',
     title: 'Impact de l’usage de l’intelligence artificielle dans une plateforme de formation à distance',
     event: '1re édition des Rencontres internationales des sciences de l’éducation, UM6P',
-    location: 'Ben Guérir, Morocco',
+    location: 'Ben Guerir, Morocco',
     links: [{ label: 'Video (from 49:40)', url: 'https://m.youtube.com/watch?v=BrEokmVkh60' }],
     lang: 'fr',
   },
@@ -241,6 +243,7 @@ export const talks: Talk[] = [
     id: 'africa-2020-paper',
     date: '2020-10-02',
     endDate: '2020-10-09',
+    dateLabel: { en: '2–3 & 9 October 2020', fr: '2–3 et 9 octobre 2020' },
     type: 'Oral',
     authors: ['Mimoudi, A.', 'Meyer, F.'],
     title: 'La réponse de l’école africaine à la crise de la COVID-19 : place des nouvelles technologies',
@@ -253,7 +256,7 @@ export const talks: Talk[] = [
     id: 'africa-2020-chair',
     date: '2020-10-02',
     endDate: '2020-10-09',
-    dateLabel: 'October 2–3 and 9, 2020',
+    dateLabel: { en: '2–3 & 9 October 2020', fr: '2–3 et 9 octobre 2020' },
     type: 'Chair',
     title: 'STEM Session (Theme 3)',
     event:

@@ -85,7 +85,14 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
 - C. Research + Publications ✅
   - Research map: no more "…": project labels show in full (one line, or two balanced lines), publication titles show in full on hover (wrapped). A label that would cover a bubble on its right moves to the node's left. Themes sit on an arc that avoids the bottom-left, and a title force keeps every node and label out of the title/intro/legend box (`TITLE_ZONE`, measured from 1024×768 to 1920×1080), also while the map drifts live
   - Publications: the type chips are one row that scrolls sideways when it doesn't fit (`FilterChips scroll`, no scrollbar, soft right edge), so "Thesis" no longer wraps alone
-- D. Talks ⬜
+- D. Talks ✅
+  - One source of truth: the poster is now the navigator. Hover/focus a city → a small preview only (photo where one was taken there, "N talks · country", the latest title on one line); the right-hand panel that repeated the talks is gone. Selecting a city filters the list below and scrolls to it, with a "Showing: Rabat ×" chip; the type and city filters combine
+  - Grouped entries (`lib/talk-cities.ts` `talkEntries`): "Recension des écrits…" (Sherbrooke Feb 2021 + Rabat Dec 2020) and "Impact de l'usage de l'intelligence artificielle…" (UM6P Jun 2021 + CRIFPE Apr 2021) are one entry each, "Presented at 2 venues", each venue listed with date, event, place and links; ROC 2021 stays separate. The Oct 2020 Al Akhawayn & UM6P conference is one entry with two roles (Speaker · Session chair — STEM Session). 21 talks → 18 entries; type counts are per entry
+  - Cities: Cannexus 2023 marked virtual in the data and listed under "Online / virtual" (no more "Canada" on the poster); one spelling "Ben Guerir" in the talks and service data; virtual events keep their host city with a small "virtual" tag (Alicante, Ifrane); ICAIR 2024 stays off the poster (no location) but is in the list
+  - Tickets: the stub shows the role ("Keynote speaker", "Panelist") instead of "Admit one"; one centred layout (day / month / year, or month / year); the stub no longer has a big empty band, and titles are a size smaller so tickets are shorter
+  - One date format everywhere (poster, tickets, rows): "25–26 November 2026", "June 2026", "2–3 & 9 October 2020" (FR: "2–3 et 9 octobre 2020"; `dateLabel` is now localized)
+  - "(UM6P login may be required)" is no longer text: links that may need a login show a lock with a tooltip (on hover and keyboard focus; the lock is labelled for screen readers), on every page
+  - Phones: the poster shows the latest date and "+n" per city so names keep their size
 - E. Teaching ⬜
 
 ### Next ⬜

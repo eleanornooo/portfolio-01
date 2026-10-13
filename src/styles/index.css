@@ -572,6 +572,36 @@ html {
     mask-image: none;
   }
 }
+/* Lock on links that may need a UM6P login: the explanation appears as a small tooltip. */
+.lock-tip {
+  position: relative;
+  display: inline-block;
+}
+.lock-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.5rem);
+  translate: -50% 0.25rem;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(var(--ink));
+  color: rgb(var(--paper));
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    translate 0.2s;
+  z-index: 20;
+}
+a:hover .lock-tip::after,
+a:focus-visible .lock-tip::after {
+  opacity: 1;
+  translate: -50% 0;
+}
 /* Slow glow fields behind glass. Radial gradients (no blur filter), moved with transforms. */
 .glow-field {
   position: absolute;

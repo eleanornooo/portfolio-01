@@ -98,8 +98,8 @@ export interface Talk {
   id: string;
   date: PartialDate;
   endDate?: PartialDate;
-  /** Free-text dates when they don't fit a range (e.g. "October 2–3 and 9, 2020"). */
-  dateLabel?: string;
+  /** Dates that don't fit a range, per language (e.g. "2–3 & 9 October 2020"). */
+  dateLabel?: Localized;
   type: TalkType;
   /** Talk title; when absent the event name is used as the heading. */
   title?: string;

@@ -25,7 +25,7 @@ export function Ext({
   );
 }
 
-/** A row of small secondary links; links that need a UM6P login are marked with a lock. */
+/** A row of small secondary links; links that need a UM6P login are marked with a lock (tooltip on hover/focus). */
 export function LinkRow({ links, className = '' }: { links: Link[]; className?: string }) {
   const { t } = useLang();
   if (!links.length) return null;
@@ -34,9 +34,13 @@ export function LinkRow({ links, className = '' }: { links: Link[]; className?: 
       {links.map((l) => (
         <li key={l.url}>
           <Ext href={l.url} className={l.restricted ? 'link-quiet text-ink2' : 'link'}>
-            {l.restricted && <Lock size="0.85em" aria-hidden="true" className="mr-1 inline-block align-[-0.05em]" />}
+            {/* A lock with a tooltip (the text lives in an attribute, so it's not page copy). */}
+            {l.restricted && (
+              <span role="img" aria-label={t.common.loginNeeded} data-tip={t.common.loginNeeded} className="lock-tip mr-1">
+                <Lock size="0.85em" aria-hidden="true" className="inline-block align-[-0.05em]" />
+              </span>
+            )}
             {l.label}
-            {l.restricted && <span className="sr-only"> ({t.common.loginNeeded})</span>}
           </Ext>
         </li>
       ))}

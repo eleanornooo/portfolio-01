@@ -77,7 +77,7 @@ export const service: ServiceGroup[] = [
     items: [
       {
         role: 'Supervisor and session chair',
-        body: 'Symposium of the Institute of Education Sciences (ISE), Science Week at UM6P, Benguerir',
+        body: 'Symposium of the Institute of Education Sciences (ISE), Science Week at UM6P, Ben Guerir',
         period: 'February 2025',
       },
       {
