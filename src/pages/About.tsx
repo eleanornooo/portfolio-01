@@ -18,6 +18,7 @@ import Heading from '../components/SectionHeading';
 import ExperienceTimeline from '../components/about/ExperienceTimeline';
 import Showcase, { type Entry } from '../components/about/Showcase';
 import Logo from '../components/about/Logo';
+import FieldGallery from '../components/about/FieldGallery';
 
 /** The About portrait: its own pre-faded cut-out (not the Home hero's), see scripts/build-hero.mjs. */
 const PORTRAIT_SRCSET = '/about/aziz-about-cutout-760.webp 760w, /about/aziz-about-cutout-1100.webp 1100w, /about/aziz-about-cutout.webp 2048w';
@@ -170,6 +171,12 @@ export function Component() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* ------------------------------------------------------ in the field */}
+      <section id="field" aria-labelledby="field-title" className="page pb-24 md:pb-32">
+        <Heading id="field" label={t.about.gallery} lines={[t.about.gallery]} intro={t.about.galleryIntro} />
+        <FieldGallery />
       </section>
 
       {/* --------------------------------------------------------- experience */}

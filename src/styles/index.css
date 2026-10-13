@@ -1067,6 +1067,15 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
     animation: none;
   }
 }
+/* Lightbox: each photo slides in (reduced motion: it simply appears). */
+.lightbox-in {
+  animation: kin-fade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-in {
+    animation: none;
+  }
+}
 /* Experience chapters: the number lights up as the scroll reaches its row (lit by default). */
 .xp-num {
   color: rgb(var(--amber));

@@ -141,8 +141,12 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 ## 6. Publications & talks ⬜
 - Venue marquee (pauses on hover), row hover (year shift, DOI ↗), framer-motion `layout` on filter, talks timeline drawing in, larger keynotes
 
-## 7. "In the field" gallery ⬜
-- Bento/masonry with photos from `lib/photos.ts`, per-column parallax, a lightbox (keyboard + swipe)
+## 7. "In the field" gallery ✅
+- New About section right after the biography (no other About section changed): `components/about/FieldGallery.tsx`, data in `lib/gallery.ts`
+- Seven real photos already in the assets (Science Week keynote and panels, teaching and a workshop at UM6P, the 2019 instructional-design conference); not used: the Home hero and About cut-outs, the campus and Montréal street photos. Captions: event · place · year, only from the site's data (Science Week = ISE symposium, February 2025, Ben Guerir, per talks.ts and service.ts; 2019 from the banner); the two UM6P teaching photos have no place/year in the data, so none is shown
+- Asymmetric masonry: three columns of unequal width, the middle one set lower; each column drifts at its own speed while scrolling (GSAP scrub; desktop, motion allowed). Phones: two plain columns. WebP 640/1200 with width/height, lazy-loaded
+- Lightbox (`components/about/Lightbox.tsx`, native `<dialog>`): ← / →, Esc, swipe on touch, focus trapped and returned to the photo, "n / 7" announced; reduced motion: no slide-in
+- Note: `science-week-panel-a` has a Windows taskbar strip across its top (it is in the source image)
 
 ## 8. Micro-interactions 🟡
 - ✅ `Magnetic` component (used on the hero CTAs only)
