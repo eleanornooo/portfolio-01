@@ -1,0 +1,1441 @@
+@import '@fontsource-variable/fraunces/wght.css';
+@import '@fontsource-variable/fraunces/wght-italic.css';
+/* Display face for the giant words (weight axis only, ≈41 KB for Latin). */
+@import '@fontsource-variable/bricolage-grotesque/wght.css';
+/* Latin + Latin Extended only (French, Turkish names…); no Cyrillic/Greek/Vietnamese. */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans/latin-400-italic.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+
+/* Font fallbacks: local fonts resized to the web fonts' metrics (measured from the font files),
+   so text keeps its line breaks when the web font swaps in (no layout shift). */
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  size-adjust: 117%;
+  ascent-override: 83.6%;
+  descent-override: 21.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  font-style: italic;
+  src: local('Georgia Italic'), local('Georgia-Italic');
+  size-adjust: 114%;
+  ascent-override: 85.8%;
+  descent-override: 22.4%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bricolage Fallback';
+  src: local('Arial');
+  size-adjust: 112.6%;
+  ascent-override: 82.6%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Plex Fallback';
+  src: local('Arial');
+  size-adjust: 101.7%;
+  ascent-override: 100.7%;
+  descent-override: 27%;
+  line-gap-override: 0%;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ tokens */
+/* Colours are RGB triplets so Tailwind can apply opacity (bg-ink/10 …).
+   Dark is the default theme. Sections can force a palette with .tone-dark / .tone-light,
+   or flip it with .tone-inverse (light sections inside the dark theme, and vice versa). */
+:root,
+.tone-light,
+[data-theme='dark'] .tone-inverse {
+  --paper: 244 240 233;
+  --paper-2: 233 227 217;
+  --ink: 17 18 23;
+  --ink-2: 62 60 58;
+  --ink-3: 96 92 88;
+  --rule: 216 208 195;
+  --accent: 172 62 24; /* terracotta, AA on paper */
+  --accent-vivid: 226 87 43; /* #E2572B, glow and decoration */
+  --amber: 245 158 59; /* #F59E3B, glow and decoration */
+  --amber-ink: 150 78 8; /* amber as text on paper: 5.4:1 (AA) */
+  --glass: 255 255 255;
+  --glass-a: 0.5;
+  --glass-line: 30 22 14;
+  --glass-line-a: 0.1;
+  --glass-hi: 0.7;
+  --shadow-a: 0.18;
+  color-scheme: light;
+}
+
+[data-theme='dark'],
+.tone-dark,
+[data-theme='light'] .tone-inverse {
+  --paper: 10 11 15; /* #0A0B0F */
+  --paper-2: 21 22 28;
+  --ink: 243 238 230;
+  --ink-2: 201 195 186;
+  --ink-3: 152 147 140;
+  --rule: 44 45 53;
+  --accent: 245 158 59; /* amber reads as text on ink (9:1) */
+  --accent-vivid: 226 87 43;
+  --amber: 245 158 59;
+  --amber-ink: 245 158 59;
+  --glass: 255 255 255;
+  --glass-a: 0.045;
+  --glass-line: 255 255 255;
+  --glass-line-a: 0.1;
+  --glass-hi: 0.09;
+  --shadow-a: 0.55;
+  color-scheme: dark;
+}
+
+.tone-light,
+.tone-dark,
+.tone-inverse {
+  background-color: rgb(var(--paper));
+  color: rgb(var(--ink));
+}
+
+/* Timetable session types: fill / line */
+:root {
+  --tt-lecture: 223 228 238;
+  --tt-lecture-line: 52 70 110;
+  --tt-seminar: 244 222 211;
+  --tt-seminar-line: 168 64 31;
+  --tt-office: 220 232 223;
+  --tt-office-line: 63 107 83;
+  --tt-supervision: 242 231 200;
+  --tt-supervision-line: 128 98 16;
+}
+[data-theme='dark'],
+.tone-dark {
+  --tt-lecture: 33 45 72;
+  --tt-lecture-line: 140 163 214;
+  --tt-seminar: 66 36 28;
+  --tt-seminar-line: 238 138 99;
+  --tt-office: 28 52 42;
+  --tt-office-line: 129 186 152;
+  --tt-supervision: 58 48 20;
+  --tt-supervision-line: 222 186 92;
+}
+
+/* -------------------------------------------------------------------- base */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply bg-paper font-sans text-base text-ink antialiased;
+    font-feature-settings: 'kern', 'liga';
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif text-ink;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  ::selection {
+    background: rgb(var(--accent-vivid) / 0.22);
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  /* Film grain over everything (a static tile; no blend mode, so scrolling stays cheap). */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  [data-theme='light'] body::after {
+    opacity: 0.035;
+    filter: invert(1);
+  }
+}
+
+/* -------------------------------------------------------------- components */
+@layer components {
+  .page {
+    @apply mx-auto w-full max-w-page px-5 sm:px-8 lg:px-12;
+  }
+  /* 12-column editorial grid; the margin column holds section labels and dates. */
+  .grid-12 {
+    @apply grid grid-cols-4 gap-x-6 md:grid-cols-12 md:gap-x-8;
+  }
+  .label {
+    @apply font-sans text-label font-medium uppercase text-ink3;
+  }
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .link {
+    @apply text-accent underline decoration-accent/40 underline-offset-[0.2em] transition-colors hover:decoration-accent;
+  }
+  .link-quiet {
+    @apply text-ink underline decoration-rule underline-offset-[0.2em] transition-colors hover:text-accent hover:decoration-accent;
+  }
+  .rule {
+    @apply border-t border-rule;
+  }
+  .prose-measure {
+    @apply max-w-measure;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors;
+  }
+  /* Older names, kept for the timetable and inner pages: same look as .btn-glow / .btn-ghost. */
+  .btn-solid {
+    @apply btn font-semibold;
+    color: #160b05;
+    background: linear-gradient(120deg, #e2572b 0%, #f08a3a 55%, #f59e3b 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 30px -12px rgb(226 87 43 / 0.8);
+  }
+  .btn-solid:hover {
+    filter: brightness(1.06);
+  }
+  .btn-line {
+    @apply btn border border-ink/20 bg-ink/[0.03] text-ink hover:border-amber/70 hover:bg-amber/[0.08];
+  }
+  .btn-small {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1 text-sm text-ink2 transition-colors hover:border-amber/60 hover:text-ink;
+  }
+  .tag {
+    @apply inline-flex items-center rounded-full border border-current px-2 py-px text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.1em];
+  }
+  .field {
+    @apply w-full rounded-2xl border border-ink/15 bg-ink/[0.04] px-4 py-2.5 text-base text-ink transition-colors placeholder:text-ink3 hover:border-ink/30 focus:border-amber focus:outline-none focus:ring-2 focus:ring-amber/30;
+  }
+  .field option {
+    background: rgb(var(--paper));
+    color: rgb(var(--ink));
+  }
+  .chip {
+    @apply rounded-full border border-ink/15 px-3.5 py-1.5 text-sm text-ink2 transition-colors hover:border-ink/40 hover:text-ink aria-pressed:border-amber aria-pressed:bg-amber aria-pressed:text-[#160b05];
+  }
+  /* Small refined UI label with wide tracking. */
+  .eyebrow {
+    @apply font-sans text-eyebrow font-medium uppercase text-ink3;
+  }
+  /* Primary call to action: a terracotta → amber glow. Dark text keeps it AA (5.8:1). */
+  .btn-glow {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold;
+    color: #160b05;
+    background: linear-gradient(120deg, #e2572b 0%, #f08a3a 55%, #f59e3b 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 34px -10px rgb(226 87 43 / 0.85),
+      0 0 60px -18px rgb(245 158 59 / 0.75);
+    transition:
+      box-shadow 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.4s;
+  }
+  .btn-glow:hover {
+    filter: brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      0 14px 44px -10px rgb(226 87 43 / 1),
+      0 0 90px -14px rgb(245 158 59 / 0.9);
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-ink;
+    border: 1px solid rgb(var(--ink) / 0.22);
+    background: rgb(var(--ink) / 0.03);
+    transition:
+      border-color 0.3s,
+      background-color 0.3s,
+      color 0.3s;
+  }
+  .btn-ghost:hover {
+    border-color: rgb(var(--amber) / 0.7);
+    background: rgb(var(--amber) / 0.08);
+  }
+  /* Frosted glass, for layers that float over glow or 3D (not for flat content). */
+  .glass {
+    background: linear-gradient(
+      160deg,
+      rgb(var(--glass) / calc(var(--glass-a) * 1.8)) 0%,
+      rgb(var(--glass) / var(--glass-a)) 60%
+    );
+    border: 1px solid rgb(var(--glass-line) / var(--glass-line-a));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / var(--glass-hi)),
+      0 30px 70px -34px rgb(0 0 0 / var(--shadow-a));
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+  .glass-nav {
+    background: rgb(var(--paper) / 0.72);
+    border: 1px solid rgb(var(--glass-line) / var(--glass-line-a));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / var(--glass-hi)),
+      0 18px 50px -24px rgb(0 0 0 / var(--shadow-a));
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
+  /* Dark card with a glow that follows the cursor (see lib/spotlight.ts). */
+  .card-dark {
+    @apply relative overflow-hidden rounded-3xl;
+    background: linear-gradient(170deg, rgb(var(--ink) / 0.06), rgb(var(--ink) / 0.02));
+    border: 1px solid rgb(var(--ink) / 0.09);
+    transition:
+      border-color 0.4s,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .card-dark:hover {
+    border-color: rgb(var(--amber) / 0.35);
+  }
+  .spot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.4s;
+    background: radial-gradient(
+      26rem circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent-vivid) / 0.2),
+      rgb(var(--amber) / 0.06) 40%,
+      transparent 70%
+    );
+  }
+  .spot:hover::before {
+    opacity: 1;
+  }
+  /* Display type for giant words. */
+  .display {
+    @apply font-display font-extrabold;
+    font-kerning: normal;
+  }
+  /* Amber gradient text. */
+  .text-glow {
+    background: linear-gradient(100deg, #e2572b, #f59e3b 70%, #f7c27a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Bibliography entry: hanging indent like a printed reference list. */
+  .hanging {
+    padding-left: 1.75em;
+    text-indent: -1.75em;
+  }
+}
+
+/* ------------------------------------------------------------ smooth scroll */
+/* Lenis (lib/smooth.ts) sets these classes on <html> while it drives the scroll. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* -------------------------------------------------------------------- hero */
+/* The page background at the root (not the nearest .tone-* scope), for fades between sections. */
+html {
+  --page: var(--paper);
+}
+.hero {
+  height: 100svh;
+  min-height: 40rem;
+  max-height: 70rem;
+}
+/* Bottom fade: the portrait sinks into the dark band that follows (the numbers). */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 9rem;
+  z-index: 25;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(var(--paper) / 0), rgb(var(--paper)));
+}
+.hero-glow {
+  background:
+    radial-gradient(42% 46% at 50% 56%, rgb(226 87 43 / 0.34), transparent 72%),
+    radial-gradient(30% 32% at 58% 34%, rgb(245 158 59 / 0.2), transparent 70%),
+    radial-gradient(38% 40% at 8% 92%, rgb(226 87 43 / 0.16), transparent 70%),
+    radial-gradient(30% 30% at 94% 8%, rgb(245 158 59 / 0.08), transparent 70%);
+  animation: glow-breathe 10s ease-in-out infinite alternate;
+}
+@keyframes glow-breathe {
+  to {
+    opacity: 0.72;
+    transform: scale(1.07);
+  }
+}
+
+/* Mouse parallax: --px / --py (−1 … 1) are set on .hero by HeroNetwork; the CSS `translate`
+   property composes with the GSAP scroll transforms. */
+.hero-depth {
+  translate: calc(var(--px, 0) * var(--depth, 0) * 1px) calc(var(--py, 0) * var(--depth, 0) * 0.6px);
+  transition: translate 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* The giant word: solid at the top, fading out toward the bottom. */
+.hero-word-in {
+  animation: word-in 1.5s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.1s;
+}
+@keyframes word-in {
+  from {
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(18%);
+  }
+  to {
+    clip-path: inset(-20% 0 -20% 0);
+  }
+}
+.hero-word text,
+.hero-word-outline text {
+  font-family: 'Bricolage Grotesque Variable', 'Bricolage Fallback', 'Arial Narrow', system-ui, sans-serif;
+  font-weight: 800;
+}
+.hero-word-outline text {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.13);
+  stroke-width: 1.1;
+}
+
+/* Cut-out portrait: painted at once (it is the LCP), rises into place without fading. */
+.hero-portrait-img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 99%);
+  animation: portrait-in 1.7s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
+}
+@keyframes portrait-in {
+  from {
+    transform: translateY(6%) scale(1.035);
+  }
+}
+.hero-rim {
+  background: radial-gradient(closest-side, rgb(245 158 59 / 0.38), rgb(226 87 43 / 0.16) 55%, transparent);
+}
+
+/* Network canvas: SVG stand-ins until it has drawn its first frame. */
+.hero-canvas {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.hero[data-live] .hero-canvas {
+  opacity: 1;
+}
+.hero-poster {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 162%; /* 2 × 1.62 × 0.5 — the network radius is half the anchor */
+  max-width: none;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.6s ease;
+}
+.hero-poster-final {
+  display: none;
+}
+.hero[data-live] .hero-poster {
+  opacity: 0;
+}
+
+/* Page titles: each line rises from behind its own edge (CSS, so it plays on first paint). */
+.kin-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.kin-line > span {
+  display: block;
+  animation: kin-rise 1.1s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes kin-rise {
+  from {
+    transform: translateY(110%) rotate(1.5deg);
+  }
+}
+
+/* Entrance for the small text: pure CSS so it starts with the first paint. */
+.kin-fade {
+  animation: kin-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+.kin-rise {
+  animation: kin-rise-card 1.2s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes kin-fade {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes kin-rise-card {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.97);
+  }
+}
+
+.cue-track {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 2.5rem;
+  overflow: hidden;
+  background: rgb(var(--ink) / 0.2);
+}
+.cue-track > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 40%;
+  background: rgb(var(--amber));
+  animation: cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite 1.6s;
+  transform: translateY(-100%);
+}
+@keyframes cue {
+  to {
+    transform: translateY(260%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow,
+  .hero-word-in,
+  .hero-portrait-img,
+  .kin-line > span,
+  .kin-fade,
+  .kin-rise,
+  .cue-track > span {
+    animation: none;
+  }
+  .hero-depth {
+    translate: none;
+  }
+  .hero-poster-star {
+    display: none;
+  }
+  .hero-poster-final {
+    display: block;
+  }
+}
+
+/* -------------------------------------------------- section rhythm & blends */
+/* Sections with a fixed palette (.tone-dark / .tone-light) meet the page background (--page)
+   with a short, clean fade (4.5rem = 72px) instead of a hard edge. No glow and no long
+   ramp, so a light/dark change never reads as grey haze. When the page already has the same
+   palette, the gradient is invisible. */
+.blend-t,
+.blend-b,
+.blend-y {
+  --fade: rgb(var(--page)) 0, rgb(var(--page) / 0.4) 1.25rem, rgb(var(--page) / 0.1) 2.75rem, rgb(var(--page) / 0) 4.5rem;
+}
+.blend-t {
+  background-image: linear-gradient(to bottom, var(--fade));
+}
+.blend-b {
+  background-image: linear-gradient(to top, var(--fade));
+}
+.blend-y {
+  background-image: linear-gradient(to bottom, var(--fade)), linear-gradient(to top, var(--fade));
+}
+/* Filter bars that stick while their list scrolls (md and up): always just below the
+   floating nav pill (header top padding + its 3.5rem height), never under it. */
+html {
+  --nav-h: 4.5rem;
+}
+@media (min-width: 768px) {
+  .sticky-bar {
+    position: sticky;
+    top: calc(var(--nav-h) + 12px);
+    z-index: 30;
+  }
+}
+/* A chip row that scrolls sideways on narrow screens: no scrollbar, soft right edge. */
+.chips-scroll {
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+}
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .chips-scroll {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+/* Lock on links that may need a UM6P login: the explanation appears as a small tooltip. */
+.lock-tip {
+  position: relative;
+  display: inline-block;
+}
+.lock-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.5rem);
+  translate: -50% 0.25rem;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(var(--ink));
+  color: rgb(var(--paper));
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    translate 0.2s;
+  z-index: 20;
+}
+a:hover .lock-tip::after,
+a:focus-visible .lock-tip::after {
+  opacity: 1;
+  translate: -50% 0;
+}
+/* Slow glow fields behind glass. Radial gradients (no blur filter), moved with transforms. */
+.glow-field {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(28% 34% at 30% 45%, rgb(226 87 43 / 0.28), transparent 70%),
+    radial-gradient(26% 30% at 70% 55%, rgb(245 158 59 / 0.2), transparent 70%);
+  animation: glow-drift 16s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  0% {
+    transform: translate3d(-6%, -3%, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(6%, 4%, 0) rotate(8deg);
+  }
+}
+.badge-glow {
+  box-shadow:
+    0 0 0 1px rgb(245 158 59 / 0.4),
+    0 0 18px -2px rgb(245 158 59 / 0.75);
+  animation: badge-pulse 2.6s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  50% {
+    box-shadow:
+      0 0 0 1px rgb(245 158 59 / 0.6),
+      0 0 28px 0 rgb(245 158 59 / 0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-field,
+  .badge-glow {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------------- cursor */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor :is(input, textarea, select, [contenteditable]) {
+  cursor: auto !important;
+}
+/* A modal <dialog> sits in the top layer, above the custom cursor: while one is open
+   (html.modal-open, set by lockScroll), the custom cursor hides and the system cursor returns.
+   (A class, not :has(), which would make every DOM change re-check the whole page's styles.) */
+html.has-cursor.modal-open,
+html.has-cursor.modal-open * {
+  cursor: auto !important;
+}
+html.has-cursor.modal-open :is(a, button, label, summary, [role='button']) {
+  cursor: pointer !important;
+}
+html.modal-open :is(.cursor-dot, .cursor-ring) {
+  visibility: hidden;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  pointer-events: none;
+  border-radius: 9999px;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: #fff;
+}
+.cursor-ring {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -1.125rem 0 0 -1.125rem;
+  border: 1px solid #fff;
+  transition:
+    width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    margin 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 0.35s,
+    opacity 0.3s;
+}
+.cursor-ring[data-hover] {
+  width: 4rem;
+  height: 4rem;
+  margin: -2rem 0 0 -2rem;
+  background: #fff;
+}
+.cursor-ring[data-down] {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -0.75rem;
+}
+
+/* --------------------------------------------------------- reveal on scroll */
+/* Armed by <Reveal> only for sections below the fold, and only when motion is allowed. */
+.reveal-armed {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-armed.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* [data-reveal] (lib/reveal.ts): armed below the fold only, never with reduced motion.
+   "mask": each .rv-line slides up from behind its own edge; "up": fade-up;
+   "stagger": the children fade up one after another; "clip": the box opens from its centre. */
+.rv-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.rv-line > span {
+  display: block;
+}
+.rv-armed[data-reveal='mask'] .rv-line > span {
+  transition: transform 1.15s cubic-bezier(0.19, 0.8, 0.22, 1);
+  transition-delay: calc(var(--l, 0) * 90ms);
+}
+.rv-armed[data-reveal='mask']:not(.rv-in) .rv-line > span {
+  transform: translateY(112%) rotate(1.5deg);
+}
+.rv-armed[data-reveal='up'] {
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rv-armed[data-reveal='up']:not(.rv-in) {
+  opacity: 0;
+  transform: translateY(36px);
+}
+.rv-armed[data-reveal='stagger'] > * {
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 1s cubic-bezier(0.19, 0.8, 0.22, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.rv-armed[data-reveal='stagger']:not(.rv-in) > * {
+  opacity: 0;
+  transform: translateY(44px) scale(0.97);
+}
+.rv-armed[data-reveal='clip'] {
+  transition:
+    clip-path 1.3s cubic-bezier(0.19, 0.8, 0.22, 1),
+    opacity 0.6s;
+}
+.rv-armed[data-reveal='clip']:not(.rv-in) {
+  clip-path: inset(14% 10% 14% 10% round 2rem);
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------------- print */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  :root,
+  [data-theme='dark'],
+  .tone-dark,
+  .tone-light,
+  .tone-inverse {
+    --paper: 255 255 255;
+    --paper-2: 255 255 255;
+    --ink: 0 0 0;
+    --ink-2: 40 40 40;
+    --ink-3: 80 80 80;
+    --rule: 190 190 190;
+  }
+  .no-print,
+  header[role='banner'],
+  footer[role='contentinfo'] {
+    display: none !important;
+  }
+  .reveal-armed,
+  .rv-armed,
+  .rv-armed * {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  body::after,
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+  /* Timetable: always print the week grid, never the phone agenda. */
+  .tt-grid {
+    display: block !important;
+    overflow: visible !important;
+  }
+  .tt-agenda {
+    display: none !important;
+  }
+  .tt-grid button {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  a {
+    text-decoration: none;
+  }
+}
+
+/* ---------------------------------------------------------------- journey */
+/* Giant outlined years; the amber fill sweeps in as each one becomes active. */
+.year-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(var(--ink) / 0.35);
+}
+.journey-year-fill {
+  will-change: clip-path;
+}
+@media (min-width: 768px) {
+  /* Without the scroll-driven version (reduced motion), the row scrolls sideways. */
+  .journey-pin {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+  .journey-pin.is-pinned {
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+}
+
+/* ------------------------------------------------------------------ talks */
+/* Tour poster (components/talks/TourPoster.tsx): cities rise in one by one; hovering one
+   fades the others. */
+.poster-city {
+  transition: opacity 0.4s;
+  animation: poster-in 1s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+@keyframes poster-in {
+  from {
+    transform: translateY(45%);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.poster-list {
+  container-type: inline-size;
+}
+.poster-list[data-active] .poster-city:not(.is-active) {
+  opacity: 0.14;
+}
+/* Tickets (components/talks/Ticket.tsx): amber stub, dashed tear line, two notches. */
+.ticket {
+  --seam: 6.5rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  -webkit-mask:
+    radial-gradient(circle 0.75rem at var(--seam) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 0.75rem at var(--seam) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle 0.75rem at var(--seam) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 0.75rem at var(--seam) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+}
+@media (min-width: 640px) {
+  .ticket {
+    --seam: 9rem;
+  }
+}
+.ticket:hover {
+  transform: translateY(-4px) rotate(-0.4deg);
+}
+.ticket-stub {
+  background: linear-gradient(165deg, #e2572b, #f59e3b 85%);
+}
+.ticket-main {
+  background: rgb(255 255 255 / 0.78);
+  border-left: 2px dashed rgb(var(--ink) / 0.2);
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster-city {
+    animation: none;
+  }
+  .ticket:hover {
+    transform: none;
+  }
+}
+
+/* ----------------------------------------------------------- publications */
+/* Venue marquees (components/publications/Marquee.tsx). */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur, 48s) linear infinite;
+}
+.marquee[data-reverse] .marquee-track {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.2px rgb(var(--ink) / 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .marquee-track {
+    animation: none;
+    width: auto;
+    padding-inline: 1rem;
+  }
+  .marquee-row {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+  }
+  .marquee-copy {
+    display: none;
+  }
+}
+/* Typographic index: the row under the cursor stays bright, the others recede. */
+@media (hover: hover) and (pointer: fine) {
+  .pub-index:hover > .pub-row:not(:hover) {
+    opacity: 0.38;
+  }
+  .pub-row {
+    transition: opacity 0.35s;
+  }
+  .pub-row:hover .pub-title {
+    transform: translateX(0.6rem);
+  }
+}
+
+/* --------------------------------------------------------------- research */
+/* Knowledge graph (components/research/ResearchMap.tsx). */
+.rmap-in {
+  animation: rmap-in 1.6s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.1s;
+}
+@keyframes rmap-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+.rmap line {
+  stroke: rgb(245 158 59 / 0.22);
+  stroke-width: 1;
+  transition:
+    stroke 0.4s,
+    opacity 0.4s;
+}
+.rmap line.is-lit {
+  stroke: rgb(245 158 59 / 0.9);
+  stroke-width: 1.5;
+}
+.rmap line.is-dim {
+  opacity: 0.12;
+}
+.rmap-node {
+  cursor: pointer;
+  transition: opacity 0.4s;
+}
+.rmap-node.is-dim {
+  opacity: 0.16;
+}
+.rmap-node circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    fill 0.3s,
+    stroke 0.3s;
+}
+.rmap-theme .rmap-ring {
+  fill: none;
+  stroke: rgb(247 194 122 / 0.7);
+  stroke-width: 1.2;
+}
+.rmap-theme:hover .rmap-core,
+.rmap-theme:hover .rmap-ring {
+  transform: scale(1.07);
+}
+.rmap-theme.is-active .rmap-ring {
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.rmap-theme.is-active .rmap-halo {
+  transform: scale(1.25);
+}
+.rmap-label-theme {
+  fill: rgb(var(--ink));
+  font: 600 15px 'IBM Plex Sans', system-ui, sans-serif;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.85);
+  stroke-width: 5px;
+}
+.rmap-project circle {
+  fill: #e2572b;
+  stroke: rgb(255 255 255 / 0.45);
+  stroke-width: 1;
+}
+.rmap-project:hover circle,
+.rmap-project.is-hover circle {
+  fill: #f59e3b;
+  transform: scale(1.3);
+}
+.rmap-label-project {
+  fill: rgb(var(--ink-2));
+  font: 500 12px 'IBM Plex Sans', system-ui, sans-serif;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.85);
+  stroke-width: 4px;
+}
+.rmap-publication circle {
+  fill: rgb(var(--ink-2));
+}
+.rmap-publication.is-hover circle {
+  fill: #fff;
+  transform: scale(1.6);
+}
+.rmap-label-pub {
+  fill: rgb(var(--ink));
+  font: 500 13px 'IBM Plex Sans', system-ui, sans-serif;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.9);
+  stroke-width: 5px;
+}
+.rmap-label-meta {
+  fill: rgb(var(--amber));
+  font: 500 11px 'IBM Plex Sans', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  paint-order: stroke;
+  stroke: rgb(10 11 15 / 0.9);
+  stroke-width: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rmap-in {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ about */
+/* About opener: the pre-faded cut-out (its edges are already transparent: no mask here)
+   over a warm glow behind the head and shoulders. */
+.about-glow {
+  background:
+    radial-gradient(38% 42% at 50% 34%, rgb(245 158 59 / 0.32), transparent 70%),
+    radial-gradient(55% 55% at 50% 48%, rgb(226 87 43 / 0.24), transparent 72%);
+}
+.about-cutout {
+  animation: portrait-in 1.7s cubic-bezier(0.19, 0.8, 0.22, 1) both 0.15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-cutout {
+    animation: none;
+  }
+}
+/* Lightbox: each photo slides in (reduced motion: it simply appears). */
+.lightbox-in {
+  animation: kin-fade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-in {
+    animation: none;
+  }
+}
+/* Experience chapters: the number lights up as the scroll reaches its row (lit by default). */
+.xp-num {
+  color: rgb(var(--amber-ink));
+  text-shadow: 0 0 24px rgb(245 158 59 / 0.45);
+  transition:
+    color 0.6s,
+    text-shadow 0.6s;
+}
+.xp-armed .xp-item:not(.is-on) .xp-num {
+  /* Dimmed, but still 3:1 against the page (large text). */
+  color: rgb(var(--ink) / 0.42);
+  text-shadow: none;
+}
+/* "Show all" lists: rows slide in one after another. */
+.list-in > li {
+  animation: kin-fade 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 45ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .list-in > li {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------- teaching */
+/* Statement revealed word by word: --p (0–1) is the scroll progress on .ws-stage; each word
+   brightens as the progress passes its index. Bright by default without the variable. */
+.ws-word {
+  opacity: clamp(0.16, calc((var(--p, 1) * (var(--n) + 4) - var(--i)) / 4), 1);
+  transition: opacity 0.25s linear;
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .ws-stage {
+    height: 190svh;
+  }
+  .ws-sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 40rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws-word {
+    opacity: 1;
+  }
+}
+
+/* Course flip cards: front (light card) and back (dark), turned in 3D. */
+.flip {
+  perspective: 1600px;
+}
+.flip-inner {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.flip[data-flipped] .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.75rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.flip-front {
+  border: 1px solid rgb(var(--ink) / 0.1);
+  background:
+    radial-gradient(70% 55% at 85% 0%, rgb(245 158 59 / 0.14), transparent 70%),
+    rgb(255 255 255 / 0.6);
+  box-shadow: 0 30px 60px -40px rgb(120 50 20 / 0.45);
+}
+.flip-back {
+  transform: rotateY(180deg);
+  border: 1px solid rgb(245 158 59 / 0.3);
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgb(226 87 43 / 0.28), transparent 70%),
+    rgb(var(--paper));
+  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner,
+  .flip[data-flipped] .flip-inner {
+    transform: none;
+    transition: none;
+  }
+  .flip-back {
+    transform: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .flip[data-flipped] .flip-back {
+    opacity: 1;
+  }
+}
+
+/* The timetable as a framed app window. */
+.tt-app {
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.015)), rgb(var(--paper));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 60px 120px -50px rgb(0 0 0 / 0.95),
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 0 120px -40px rgb(226 87 43 / 0.35);
+}
+.tt-app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.03);
+}
+/* The live "now" line glows and breathes. */
+.tt-now-line {
+  box-shadow:
+    0 0 10px 1px rgb(245 158 59 / 0.85),
+    0 0 26px 3px rgb(226 87 43 / 0.5);
+}
+.tt-now-dot {
+  box-shadow: 0 0 12px 3px rgb(245 158 59 / 0.9);
+  animation: tt-pulse 2s ease-in-out infinite;
+}
+.tt-now-time {
+  box-shadow: 0 0 14px rgb(245 158 59 / 0.7);
+}
+@keyframes tt-pulse {
+  50% {
+    transform: scale(1.6);
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-now-dot {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------- research guide */
+/* Floating button: bottom-right, inside the safe area, below the custom cursor (z 90).
+   Phones: a compact 48 px icon button; tablets and up: a pill with the label and shortcut. */
+.guide-fab {
+  position: fixed;
+  z-index: 38;
+  right: max(0.875rem, env(safe-area-inset-right, 0px) + 0.75rem);
+  bottom: max(0.875rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  color: rgb(var(--ink));
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgb(var(--paper) / 0.78);
+  border: 1px solid rgb(245 158 59 / 0.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow:
+    0 14px 40px -14px rgb(0 0 0 / 0.6),
+    0 0 30px -10px rgb(245 158 59 / 0.55);
+  transition: border-color 0.3s;
+}
+.guide-fab:hover {
+  border-color: rgb(245 158 59 / 0.8);
+}
+@media (min-width: 768px) {
+  .guide-fab {
+    width: auto;
+    padding: 0 0.9rem 0 1.1rem;
+    height: 2.875rem;
+    right: max(1.5rem, env(safe-area-inset-right, 0px) + 1rem);
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+}
+@media print {
+  .guide-fab,
+  .guide-panel {
+    display: none;
+  }
+}
+
+/* The panel: a glass card below the header (non-modal: the header stays above it and usable),
+   above the floating button. */
+.guide-panel {
+  position: fixed;
+  z-index: 39;
+  top: calc(var(--nav-h) + 0.5rem);
+  right: max(0.75rem, env(safe-area-inset-right, 0px) + 0.5rem);
+  bottom: calc(max(0.875rem, env(safe-area-inset-bottom, 0px) + 0.75rem) + 3.5rem);
+  left: auto;
+  margin: 0;
+  height: auto;
+  max-height: none;
+  width: min(30rem, calc(100% - 1.5rem));
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.01)), rgb(var(--paper) / 0.92);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
+  box-shadow:
+    0 40px 90px -30px rgb(0 0 0 / 0.85),
+    0 0 0 1px rgb(0 0 0 / 0.3);
+}
+@media (min-width: 768px) {
+  .guide-panel {
+    right: max(1.5rem, env(safe-area-inset-right, 0px) + 1rem);
+    bottom: calc(max(1.5rem, env(safe-area-inset-bottom, 0px) + 1rem) + 3.75rem);
+  }
+}
+.guide-panel[open] .guide-inner {
+  animation: guide-in 0.5s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+}
+@keyframes guide-in {
+  from {
+    transform: translateX(2.5rem);
+    opacity: 0;
+  }
+}
+.guide-caret {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: rgb(var(--amber));
+  animation: guide-blink 0.9s steps(1) infinite;
+}
+@keyframes guide-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.guide-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgb(var(--amber));
+  box-shadow: 0 0 10px rgb(245 158 59 / 0.9);
+  animation: tt-pulse 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .guide-fab {
+    transition: none;
+  }
+  .guide-panel[open] .guide-inner,
+  .guide-caret,
+  .guide-dot {
+    animation: none;
+  }
+}
+
+/* Amber used as text: bright on dark, a deep amber on light (AA). Glows and fills keep --amber. */
+.text-amber {
+  color: rgb(var(--amber-ink));
+}
+
+/* ------------------------------------------------------------ touch targets */
+/* Touch screens: every tap target reaches 44 px. Text links get a taller hit area without
+   moving anything (padding outside the text, the same negative margin back); controls get a
+   44 px minimum height. */
+@media (pointer: coarse) {
+  a.link,
+  a.link-quiet,
+  footer a,
+  li > a[target='_blank'],
+  main p > a {
+    padding-block: 0.875rem;
+    margin-block: -0.875rem;
+  }
+  header :is(a, button),
+  [role='group'] > button,
+  button.rounded-full,
+  .btn-small,
+  .field,
+  a.glass,
+  .poster-city > button {
+    min-height: 2.875rem;
+  }
+  button[aria-label]:not([class*='w-full']) {
+    min-width: 2.875rem;
+    min-height: 2.875rem;
+  }
+}
+
+/* ------------------------------------------------------------------ globe */
+.place-details > * {
+  animation: kin-fade 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.place-details li {
+  animation: kin-fade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .place-details > *,
+  .place-details li {
+    animation: none;
+  }
+}

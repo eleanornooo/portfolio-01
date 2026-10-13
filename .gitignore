@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Private source documents (contain personal data: date of birth, home address, phone)
+CV_Aziz_2026.md
+*.docx
+
+# Hero cut-out source (≈16 MB); the optimised WebPs in public/img/hero are committed
+public/hero/
+# Original About cut-out (≈16 MB, unfaded); the pre-faded WebP and its sizes in public/about are committed
+public/about/aziz-about-cutout.png
+
+# TypeScript build caches
+*.tsbuildinfo

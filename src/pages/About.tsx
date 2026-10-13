@@ -1,305 +1,404 @@
-import { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { GraduationCap, BookOpen, Search, Globe, BadgeCheck, Trophy, MapPin } from "lucide-react"; 
-import {
-  VerticalTimeline,
-  VerticalTimelineElement,
-} from "react-vertical-timeline-component";
-import "react-vertical-timeline-component/style.min.css";
-import azizImg from "../assests/pic1.jpg";
+import { useMemo, useRef, type CSSProperties } from 'react';
+import { Compass, Medal, Users, Vote, type LucideIcon } from 'lucide-react';
+import { profile } from '../content/profile';
+import * as experience from '../content/experience';
+import * as education from '../content/education';
+import * as serviceData from '../content/service';
+import * as awardsData from '../content/awards';
+import * as studentsData from '../content/students';
+import { txDeep } from '../lib/tx';
+import { beyondAcademia } from '../content/beyond';
+import { useLang } from '../i18n/useLang';
+import { doiUrl } from '../lib/apa';
+import { useReveals } from '../lib/reveal';
+import { useSpotlight } from '../lib/spotlight';
+import Seo from '../components/Seo';
+import { Ext, LinkRow } from '../components/Ext';
+import MaskText from '../components/MaskText';
+import Heading from '../components/SectionHeading';
+import ExperienceTimeline from '../components/about/ExperienceTimeline';
+import Showcase, { type Entry } from '../components/about/Showcase';
+import Logo from '../components/about/Logo';
+import FieldGallery from '../components/about/FieldGallery';
 
+/** The About portrait: its own pre-faded cut-out (not the Home hero's), see scripts/build-hero.mjs. */
+const PORTRAIT_SRCSET = '/about/aziz-about-cutout-760.webp 760w, /about/aziz-about-cutout-1100.webp 1100w, /about/aziz-about-cutout.webp 2048w';
+const PORTRAIT_SIZES = '(min-width: 768px) 50vw, 100vw';
 
-// Import images for education
-import sherbrookeImg from "../assests/sherbrooke.png";
-import jeanMonnetImg from "../assests/UJM.png";
-import cadiAyyadImg from "../assests/Cadi Ayyad.png";
+const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 
+/** Initials for the supervision avatars ("Hiba Ait Bassou" → "HB"). */
+const initials = (name: string) => {
+  const parts = name.split(/\s+/);
+  return (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+};
 
-// Work experience images
-import um6pImg from '../assests/um6pp.png';
-import teluqImg from '../assests/Université TÉLUQ.png';
-import quebecImg from '../assests/Quebec gov.png';
-import cssdpImg from '../assests/cssdp1.png';
-import aefeImg from '../assests/AEFE logo.png';
-import marocEduImg from '../assests/Moroccan Ministry of Education.png';
+/** One icon per "beyond academia" item, in the order of content/beyond.ts. */
+const BEYOND_ICONS: LucideIcon[] = [Medal, Users, Vote, Compass];
 
-export default function About() {
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
+export function Component() {
+  const { t, pick, lang, tx } = useLang();
+  // French site: the English-only content text, translated (i18n/content-fr.ts).
+  const { positions, affiliations, degrees, certifications, service, awards, students } = useMemo(
+    () =>
+      txDeep(
+        {
+          positions: experience.positions,
+          affiliations: experience.affiliations,
+          degrees: education.degrees,
+          certifications: education.certifications,
+          service: serviceData.service,
+          awards: awardsData.awards,
+          students: studentsData.students,
+        },
+        tx,
+      ),
+    [tx],
+  );
+  const root = useRef<HTMLDivElement>(null);
+  useReveals(root);
+  useSpotlight(root);
 
-  const education = [
-    {
-      title: "Ph.D. in Education",
-      school: "Université de Sherbrooke, Canada",
-      year: "2020 – Present",
-      img: sherbrookeImg, // Upload & import this logo
-    },
-    {
-      title: "Master's in Training Engineering in Plurilingualism and Interculturality",
-      school: "Université Jean Monnet, Saint-Étienne, France",
-      year: "2017",
-      img: jeanMonnetImg,
-    },
-    {
-      title: "Bachelor",
-      school: "Université Cadi Ayyad, Marrakech, Morocco",
-      year: "2005",
-      img: cadiAyyadImg,
-    }
-  ];
-  const experiences = [
-    {
-      title: "Lecturer in AI & Educational Technologies",
-      company: "UM6P – Institute of Education Sciences",
-      year: "May 2024 – Present",
-      img: um6pImg,
-    },
-    {
-      title: "Instructor – Executive Master’s Program",
-      company: "UM6P – Educational Technologies and AI in Moroccan Schools",
-      year: "May – July 2023",
-      img: um6pImg,
-    },
-    {
-      title: "Co-Researcher – GSDL Project (UNESCO)",
-      company: "Université TÉLUQ, Canada",
-      year: "Oct 2022 – 2024",
-      img: teluqImg,
-    },
-    {
-      title: "Co-Researcher – CETAL-CEAN Project",
-      company: "Quebec Ministry of Labour",
-      year: "Dec 2022 – June 2023",
-      img: quebecImg,
-    },
-    {
-      title: "Substitute Teacher",
-      company: "Centre de services scolaires des Patriotes, Quebec",
-      year: "Dec 2022 – June 2023",
-      img: cssdpImg,
-    },
-    {
-      title: "Language Teacher",
-      company: "Campus Victor Hugo (AEFE), Marrakech",
-      year: "2016 – 2019",
-      img: aefeImg,
-    },
-    {
-      title: "Permanent Teacher (French & Arabic)",
-      company: "Ministry of Education, Morocco",
-      year: "1999 – 2019",
-      img: marocEduImg,
-    }
-  ];
-  
+  const [lead, ...rest] = profile.bio[lang];
+  // Pull quote: the first sentence of the bio's last paragraph (twenty years in the classroom), not
+  // the research statement used on Home.
+  const lastPara = profile.bio[lang][profile.bio[lang].length - 1];
+  const pull = lastPara.split(/(?<=\.)\s/)[0];
+  const main = degrees.filter((d) => !d.minor);
+  const minor = degrees.filter((d) => d.minor);
+  const [phd, ...others] = main;
+
+  const serviceEntries = (items: (typeof service)[number]['items']): Entry[] =>
+    items.map((s) => ({ key: s.body, period: s.period, title: s.body, sub: s.role, detail: s.detail, links: s.links }));
+  const awardEntries: Entry[] = awards.map((a) => ({
+    key: a.title,
+    period: a.year,
+    title: a.title,
+    detail: a.detail,
+    links: a.links,
+  }));
+  const certEntries: Entry[] = certifications.map((c) => ({
+    key: c.title,
+    period: c.year,
+    title: c.title,
+    sub: c.provider,
+    detail: (
+      <>
+        {c.detail && <p>{c.detail}</p>}
+        {c.modules && (
+          <ul className="mt-2 space-y-1">
+            {c.modules.map((m) => (
+              <li key={m.title} className="flex flex-wrap gap-x-3">
+                <span>— {m.title}</span>
+                {m.link && <LinkRow links={[m.link]} />}
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    ),
+    links: c.links,
+  }));
+
   return (
-    <div className="min-h-screen p-6 py-20 bg-gray-50">
-      <div className="max-w-screen-lg mx-auto px-4">
-          {/* About Me Section */}
-          <h2 className="text-4xl font-bold mb-8 text-center text-gray-800" data-aos="fade-down">
-          About Me
-          </h2>
-          <div 
-            className="bg-white rounded-xl shadow-md p-8 flex flex-col md:flex-row items-center md:items-center gap-6 transition-all hover:shadow-lg transform hover:scale-105 duration-300"
-            data-aos="fade-up"
-          >
-            {/* Profile Image */}
-            <img 
-              src={azizImg} 
-              alt="Aziz Mimoudi" 
-              className="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-gray-300 shadow-md hover:shadow-lg transform hover:scale-110 transition-all duration-300 self-center md:self-start mt-4 md:mt-0"
-            />
+    <div ref={root}>
+      <Seo title={t.about.metaTitle} description={t.about.metaDescription} path="/about" />
 
-            {/* Text Content */}
-            <div className="text-left flex-1">
-  <p className="text-lg text-gray-700 leading-relaxed">
-    Aziz Mimoudi is a <strong>lecturer and coordinator of the Digital and AI Research Axis</strong> at the Institute of Education Sciences, 
-    Mohammed VI Polytechnic University (<strong>UM6P</strong>) in Morocco. He recently submitted his <strong>PhD thesis in Education </strong> 
-     at the <strong>University of Sherbrooke</strong>, where his research focused on the <strong>design and impact of AI-powered educational applications</strong>. 
-    At UM6P, he teaches predoctoral students and guides them in applying AI to research, especially in <strong>Education, Agriculture, and Healthcare</strong>.
-  </p>
-  <p className="text-lg text-gray-700 mt-4 leading-relaxed">
-    Mimoudi is actively engaged in several <strong>research and development initiatives</strong> at UM6P. He collaborates as Co-researcher with the 
-     <strong> Africa Business School</strong> on an AI-assisted platform for designing <strong>sustainable business models</strong>, and co-leads 
-    the <strong>"VOLCANIC-ERASMUS+"</strong> project, which aims to develop educational programs that integrate <strong>educational technologies, 
-    computational thinking,</strong> and <strong>inclusion in higher education</strong>.
-  </p>
-</div>
+      {/* --------------------------------------------------------------- hero */}
+      <section aria-labelledby="about-title" className="tone-dark blend-b relative isolate overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_75%_55%,rgb(226_87_43/0.3),transparent_70%),radial-gradient(30%_35%_at_20%_30%,rgb(245_158_59/0.1),transparent_70%)]"
+        />
+        <div className="page grid min-h-[min(100svh,58rem)] items-end gap-y-4 pt-28 md:grid-cols-12 md:gap-x-8 md:pt-32">
+          <div className="relative z-10 pb-10 md:col-span-7 md:pb-24">
+            <p className="eyebrow kin-fade" style={delay(100)}>
+              {pick(profile.institute)} · UM6P
+            </p>
+            <h1 id="about-title" className="display mt-6 text-mega">
+              <span className="kin-fade block" style={delay(160)}>
+                {t.about.title}
+              </span>
+            </h1>
+            <figure className="kin-fade relative mt-16 md:mt-10" style={delay(420)}>
+              <span
+                aria-hidden="true"
+                className="text-glow absolute -left-2 -top-10 font-serif text-[6rem] leading-none md:-left-10 md:-top-8"
+              >
+                “
+              </span>
+              <blockquote>
+                <p className="max-w-[26ch] font-serif text-[clamp(1.5rem,1rem+1.7vw,2.5rem)] font-light italic leading-[1.22] tracking-[-0.01em]">
+                  {pull}
+                </p>
+              </blockquote>
+            </figure>
           </div>
-
-
-
-        {/* Education - Vertical Timeline */}
-        <h3 className="text-3xl font-bold text-gray-800 text-center mt-16 mb-6" data-aos="fade-up">
-          Education
-        </h3>
-        <VerticalTimeline>
-          {education.map((edu, index) => (
-            <VerticalTimelineElement
-              key={index}
-              date={edu.year}
-              contentStyle={{ background: "#f8f9fa", color: "#333", borderRadius: "10px", transition: "all 0.3s"  }}
-              contentArrowStyle={{ borderRight: "7px solid #e0e0e0" }}
-              iconStyle={{ background: "white", boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)" }}
-              icon={
-                <img
-                  src={edu.img}
-                  alt={edu.school}
-                  className="w-full h-full rounded-full hover:scale-110 transition-transform duration-300"
-                />}
-            >
-              <h3 className="text-xl font-bold">{edu.title}</h3>
-              <p className="text-gray-600">{edu.school}</p>
-            </VerticalTimelineElement>
-          ))}
-        </VerticalTimeline>
-
-        {/* Experience - Vertical Timeline */}
-        <h3 className="text-3xl font-bold text-gray-800 text-center mt-16 mb-6" data-aos="fade-up">
-          Work Experience
-        </h3>
-        <VerticalTimeline>
-          {experiences.map((exp, index) => (
-            <VerticalTimelineElement
-              key={index}
-              date={exp.year}
-              contentStyle={{ background: "#f8f9fa", color: "#333", borderRadius: "10px", transition: "all 0.3s" }}
-              contentArrowStyle={{ borderRight: "7px solid #e0e0e0" }}
-              iconStyle={{ background: "white", boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)" }}
-              icon={
-                <img
-                  src={exp.img}
-                  alt={exp.company}
-                  className="w-full h-full rounded-full hover:scale-110 transition-transform duration-300"
-                />}
-            >
-              <h3 className="text-xl font-bold">{exp.title}</h3>
-              <p className="text-gray-600">{exp.company}</p>
-            </VerticalTimelineElement>
-          ))}
-        </VerticalTimeline>
-
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10" data-aos="fade-up">
-          {/* Author Identifiers Section */}
-          <div className="bg-white rounded-xl shadow-md p-4 transition-all hover:shadow-lg hover:scale-105 duration-300 w-full">
-
-            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-600" /> Author Identifiers
-            </h3>
-
-            <ul className="space-y-3">
-              {[
-               { label: "Google Scholar", link: "https://scholar.google.com/citations?user=-9rVxq0AAAAJ&hl=fr", icon: <BookOpen /> },
-                { label: "ORCID", link: "https://orcid.org/0000-0003-2219-9586", icon: <GraduationCap /> },
-                { label: "LinkedIn", link: "https://www.linkedin.com/in/aziz-mimoudi-328442115/", icon: <Globe /> }
-              ].map(({ label, link, icon }, index) => (
-                <a key={index} href={link} target="_blank" rel="noopener noreferrer" className="block">
-                  <button 
-                    className="flex items-center gap-4 p-3 rounded-lg bg-gray-100 hover:bg-blue-100 transition-all duration-300 shadow-sm hover:shadow-md w-full"
-                  >
-                    <span className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-full group-hover:scale-110 transition-transform duration-300">
-                      {icon}
-                    </span>
-                    <span className="text-gray-700 font-semibold hover:text-blue-700 transition-all text-lg">
-                      {label}
-                    </span>
-                  </button>
-                </a>
-              ))}
-            </ul>
-          </div>
-
-          {/* Research Experience Section */}
-          <div className="bg-white rounded-xl shadow-md p-6 transition-all hover:shadow-lg hover:scale-105 duration-300 w-full">
-            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-              <Search className="w-6 h-6 text-green-600" /> Research Experience
-            </h3>
-
-            <ul className="list-disc pl-5 space-y-3 text-gray-700">
-  <li>Co-researcher on the <strong>VOLCANIC (EU ERASMUS+)</strong> project, developing AI and computational thinking curricula for inclusive education.</li>
-  <li>Lead researcher in the <strong>GSDL Project (UNESCO Chair, Université TÉLUQ)</strong> on AI-driven personalized learning in higher education.</li>
-  <li>Participated in the <strong>SIGC Project</strong> under Professor Chikhaoui Belkacem, focused on AI and smart educational environments.</li>
-  <li>Research Assistant in the <strong>Comodal Teaching in Francophone Canada</strong> project with Professor Serge Gérin-Lajoie, Université TÉLUQ.</li>
-  <li>Co-investigator in the <strong>Sustainable Business Model Platform (Sustaineur)</strong> project funded by OCP Foundation & Africa Business School.</li>
-  <li>Ongoing doctoral research on <strong>AI’s impact on distance learning platforms</strong> at Université de Sherbrooke, Canada.</li>
-</ul>
-
+          {/* Flush with the section's bottom edge: the picture's own fade does the blending. */}
+          <div className="relative -mx-5 self-end sm:mx-0 md:col-span-5">
+            {/* Warm glow behind his head and shoulders. */}
+            <div aria-hidden="true" className="about-glow absolute inset-x-[-15%] top-[-4%] h-[75%]" />
+            <picture>
+              <source type="image/webp" srcSet={PORTRAIT_SRCSET} sizes={PORTRAIT_SIZES} />
+              <img
+                src="/about/aziz-about-cutout-1100.png"
+                width={2048}
+                height={2048}
+                alt={t.about.portraitAlt}
+                loading="eager"
+                decoding="async"
+                {...{ fetchpriority: 'high' }}
+                className="about-cutout relative mx-auto block h-auto w-full max-w-[40rem] md:-ml-[6%] md:w-[124%] md:max-w-none"
+              />
+            </picture>
           </div>
         </div>
+      </section>
 
-
-
-        {/* Certifications, Extra Curricular Activities, and Address */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10" data-aos="fade-up">
-            {[
-              {
-                title: "Certifications",
-                icon: <BadgeCheck className="w-6 h-6 text-blue-600" />,
-                items: [
-                  "Virtual & Augmented Reality (EON-XR Platform), EON Reality",
-                  "MOOC: CERTICE Scol – AUF/AFD",
-                  "Open Dialogues on Ethics & AI in Canada (AIcan)",
-                  "Eye Tracking for Research, Tobii Pro",
-                  "Microprogram on Remote Teaching, TELUQ",
-                  "Technopedagogy Training, Stanford GSE"
-                ]
-              },
-
-              {
-                title: "Extra Curricular Activities",
-                icon: <Trophy className="w-6 h-6 text-yellow-600" />,
-                items: [
-                  <ol key="list" className="list-decimal pl-5 space-y-2">
-                    <li><strong>Taekwondo Coach</strong>, 2nd Dan black belt, and former <strong>national referee</strong>.</li>
-                    <li><strong>Lead organizer</strong> of the ISE Symposium during <strong>UM6P Science Week 2025</strong>.</li>
-                    <li><strong>Youth Mentor</strong> as Provincial President (2010–2014) of a civic youth organization.</li>
-                    <li><strong>Observer</strong> for the National Human Rights Council during Morocco’s 2011 elections.</li>
-                    <li><strong>Organizer</strong> of educational trips and workshops (ICT, technopedagogy, outdoor education).</li>
-                  </ol>
-                ]
-                
-              },
-            
-              {
-                title: "Address",
-                icon: <MapPin className="w-6 h-6 text-red-600" />,
-                items: [
-                 "Institute of Education Sciences, Mohammed VI Polytechnic University (UM6P), Ben Guerir, Morocco",
-                  <iframe
-                    key="map"
-                    src="https://www.google.com/maps?q=Mohammed+VI+Polytechnic+University,+Ben+Guerir,+Morocco&output=embed"
-                    width="100%"
-                    height="250"
-                    className="rounded-lg mt-4 border"
-                    style={{ border: "0", borderRadius: "10px", marginTop: "10px" }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  ></iframe>
-                ]
-              }
-            
-            ].map((section, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-xl shadow-md p-6 transition-all hover:shadow-lg hover:scale-105 duration-300"
-              >
-                {/* Section Title with Icon */}
-                <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-                  {section.icon} {section.title}
-                </h3>
-          
-                {/* Section Content */}
-                <ul className="space-y-3 text-gray-600">
-                  {section.items.map((item, i) => <li key={i} className="transition-all hover:text-blue-600">{item}</li>)}
-                </ul>
-              </div>
-            ))}
+      {/* ---------------------------------------------------------------- bio */}
+      <section aria-labelledby="bio-title" className="page pb-24 pt-20 md:pb-32 md:pt-28">
+        <div className="grid-12 gap-y-6">
+          <h2 id="bio-title" className="eyebrow col-span-4 font-sans md:col-span-3 md:pt-2">
+            {t.about.bio}
+          </h2>
+          <div className="col-span-4 md:col-span-9">
+            <p data-reveal="up" className="prose-measure font-serif text-[1.375rem] font-light leading-[1.55] md:text-[1.625rem]">
+              {lead}
+            </p>
+            <div data-reveal="up" className="prose-measure mt-6 space-y-5 text-ink2">
+              {rest.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
+            <div data-reveal="up" className="mt-10">
+              <h3 className="eyebrow font-sans">{t.about.identifiers}</h3>
+              <ul className="mt-4 flex flex-wrap gap-2.5 text-sm">
+                {[
+                  ['Google Scholar', profile.links.scholar],
+                  ['ORCID 0000-0003-2219-9586', profile.links.orcid],
+                  ...(profile.links.scopus ? [['Scopus', profile.links.scopus]] : []),
+                  ['LinkedIn', profile.links.linkedin],
+                ].map(([label, href]) => (
+                  <li key={href}>
+                    <Ext href={href} className="glass inline-flex items-center gap-1 rounded-full px-4 py-2 text-ink transition-colors hover:text-amber">
+                      {label}
+                    </Ext>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-      </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------ in the field */}
+      <section id="field" aria-labelledby="field-title" className="page pb-24 md:pb-32">
+        <Heading id="field" label={t.about.gallery} lines={[t.about.gallery]} intro={t.about.galleryIntro} />
+        <FieldGallery />
+      </section>
+
+      {/* --------------------------------------------------------- experience */}
+      <section id="experience" aria-labelledby="experience-title" className="page pb-24 md:pb-32">
+        <Heading id="experience" index="01" label={t.about.experience} lines={[t.about.experience]} intro={t.about.timelineHint} />
+        <ExperienceTimeline positions={positions} />
+
+        <h3 className="eyebrow mb-5 mt-16 font-sans md:ml-[calc(8.5rem+2.5rem)]">{t.about.affiliations}</h3>
+        <ul data-reveal="stagger" className="grid gap-3 sm:grid-cols-2 md:ml-[calc(8.5rem+2.5rem)]">
+          {affiliations.map((a) => (
+            <li key={a.name} className="glass rounded-3xl p-5 md:p-6">
+              <p className="num eyebrow">{a.period}</p>
+              <p className="mt-3 font-display text-[1.75rem] font-bold tracking-[-0.03em]">
+                {a.url ? (
+                  <Ext href={a.url} className="hover:text-amber">
+                    {a.name}
+                  </Ext>
+                ) : (
+                  a.name
+                )}
+              </p>
+              <p className="mt-1 text-[0.9375rem] text-ink">{a.role}</p>
+              <p className="mt-1 text-sm text-ink2">{a.org}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ---------------------------------------------------------- education */}
+      <section id="education" aria-labelledby="education-title" className="tone-light blend-y py-36 md:py-44">
+        <div className="page">
+          <Heading id="education" index="02" label={t.about.education} lines={[t.about.education]} />
+          <ol data-reveal="stagger" className="grid gap-4 lg:grid-cols-3">
+            {phd && (
+              <li className="group relative flex flex-col rounded-[2rem] border border-ink/10 bg-white/70 p-7 shadow-[0_1px_0_rgb(255_255_255/0.8)_inset] transition-[box-shadow,border-color] duration-500 hover:border-accent/30 hover:shadow-[0_50px_90px_-50px_rgb(120_50_20/0.5)] md:p-10 lg:col-span-2 lg:row-span-2">
+                <div className="flex items-start justify-between gap-6">
+                  <p className="num display text-[clamp(4rem,2rem+6vw,7.5rem)] leading-[0.85] tracking-[-0.05em] text-accent">{phd.year}</p>
+                  <Logo name={phd.logo} className="h-16 w-16" />
+                </div>
+                <h3 className="mt-8 font-serif text-[2rem] font-normal leading-tight md:text-[2.5rem]">{phd.degree}</h3>
+                <p className="mt-2 text-ink2">
+                  {phd.school}
+                  {phd.place && <span className="text-ink3"> · {phd.place}</span>}
+                </p>
+                {phd.thesis && (
+                  <div className="mt-8 border-t border-ink/10 pt-6">
+                    <p className="eyebrow">{t.about.thesis}</p>
+                    <p lang="fr" className="mt-3 max-w-[50ch] font-serif text-[1.25rem] italic leading-snug md:text-[1.375rem]">
+                      {phd.thesis.title}
+                    </p>
+                    {phd.thesis.translation && <p className="mt-2 max-w-[60ch] text-ink3">{phd.thesis.translation}</p>}
+                    {phd.thesis.doi && (
+                      <p className="mt-4">
+                        <Ext href={doiUrl(phd.thesis.doi)} className="link num">
+                          DOI {phd.thesis.doi}
+                        </Ext>
+                      </p>
+                    )}
+                  </div>
+                )}
+                {phd.links && <LinkRow links={phd.links} className="mt-4" />}
+              </li>
+            )}
+            {others.map((d) => (
+              <li
+                key={d.id}
+                className="group relative flex flex-col rounded-[2rem] border border-ink/10 bg-white/60 p-7 transition-[transform,box-shadow,border-color] duration-500 hover:-translate-y-1 hover:border-accent/30 hover:shadow-[0_40px_70px_-40px_rgb(120_50_20/0.45)]"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <p className="num display text-[3.25rem] leading-[0.85] tracking-[-0.05em] text-ink/30 transition-colors duration-500 group-hover:text-accent">
+                    {d.year}
+                  </p>
+                  <Logo name={d.logo} />
+                </div>
+                <h3 className="mt-6 font-serif text-[1.375rem] font-normal leading-snug">{d.degree}</h3>
+                <p className="mt-1 text-[0.9375rem] text-ink2">
+                  {d.school}
+                  {d.place && <span className="text-ink3"> · {d.place}</span>}
+                </p>
+                {d.links && <LinkRow links={d.links} className="mt-auto pt-4" />}
+              </li>
+            ))}
+          </ol>
+
+          {minor.length > 0 && (
+            <div data-reveal="up" className="mt-10">
+              <h3 className="eyebrow font-sans">{t.about.earlier}</h3>
+              <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-ink2">
+                {minor.map((d) => (
+                  <li key={d.id}>
+                    <span className="num mr-2 text-ink3">{d.year}</span>
+                    {d.degree} — {d.school}
+                    {d.place && `, ${d.place}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* -------------------------------------------------------- supervision */}
+      <section id="supervision" aria-labelledby="supervision-title" className="page pb-24 pt-8 md:pb-32">
+        <Heading
+          id="supervision"
+          index="03"
+          label={t.about.supervision}
+          lines={[t.about.supervision]}
+          intro={t.about.supervisionIntro}
+        />
+        <ul data-reveal="stagger" className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          {students.map((s) => (
+            <li key={s.name} className="card-dark spot group flex flex-col p-6">
+              <div className="relative z-10 flex items-center gap-4">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-vivid to-amber font-display text-[1.125rem] font-bold text-[#160b05] shadow-[0_0_30px_-4px_rgb(226_87_43/0.7)] transition-transform duration-500 group-hover:scale-105"
+                >
+                  {initials(s.name)}
+                </span>
+                <div>
+                  <h3 className="font-serif text-[1.25rem] font-normal leading-snug">{s.name}</h3>
+                  <p className="num text-sm text-ink3">
+                    {t.about.cohort} {s.cohort}
+                  </p>
+                </div>
+              </div>
+              <p className="relative z-10 mt-5 text-[0.9375rem] leading-relaxed text-ink">{s.topic}</p>
+              <p className="relative z-10 mt-auto pt-4 text-sm text-ink3">{s.status}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ------------------------------------------------------------ service */}
+      <section id="service" aria-labelledby="service-title" className="page pb-24 md:pb-32">
+        <Heading id="service" index="04" label={t.about.service} lines={[t.about.service]} />
+        <div className="space-y-16">
+          {service.map((g) => (
+            <Showcase
+              key={g.id}
+              entries={serviceEntries(g.items)}
+              heading={<h3 className="eyebrow mb-5 font-sans text-amber">{pick(g.title)}</h3>}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------- awards & development */}
+      <section id="awards" aria-labelledby="awards-title" className="tone-light blend-y py-36 md:py-44">
+        <div className="page">
+          <Heading id="awards" index="05" label={t.about.awards} lines={[t.about.awards]} />
+          <Showcase entries={awardEntries} tone="light" />
+
+          <div id="development" className="mt-24">
+            <Heading
+              id="development"
+              index="06"
+              label={t.about.certifications}
+              lines={[t.about.certifications]}
+            />
+            <Showcase entries={certEntries} tone="light" />
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- beyond */}
+      <section id="beyond" aria-labelledby="beyond-title" className="page pb-28 pt-8 md:pb-40">
+        <div className="grid-12 mb-12 gap-y-6 md:mb-16">
+          <p className="eyebrow num col-span-4 md:col-span-3 md:pt-4">
+            <span className="text-amber" aria-hidden="true">
+              07 ·{' '}
+            </span>
+            {t.about.beyond}
+          </p>
+          <h2 id="beyond-title" data-reveal="mask" className="display col-span-4 text-big md:col-span-9">
+            <MaskText lines={[t.about.beyond]} />
+          </h2>
+        </div>
+        <ul data-reveal="stagger" className="grid gap-3 md:grid-cols-4 md:gap-4">
+          {beyondAcademia.map((b, i) => {
+            const Icon = BEYOND_ICONS[i % BEYOND_ICONS.length];
+            const big = i === 0;
+            return (
+              <li
+                key={b.en}
+                className={`card-dark spot group flex min-h-[12rem] flex-col p-6 ${big ? 'md:col-span-2 md:row-span-2 md:min-h-[24rem] md:p-8' : i === 3 ? 'md:col-span-2' : ''}`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`relative z-10 inline-flex items-center justify-center rounded-2xl bg-amber/10 text-amber shadow-[0_0_30px_-6px_rgb(245_158_59/0.6)] ring-1 ring-amber/30 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110 ${big ? 'h-16 w-16' : 'h-12 w-12'}`}
+                >
+                  <Icon size={big ? 30 : 22} strokeWidth={1.6} />
+                </span>
+                <p
+                  className={`relative z-10 mt-auto pt-8 ${big ? 'font-serif text-[1.75rem] leading-snug md:text-[2.25rem]' : 'text-[0.9375rem] leading-relaxed text-ink'}`}
+                >
+                  {pick(b)}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
     </div>
   );
 }
