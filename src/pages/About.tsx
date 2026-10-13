@@ -19,9 +19,9 @@ import ExperienceTimeline from '../components/about/ExperienceTimeline';
 import Showcase, { type Entry } from '../components/about/Showcase';
 import Logo from '../components/about/Logo';
 
-/** The About portrait: its own cut-out (not the Home hero's), see scripts/build-hero.mjs. */
-const PORTRAIT = '/img/about/aziz-about-cutout-760.webp';
-const PORTRAIT_SRCSET = [480, 760, 1100].map((w) => `/img/about/aziz-about-cutout-${w}.webp ${w}w`).join(', ');
+/** The About portrait: its own pre-faded cut-out (not the Home hero's), see scripts/build-hero.mjs. */
+const PORTRAIT_SRCSET = '/about/aziz-about-cutout-760.webp 760w, /about/aziz-about-cutout-1100.webp 1100w, /about/aziz-about-cutout.webp 2048w';
+const PORTRAIT_SIZES = '(min-width: 768px) 50vw, 100vw';
 
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 
@@ -41,10 +41,10 @@ export function Component() {
   useSpotlight(root);
 
   const [lead, ...rest] = profile.bio[lang];
-  // Pull quote: the opening of the bio's last paragraph (twenty years in the classroom), not
+  // Pull quote: the first sentence of the bio's last paragraph (twenty years in the classroom), not
   // the research statement used on Home.
   const lastPara = profile.bio[lang][profile.bio[lang].length - 1];
-  const pull = lastPara.slice(0, lastPara.indexOf(')') + 1);
+  const pull = lastPara.split(/(?<=\.)\s/)[0];
   const main = degrees.filter((d) => !d.minor);
   const minor = degrees.filter((d) => d.minor);
   const [phd, ...others] = main;
@@ -91,7 +91,7 @@ export function Component() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_75%_55%,rgb(226_87_43/0.3),transparent_70%),radial-gradient(30%_35%_at_20%_30%,rgb(245_158_59/0.1),transparent_70%)]"
         />
-        <div className="page grid min-h-[min(100svh,58rem)] items-end gap-y-8 pt-28 md:grid-cols-12 md:gap-x-8 md:pt-32">
+        <div className="page grid min-h-[min(100svh,58rem)] items-end gap-y-4 pt-28 md:grid-cols-12 md:gap-x-8 md:pt-32">
           <div className="relative z-10 pb-10 md:col-span-7 md:pb-24">
             <p className="eyebrow kin-fade" style={delay(100)}>
               {pick(profile.institute)} · UM6P
@@ -110,25 +110,28 @@ export function Component() {
               </span>
               <blockquote>
                 <p className="max-w-[26ch] font-serif text-[clamp(1.5rem,1rem+1.7vw,2.5rem)] font-light italic leading-[1.22] tracking-[-0.01em]">
-                  {pull}…
+                  {pull}
                 </p>
               </blockquote>
             </figure>
           </div>
-          <div className="relative md:col-span-5 md:self-end">
-            {/* Warm glow behind the cut-out, so its edges melt into the dark. */}
-            <div aria-hidden="true" className="about-glow absolute inset-x-[-25%] bottom-[-10%] top-[2%]" />
-            <img
-              src={PORTRAIT}
-              srcSet={PORTRAIT_SRCSET}
-              sizes="(min-width: 768px) 50vw, 92vw"
-              width={1100}
-              height={1091}
-              alt={t.about.portraitAlt}
-              decoding="async"
-              {...{ fetchpriority: 'high' }}
-              className="about-cutout relative mx-auto h-auto w-full max-w-[40rem] md:-ml-[4%] md:w-[122%] md:max-w-none"
-            />
+          {/* Flush with the section's bottom edge: the picture's own fade does the blending. */}
+          <div className="relative -mx-5 self-end sm:mx-0 md:col-span-5">
+            {/* Warm glow behind his head and shoulders. */}
+            <div aria-hidden="true" className="about-glow absolute inset-x-[-15%] top-[-4%] h-[75%]" />
+            <picture>
+              <source type="image/webp" srcSet={PORTRAIT_SRCSET} sizes={PORTRAIT_SIZES} />
+              <img
+                src="/about/aziz-about-cutout-1100.png"
+                width={2048}
+                height={2048}
+                alt={t.about.portraitAlt}
+                loading="eager"
+                decoding="async"
+                {...{ fetchpriority: 'high' }}
+                className="about-cutout relative mx-auto block h-auto w-full max-w-[40rem] md:-ml-[6%] md:w-[124%] md:max-w-none"
+              />
+            </picture>
           </div>
         </div>
       </section>

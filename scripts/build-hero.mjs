@@ -1,36 +1,39 @@
-// Cut-out portraits: turns the transparent source PNGs (≈16 MB each, not committed and not
-// deployed) into small alpha WebPs:
-//   public/hero/aziz-cutout.png        → public/img/hero/aziz-cutout-{480,760,1100}.webp   (Home hero)
-//   public/about/aziz-about-cutout.png → public/img/about/aziz-about-cutout-{480,760,1100}.webp (About)
-// Run with: npm run images:hero  (only needed when a source image changes)
+// Cut-out portraits → small alpha images (only needed when a source image changes).
+// Run with: npm run images:hero
+//   Home hero: public/hero/aziz-cutout.png (≈16 MB, not committed, not deployed)
+//              → public/img/hero/aziz-cutout-{480,760,1100}.webp
+//   About:     public/about/aziz-about-cutout.webp (pre-faded edges, 2048 px, committed)
+//              → public/about/aziz-about-cutout-{760,1100}.webp + a PNG fallback (1100 px)
 import sharp from 'sharp';
 import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const jobs = [
-  { source: 'public/hero/aziz-cutout.png', out: 'public/img/hero', name: 'aziz-cutout' },
-  { source: 'public/about/aziz-about-cutout.png', out: 'public/img/about', name: 'aziz-about-cutout' },
-];
+const at = (p) => path.join(root, p);
 
-for (const job of jobs) {
-  const source = path.join(root, job.source);
-  if (!existsSync(source)) {
-    console.log(`No ${job.source}: skipped.`);
-    continue;
-  }
-  const out = path.join(root, job.out);
-  await mkdir(out, { recursive: true });
-
+const hero = at('public/hero/aziz-cutout.png');
+if (existsSync(hero)) {
+  await mkdir(at('public/img/hero'), { recursive: true });
   // Trim the transparent margin so the image box hugs the silhouette.
-  const trimmed = await sharp(source).trim({ threshold: 1 }).toBuffer({ resolveWithObject: true });
-  console.log(job.name, 'trimmed to', trimmed.info.width, '×', trimmed.info.height);
+  const trimmed = await sharp(hero).trim({ threshold: 1 }).toBuffer({ resolveWithObject: true });
+  console.log('hero trimmed to', trimmed.info.width, '×', trimmed.info.height);
   for (const w of [480, 760, 1100]) {
     await sharp(trimmed.data)
       .resize({ width: w })
       .webp({ quality: w > 800 ? 80 : 82, alphaQuality: 90, effort: 6 })
-      .toFile(path.join(out, `${job.name}-${w}.webp`));
-    console.log(job.name, w);
+      .toFile(at(`public/img/hero/aziz-cutout-${w}.webp`));
+    console.log('hero', w);
   }
-}
+} else console.log('No public/hero/aziz-cutout.png: hero skipped.');
+
+const about = at('public/about/aziz-about-cutout.webp');
+if (existsSync(about)) {
+  // Not trimmed: the faded edges are part of the picture and the bottom must stay flush.
+  for (const w of [760, 1100]) {
+    await sharp(about).resize({ width: w }).webp({ quality: 82, alphaQuality: 90, effort: 6 }).toFile(at(`public/about/aziz-about-cutout-${w}.webp`));
+    console.log('about', w);
+  }
+  await sharp(about).resize({ width: 1100 }).png({ compressionLevel: 9, palette: true, quality: 90 }).toFile(at('public/about/aziz-about-cutout-1100.png'));
+  console.log('about png fallback');
+} else console.log('No public/about/aziz-about-cutout.webp: About skipped.');

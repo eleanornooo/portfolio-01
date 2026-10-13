@@ -34,5 +34,5 @@ CV_Aziz_2026.md
 
 # Hero cut-out source (≈16 MB); the optimised WebPs in public/img/hero are committed
 public/hero/
-# About cut-out source (≈16 MB); the optimised WebPs in public/img/about are committed
-public/about/
+# Original About cut-out (≈16 MB, unfaded); the pre-faded WebP and its sizes in public/about are committed
+public/about/aziz-about-cutout.png
