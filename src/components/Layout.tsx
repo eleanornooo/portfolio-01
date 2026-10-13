@@ -5,6 +5,7 @@ import { useLang } from '../i18n/useLang';
 import Header from './Header';
 import Footer from './Footer';
 import Cursor from './Cursor';
+import ResearchGuide from './ResearchGuide';
 import { DARK_HERO_ROUTES } from './nav';
 import { scrollToElement, scrollToTop, startSmoothScroll } from '../lib/smooth';
 
@@ -55,6 +56,7 @@ function Shell() {
         <Outlet />
       </main>
       <Footer />
+      <ResearchGuide />
       <Cursor />
     </div>
   );

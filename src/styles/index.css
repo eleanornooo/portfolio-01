@@ -649,6 +649,18 @@ html.has-cursor * {
 html.has-cursor :is(input, textarea, select, [contenteditable]) {
   cursor: auto !important;
 }
+/* A modal <dialog> sits in the top layer, above the custom cursor: while one is open, the
+   custom cursor hides and the system cursor comes back. */
+html.has-cursor:has(dialog:modal),
+html.has-cursor:has(dialog:modal) * {
+  cursor: auto !important;
+}
+html.has-cursor:has(dialog:modal) :is(a, button, label, summary, [role='button']) {
+  cursor: pointer !important;
+}
+html:has(dialog:modal) :is(.cursor-dot, .cursor-ring) {
+  visibility: hidden;
+}
 .cursor-dot,
 .cursor-ring {
   position: fixed;
@@ -1217,6 +1229,118 @@ html.has-cursor :is(input, textarea, select, [contenteditable]) {
 }
 @media (prefers-reduced-motion: reduce) {
   .tt-now-dot {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------- research guide */
+/* Floating button: bottom-right, inside the safe area, below the custom cursor (z 90). */
+.guide-fab {
+  position: fixed;
+  z-index: 40;
+  right: max(1rem, env(safe-area-inset-right, 0px) + 0.75rem);
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  color: rgb(var(--ink));
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgb(var(--paper) / 0.72);
+  border: 1px solid rgb(245 158 59 / 0.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow:
+    0 14px 40px -14px rgb(0 0 0 / 0.6),
+    0 0 30px -10px rgb(245 158 59 / 0.55);
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.3s,
+    border-color 0.3s;
+}
+.guide-fab:hover {
+  border-color: rgb(245 158 59 / 0.8);
+}
+.guide-fab.is-tucked {
+  transform: translateY(calc(100% + 2rem));
+  opacity: 0;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .guide-fab {
+    width: auto;
+    padding: 0 0.9rem 0 1.1rem;
+    height: 2.875rem;
+    right: max(1.5rem, env(safe-area-inset-right, 0px) + 1rem);
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+}
+@media print {
+  .guide-fab {
+    display: none;
+  }
+}
+
+/* The panel: a glass sheet sliding in from the right (full screen on phones). */
+.guide-panel {
+  margin: 0 0 0 auto;
+  height: 100dvh;
+  max-height: none;
+  width: min(31rem, 100%);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.01)), rgb(var(--paper) / 0.86);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
+  box-shadow: -30px 0 80px -30px rgb(0 0 0 / 0.8);
+}
+.guide-panel::backdrop {
+  background: rgb(6 7 10 / 0.45);
+}
+.guide-panel[open] .guide-inner {
+  animation: guide-in 0.5s cubic-bezier(0.19, 0.8, 0.22, 1) both;
+}
+@keyframes guide-in {
+  from {
+    transform: translateX(2.5rem);
+    opacity: 0;
+  }
+}
+.guide-caret {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: rgb(var(--amber));
+  animation: guide-blink 0.9s steps(1) infinite;
+}
+@keyframes guide-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.guide-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgb(var(--amber));
+  box-shadow: 0 0 10px rgb(245 158 59 / 0.9);
+  animation: tt-pulse 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .guide-fab {
+    transition: none;
+  }
+  .guide-panel[open] .guide-inner,
+  .guide-caret,
+  .guide-dot {
     animation: none;
   }
 }

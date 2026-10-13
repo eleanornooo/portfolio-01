@@ -12,6 +12,8 @@ interface ImportMetaEnv {
   readonly VITE_TIMETABLE_SHEET_CSV?: string;
   /** Optional LLM endpoint for the research guide (e.g. a Vercel function). Unset = local answers only. */
   readonly VITE_ASSISTANT_ENDPOINT?: string;
+  /** "on" lets that endpoint write the guide's answers (see src/lib/guide/provider.ts). */
+  readonly VITE_ASSISTANT_LLM?: string;
 }
 
 interface ImportMeta {

@@ -102,7 +102,7 @@ Feedback: the pages felt like one template (dark opener + giant rising title + g
   - Timetable as a dark framed app window (title bar with three dots, glow, deep shadow), dark in both themes (the `--tt-*` colours now also follow `.tone-dark`); the live "now" line glows and its dot breathes. Timetable logic unchanged (only class names added to the now-line)
 
 ### Next ⬜
-- About (magazine profile), then sections 7, 9 and 8
+- Section 8 (remaining micro-interactions), then final checks
 
 ---
 
@@ -158,8 +158,13 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 - ⬜ Zellige divider that draws itself
 - ⬜ Timetable: animated "now" line, blocks scale in
 
-## 9. AI identity: "Ask about my research" assistant ⬜
-- `fuse.js` is installed but unused. Needed: a floating button + panel, ⌘K / Ctrl+K, fuzzy search over all the content, a typed answer with citations, suggestion chips, EN/FR, a pluggable LLM endpoint behind a flag
+## 9. Research guide ("Ask about the research") ✅
+- Floating button bottom-right (desktop: glass pill "Ask about the research ⌘K/Ctrl K"; phones: a round icon) and Ctrl/⌘+K open a slide-in glass panel (`components/ResearchGuide.tsx`, native modal `<dialog>`: page inert behind, Tab trapped, Esc closes, focus returns). Labelled "Research guide — answers from this site's content" (FR: "Guide de la recherche — réponses tirées du contenu de ce site")
+- Engine (`lib/guide/engine.ts`, lazy chunk ≈12 KB gzipped, loaded on first open or on button hover): fuse.js over publications, projects, research themes, talks, courses, bio, positions and doctoral students; question words dropped (EN/FR), term-by-term scoring, a kind word ("projects", "talks"…) favours that kind, weak and random matches rejected ("I couldn't find anything…"). Composes a short answer (typed out; reduced motion: instant; screen readers get the full text once via a live region) and 2–4 linked result cards to the right page/anchor. Dedicated answers for upcoming talks (from today's date) and doctoral supervision
+- Suggestion chips: What is AIA-PCEK? · Projects on inclusion · Upcoming talks · Ph.D. supervision (and the FR equivalents)
+- LLM later (`lib/guide/provider.ts`): off by default; `VITE_ASSISTANT_LLM=on` + `VITE_ASSISTANT_ENDPOINT` (your own serverless function, which holds the key) lets it write the answer from the same local results; cards stay local; any error/timeout falls back to the local answer; a note then says the text is AI-written. No key in the repo (`.env.example` documents the two variables)
+- Placement: below the custom cursor (z 40 vs 90), inside the safe area; on phones hidden over the first screen and while scrolling down; it steps aside whenever the contact form's Send button (`data-guide-avoid`) is on screen
+- Also fixed: inside any modal dialog (course details, menu, lightbox, guide) the custom cursor was drawn under the top layer and the system cursor was hidden; the system cursor now returns while a modal is open
 
 ## Final checks ⬜
 - `npm run build` (SSG), reduced motion, keyboard, Lighthouse mobile

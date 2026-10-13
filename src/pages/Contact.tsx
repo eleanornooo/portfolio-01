@@ -118,7 +118,7 @@ function ContactForm() {
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div data-guide-avoid className="flex flex-wrap items-center gap-x-6 gap-y-3">
         <Magnetic strength={0.25}>
           <button type="submit" className="btn-glow disabled:cursor-wait disabled:opacity-60" disabled={sending}>
             {sending ? t.contact.sending : t.contact.send}
