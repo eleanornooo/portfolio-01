@@ -18,9 +18,11 @@ export default {
         amber: v('amber'),
       },
       fontFamily: {
-        serif: ['"Fraunces Variable"', 'Iowan Old Style', 'Georgia', 'serif'],
-        sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['"Bricolage Grotesque Variable"', '"Arial Narrow"', 'system-ui', 'sans-serif'],
+        // Each web font is followed by a metric-matched local fallback (see "Font fallbacks" in
+        // index.css), so the swap when the web font arrives doesn't re-wrap text (no layout shift).
+        serif: ['"Fraunces Variable"', '"Fraunces Fallback"', 'Iowan Old Style', 'Georgia', 'serif'],
+        sans: ['"IBM Plex Sans"', '"Plex Fallback"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Bricolage Fallback"', '"Arial Narrow"', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         label: ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.12em' }],

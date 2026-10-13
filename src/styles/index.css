@@ -1,5 +1,5 @@
-@import '@fontsource-variable/fraunces/opsz.css';
-@import '@fontsource-variable/fraunces/opsz-italic.css';
+@import '@fontsource-variable/fraunces/wght.css';
+@import '@fontsource-variable/fraunces/wght-italic.css';
 /* Display face for the giant words (weight axis only, ≈41 KB for Latin). */
 @import '@fontsource-variable/bricolage-grotesque/wght.css';
 /* Latin + Latin Extended only (French, Turkish names…); no Cyrillic/Greek/Vietnamese. */
@@ -9,6 +9,42 @@
 @import '@fontsource/ibm-plex-sans/latin-500.css';
 @import '@fontsource/ibm-plex-sans/latin-ext-500.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
+
+/* Font fallbacks: local fonts resized to the web fonts' metrics (measured from the font files),
+   so text keeps its line breaks when the web font swaps in (no layout shift). */
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  size-adjust: 117%;
+  ascent-override: 83.6%;
+  descent-override: 21.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  font-style: italic;
+  src: local('Georgia Italic'), local('Georgia-Italic');
+  size-adjust: 114%;
+  ascent-override: 85.8%;
+  descent-override: 22.4%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bricolage Fallback';
+  src: local('Arial');
+  size-adjust: 112.6%;
+  ascent-override: 82.6%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Plex Fallback';
+  src: local('Arial');
+  size-adjust: 101.7%;
+  ascent-override: 100.7%;
+  descent-override: 27%;
+  line-gap-override: 0%;
+}
 
 @tailwind base;
 @tailwind components;
@@ -392,7 +428,7 @@ html {
 }
 .hero-word text,
 .hero-word-outline text {
-  font-family: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque Variable', 'Bricolage Fallback', 'Arial Narrow', system-ui, sans-serif;
   font-weight: 800;
 }
 .hero-word-outline text {
@@ -649,16 +685,17 @@ html.has-cursor * {
 html.has-cursor :is(input, textarea, select, [contenteditable]) {
   cursor: auto !important;
 }
-/* A modal <dialog> sits in the top layer, above the custom cursor: while one is open, the
-   custom cursor hides and the system cursor comes back. */
-html.has-cursor:has(dialog:modal),
-html.has-cursor:has(dialog:modal) * {
+/* A modal <dialog> sits in the top layer, above the custom cursor: while one is open
+   (html.modal-open, set by lockScroll), the custom cursor hides and the system cursor returns.
+   (A class, not :has(), which would make every DOM change re-check the whole page's styles.) */
+html.has-cursor.modal-open,
+html.has-cursor.modal-open * {
   cursor: auto !important;
 }
-html.has-cursor:has(dialog:modal) :is(a, button, label, summary, [role='button']) {
+html.has-cursor.modal-open :is(a, button, label, summary, [role='button']) {
   cursor: pointer !important;
 }
-html:has(dialog:modal) :is(.cursor-dot, .cursor-ring) {
+html.modal-open :is(.cursor-dot, .cursor-ring) {
   visibility: hidden;
 }
 .cursor-dot,
@@ -1097,7 +1134,8 @@ html:has(dialog:modal) :is(.cursor-dot, .cursor-ring) {
     text-shadow 0.6s;
 }
 .xp-armed .xp-item:not(.is-on) .xp-num {
-  color: rgb(var(--ink) / 0.18);
+  /* Dimmed, but still 3:1 against the page (large text). */
+  color: rgb(var(--ink) / 0.42);
   text-shadow: none;
 }
 /* "Show all" lists: rows slide in one after another. */

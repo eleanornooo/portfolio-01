@@ -1,8 +1,10 @@
-// GSAP is loaded on demand, in its own chunk, after hydration: keeping its ~50 KB (gzip)
+// GSAP is loaded on demand, in its own chunk, after the first interaction (everything it
+// drives is below the fold or tied to scrolling): keeping its ~50 KB (gzip)
 // off the critical path matters more for phones than starting animations a few ms earlier.
 // `useGsap` gives the same guarantees as @gsap/react's useGSAP: everything created inside
 // the setup function (tweens, ScrollTriggers, SplitText) is reverted on unmount.
 import { useEffect, useRef, type DependencyList, type RefObject } from 'react';
+import { firstInteraction } from './motion';
 
 type GsapCore = typeof import('gsap').gsap;
 type ScrollTriggerT = typeof import('gsap/ScrollTrigger').ScrollTrigger;
@@ -19,13 +21,13 @@ let loaded: Gsap | null = null;
 
 export function loadGsap(): Promise<Gsap> {
   if (!loading) {
-    loading = Promise.all([import('gsap'), import('gsap/ScrollTrigger'), import('gsap/SplitText')]).then(
+    loading = firstInteraction().then(() => Promise.all([import('gsap'), import('gsap/ScrollTrigger'), import('gsap/SplitText')]).then(
       ([g, st, sp]) => {
         g.gsap.registerPlugin(st.ScrollTrigger, sp.SplitText);
         loaded = { gsap: g.gsap, ScrollTrigger: st.ScrollTrigger, SplitText: sp.SplitText };
         return loaded;
       },
-    );
+    ));
   }
   return loading;
 }

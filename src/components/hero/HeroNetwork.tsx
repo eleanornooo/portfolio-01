@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { nodeText, type GraphNode } from '../../lib/graph';
 import { useLang } from '../../i18n/useLang';
-import { isLiteDevice, prefersReducedMotion, whenIdle } from '../../lib/motion';
+import { firstInteraction, isLiteDevice, prefersReducedMotion, whenIdle } from '../../lib/motion';
 import type { NetworkRenderer } from './palette';
 
 /** Network radius relative to the stage width. Mirrors .hero-poster in index.css. */
@@ -216,7 +216,15 @@ export default function HeroNetwork({
       };
     };
 
-    const cancelIdle = whenIdle(() => void start(), 1500);
+    // Phones and touch devices: the animated network starts on the first touch or scroll (its
+    // per-frame work would otherwise weigh on the first seconds); the poster shows until then.
+    // Desktop: when the browser is idle after the first paint.
+    let cancelIdle = () => {};
+    if (isLiteDevice())
+      void firstInteraction().then(() => {
+        if (!disposed) void start();
+      });
+    else cancelIdle = whenIdle(() => void start(), 1500);
     return () => {
       disposed = true;
       cancelIdle();

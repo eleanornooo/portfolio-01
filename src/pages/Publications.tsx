@@ -125,7 +125,10 @@ export function Component() {
       </section>
 
       {/* ------------------------------------------------------- the index */}
-      <section aria-label={t.publications.index} className="tone-light blend-t pb-28 pt-8">
+      <section aria-labelledby="pub-index-title" className="tone-light blend-t pb-28 pt-8">
+        <h2 id="pub-index-title" className="sr-only">
+          {t.publications.index}
+        </h2>
         <div className="page sticky-bar">
           <div className="glass flex min-w-0 flex-col gap-3 rounded-[2rem] p-3 xl:flex-row xl:items-center xl:justify-between">
             <FilterChips

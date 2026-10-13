@@ -28,11 +28,13 @@ export async function startSmoothScroll(): Promise<() => void> {
   };
 }
 
-/** Freezes page scrolling while a modal panel is open (nested calls are counted). */
+/** Freezes page scrolling while a modal panel is open (nested calls are counted); marks <html> .modal-open. */
 export function lockScroll(lock: boolean) {
   locks = Math.max(0, locks + (lock ? 1 : -1));
   const locked = locks > 0;
   document.documentElement.style.overflow = locked ? 'hidden' : '';
+  // Modal dialogs sit above the custom cursor (top layer): CSS restores the system cursor.
+  document.documentElement.classList.toggle('modal-open', locked);
   if (locked) lenis?.stop();
   else lenis?.start();
 }

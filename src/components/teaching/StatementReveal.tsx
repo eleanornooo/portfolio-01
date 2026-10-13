@@ -52,10 +52,12 @@ export default function StatementReveal({ text, lang, aside, header }: { text: s
   return (
     <div ref={stage} className="ws-stage" style={{ '--n': words.length, '--p': START } as CSSProperties}>
       <div className="ws-sticky">
-        <div className="page grid h-full items-center gap-y-12 pb-16 pt-28 md:grid-cols-12 md:gap-x-10 md:pb-10 md:pt-24">
-          <div className="md:col-span-7">
-            {header}
-            <blockquote className="ws-quote mt-6" lang={lang}>
+        <div className="page grid h-full items-center gap-y-10 pb-16 pt-28 md:grid-cols-12 md:gap-x-10 md:gap-y-12 md:pb-10 md:pt-24">
+          {/* Phones: title, then the photos, then the statement (the statement can re-wrap
+              when its font arrives without moving anything above it). Desktop: side by side. */}
+          <div className="contents md:col-span-7 md:block">
+            <div className="order-1">{header}</div>
+            <blockquote className="ws-quote order-3 md:mt-6" lang={lang}>
               <p className="font-serif text-[clamp(1.5rem,0.75rem+1.55vw,2.375rem)] font-light italic leading-[1.24] tracking-[-0.012em]">
                 {words.map((w, i) => (
                   <span key={i} className="ws-word" style={{ '--i': i } as CSSProperties}>
@@ -65,7 +67,7 @@ export default function StatementReveal({ text, lang, aside, header }: { text: s
               </p>
             </blockquote>
           </div>
-          <div className="md:col-span-5">{aside}</div>
+          <div className="order-2 md:order-none md:col-span-5">{aside}</div>
         </div>
       </div>
     </div>

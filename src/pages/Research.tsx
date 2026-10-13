@@ -7,6 +7,7 @@ import type { Project } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { projectText, pubText, themesOf } from '../lib/related';
 import { useReveals } from '../lib/reveal';
+import { useWide } from '../lib/motion';
 import { scrollToElement } from '../lib/smooth';
 import Seo from '../components/Seo';
 import Heading from '../components/SectionHeading';
@@ -26,6 +27,7 @@ function shortRef(id: string): string | null {
 
 export function Component() {
   const { t, pick } = useLang();
+  const wide = useWide();
   const root = useRef<HTMLDivElement>(null);
   useReveals(root);
   const [theme, setTheme] = useState<number | null>(null);
@@ -75,7 +77,8 @@ export function Component() {
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(45%_55%_at_62%_50%,rgb(226_87_43/0.16),transparent_70%),radial-gradient(25%_30%_at_15%_85%,rgb(245_158_59/0.08),transparent_70%)]"
         />
         <div className="rmap-in absolute inset-0 hidden md:block">
-          <ResearchMap active={theme} onTheme={(i) => choose(i)} onProject={goToCase} />
+          {/* Mounted only where it is shown (tablet and up): its force layout is not computed on phones. */}
+          {wide && <ResearchMap active={theme} onTheme={(i) => choose(i)} onProject={goToCase} />}
         </div>
 
         <div className="page pointer-events-none relative flex h-full flex-col justify-end pb-12 pt-28 md:pb-14">

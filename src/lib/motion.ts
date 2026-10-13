@@ -28,6 +28,29 @@ function useMedia(q: string): boolean {
 
 export const useReducedMotion = () => useMedia(REDUCED);
 export const useFinePointer = () => useMedia(FINE);
+/** Tablet and up (false while pre-rendering and hydrating). */
+export const useWide = () => useMedia('(min-width: 768px)');
+
+/**
+ * Resolves on the first sign of a visitor: a scroll, touch, key, click or mouse move (or at
+ * once if the page opened already scrolled). Heavy extras wait for it, so they don't compete
+ * with the first seconds of loading on phones.
+ */
+let interacted: Promise<void> | null = null;
+export function firstInteraction(): Promise<void> {
+  if (!interacted) {
+    interacted = new Promise((resolve) => {
+      const events = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'pointermove', 'keydown'] as const;
+      const go = () => {
+        events.forEach((e) => window.removeEventListener(e, go, true));
+        resolve();
+      };
+      events.forEach((e) => window.addEventListener(e, go, { capture: true, passive: true }));
+      if (window.scrollY > 0) go();
+    });
+  }
+  return interacted;
+}
 
 /** Runs `fn` once the browser is idle after the first paint (with a deadline). */
 export function whenIdle(fn: () => void, timeout = 1800): () => void {

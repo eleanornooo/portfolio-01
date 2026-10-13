@@ -28,6 +28,8 @@ export default function Showcase({
   heading?: ReactNode;
   tone?: 'dark' | 'light';
 }) {
+  // Card titles sit one level below the block's own heading (h3) when there is one, else under the section's h2.
+  const Title = heading ? 'h4' : 'h3';
   const { t } = useLang();
   const [all, setAll] = useState(false);
   const id = useId();
@@ -46,7 +48,7 @@ export default function Showcase({
           <li key={e.key} className={`${card} flex flex-col p-6`}>
             <div className="relative z-10 flex flex-1 flex-col">
               {e.period && <p className="num eyebrow">{e.period}</p>}
-              <h4 className="mt-4 font-serif text-[1.25rem] font-normal leading-snug">{e.title}</h4>
+              <Title className="mt-4 font-serif text-[1.25rem] font-normal leading-snug">{e.title}</Title>
               {e.sub && <p className="mt-1 text-[0.9375rem] text-ink2">{e.sub}</p>}
               {e.detail && <div className="mt-3 line-clamp-5 text-sm text-ink2">{e.detail}</div>}
               {e.links && <LinkRow links={e.links} className="mt-auto pt-4" />}

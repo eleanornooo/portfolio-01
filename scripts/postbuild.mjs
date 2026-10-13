@@ -1,8 +1,8 @@
 // Runs after `vite-react-ssg build`:
 //  1. moves <meta charset> and viewport to the very top of <head> (react-helmet puts the
 //     page <title> and meta tags before them; browsers want charset in the first 1 KB);
-//  2. replaces the SSG's preload of *every* font file with preloads of the three faces
-//     needed for the first paint (incl. the hero's display face) (the others load on demand via unicode-range);
+//  2. replaces the SSG's preload of *every* font file with a preload of the display face only
+//     (the others load on demand via unicode-range), and drops the preload of the inlined CSS;
 //  3. inlines the stylesheet (≈9 KB gzipped) so the first paint needs no extra request;
 //  4. writes dist/sitemap.xml from the pre-rendered pages;
 //  5. drops the cut-outs' 16 MB source PNGs (public/hero, public/about), which only feed `npm run images:hero`.
@@ -19,12 +19,9 @@ await rm(path.join(dist, 'about', 'aziz-about-cutout.png'), { force: true });
 if ((await readdir(path.join(dist, 'about')).catch(() => null))?.length === 0) await rm(path.join(dist, 'about'), { recursive: true });
 
 const assets = await readdir(path.join(dist, 'assets'));
-const criticalFonts = [
-  /^fraunces-latin-opsz-normal-.*\.woff2$/,
-  /^bricolage-grotesque-latin-wght-normal-.*\.woff2$/,
-  /^ibm-plex-sans-latin-400-normal-.*\.woff2$/,
-  /^ibm-plex-sans-latin-500-normal-.*\.woff2$/,
-]
+// Only the display face is preloaded (the hero title and the nav use it); preloading more
+// fonts competes with the first paint on slow phones. The others load on demand (swap).
+const criticalFonts = [/^bricolage-grotesque-latin-wght-normal-.*\.woff2$/]
   .map((re) => assets.find((f) => re.test(f)))
   .filter(Boolean)
   .map((f) => `<link rel="preload" as="font" type="font/woff2" href="/assets/${f}" crossorigin>`)
@@ -46,6 +43,8 @@ for (const f of htmlFiles) {
   });
   html = html.replace(/<head>/i, `<head>${first.join('')}`);
   html = html.replace(/<link rel="preload" as="font"[^>]*>/g, '');
+  // The stylesheet is inlined below, so its preload would only download it a second time.
+  html = html.replace(/<link rel="preload"[^>]*href="\/assets\/[^"]+\.css"[^>]*as="style"[^>]*>/g, '');
   html = html.replace(/<link rel="stylesheet"[^>]*href="(\/assets\/[^"]+\.css)"[^>]*>/, (_tag, href) => {
     const css = cssCache.get(href);
     return `${criticalFonts}<style>${css}</style>`;
