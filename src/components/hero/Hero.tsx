@@ -187,8 +187,7 @@ export default function Hero() {
           >
             <p className="eyebrow text-amber">{pick(profile.role)}</p>
             <h1 id="hero-name" className="mt-3 font-serif text-[1.75rem] font-normal leading-[1.05] tracking-[-0.02em] md:text-[2.25rem]">
-              {profile.honorific} {profile.name},{' '}
-              <span className="font-light italic text-ink2">{profile.postnominal}</span>
+              {profile.honorific} {profile.name}
             </h1>
             <p className="mt-2 text-sm text-ink2">
               {pick(profile.title)} · {profile.institutionShort}

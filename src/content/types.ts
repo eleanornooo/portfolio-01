@@ -111,6 +111,8 @@ export interface Talk {
   note?: string;
   links?: Link[];
   lang?: Lang;
+  /** Internal page with the full session details (e.g. "/talks/unu-macau-2026"). */
+  page?: string;
 }
 
 /* ----------------------------------------------------------------- projects */
@@ -214,6 +216,8 @@ export interface Position {
   periodLabel?: string;
   logo?: string; // file name in /public/img/logos (without extension)
   note?: string;
+  /** Titles held within one continuous role, shown as sub-lines (e.g. Lecturer → Assistant Professor). */
+  steps?: { role: string; start: string; end?: string }[];
   url?: string;
 }
 
@@ -286,4 +290,6 @@ export interface NewsItem {
   title: Localized;
   detail?: Localized;
   url?: string;
+  /** Internal page (opens in the same tab); used instead of `url`. */
+  page?: string;
 }

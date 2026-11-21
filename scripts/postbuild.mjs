@@ -32,7 +32,10 @@ for (const f of assets.filter((a) => a.endsWith('.css'))) {
   cssCache.set(`/assets/${f}`, await readFile(path.join(dist, 'assets', f), 'utf8'));
 }
 
-const htmlFiles = (await readdir(dist)).filter((f) => f.endsWith('.html'));
+// Every pre-rendered page, including nested routes (talks/unu-macau-2026.html), as paths relative to dist.
+const htmlFiles = (await readdir(dist, { recursive: true }))
+  .map((f) => f.split(path.sep).join('/'))
+  .filter((f) => f.endsWith('.html') && !f.startsWith('assets/'));
 for (const f of htmlFiles) {
   const file = path.join(dist, f);
   let html = await readFile(file, 'utf8');
@@ -52,8 +55,8 @@ for (const f of htmlFiles) {
   await writeFile(file, html);
 }
 
-const pages = (await readdir(dist))
-  .filter((f) => f.endsWith('.html') && f !== '404.html')
+const pages = htmlFiles
+  .filter((f) => f !== '404.html')
   .map((f) => (f === 'index.html' ? '/' : `/${f.replace(/\.html$/, '')}`))
   .sort((a, b) => (a === '/' ? -1 : b === '/' ? 1 : a.localeCompare(b)));
 

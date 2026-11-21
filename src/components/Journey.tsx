@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import type { Localized } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { useGsap } from '../lib/gsap';
 import { milestones } from '../lib/journey';
@@ -14,12 +15,14 @@ import MaskText from './MaskText';
  */
 export default function Journey({ index }: { index: string }) {
   const { t, pick, tx } = useLang();
+  const periodText = (p: string | Localized) => (typeof p === 'string' ? p : pick(p));
   const root = useRef<HTMLElement>(null);
   const pin = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLOListElement>(null);
   const items = milestones();
   const first = items[0].year;
-  const last = items[items.length - 1].year;
+  // The story runs to the present: the last chapter (ISE, 2020–today) is ongoing.
+  const last = String(new Date(__BUILD_TIME__).getUTCFullYear());
 
   useGsap(
     ({ gsap }) => {
@@ -172,7 +175,7 @@ export default function Journey({ index }: { index: string }) {
                 </p>
                 <div className="journey-copy mt-6 border-t border-ink/10 pt-5">
                   <h3 className="font-serif text-[1.5rem] font-normal leading-snug md:text-[1.75rem]">
-                    <span className="sr-only">{m.period ?? m.year}: </span>
+                    <span className="sr-only">{m.period ? periodText(m.period) : m.year}: </span>
                     {tx(m.title)}
                   </h3>
                   <p className="mt-2 text-ink2">
@@ -181,7 +184,7 @@ export default function Journey({ index }: { index: string }) {
                   </p>
                   {m.period && (
                     <p className="num mt-2 text-sm text-ink3" aria-hidden="true">
-                      {m.period}
+                      {periodText(m.period)}
                     </p>
                   )}
                 </div>

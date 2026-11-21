@@ -123,12 +123,15 @@ export const contentFr: Record<string, string> = {
   'LYDEX, Rabat': 'LYDEX, Rabat',
 
   /* ----------------------------------------------------------- positions */
-  'Assistant Professor & Coordinator, Technopedagogy & AI Axis': 'Professeur assistant et coordonnateur, axe Technopédagogie et IA',
+  'Faculty member & Coordinator, Technopedagogy & AI Axis': 'Membre du corps professoral et coordonnateur, axe Technopédagogie et IA',
+  'Co-founder of ISE': 'Cofondateur de l’ISE',
+  'Assistant Professor': 'Professeur assistant',
+  'Lecturer (Technopedagogy & AI Axis, formerly Digital & AI Axis)': 'Chargé de cours (axe Technopédagogie et IA, anciennement axe Numérique et IA)',
+  'Building ISE and leading the Technopedagogy & AI Axis': 'Bâtir l’ISE et diriger l’axe Technopédagogie et IA',
+  'Ben Guerir and Rabat, Morocco': 'Ben Guerir et Rabat, Maroc',
   'Institute of Education Sciences (ISE), UM6P': 'Institut des sciences de l’éducation (ISE), UM6P',
   'Ben Guerir, Morocco': 'Ben Guerir, Maroc',
   'Rabat, Morocco': 'Rabat, Maroc',
-  'Lecturer & Coordinator, Technopedagogy & AI Axis (formerly Digital & AI Axis)':
-    'Chargé de cours et coordonnateur, axe Technopédagogie et IA (anciennement axe Numérique et IA)',
   'Replacement Teacher': 'Enseignant suppléant',
   'Centre de services scolaire des Patriotes schools': 'Écoles du Centre de services scolaire des Patriotes',
   'Instructor, Executive Master’s Program': 'Formateur, Executive Master',
@@ -253,13 +256,14 @@ export const contentFr: Record<string, string> = {
   'Ph.D. candidate, ISE – UM6P': 'Doctorant, ISE – UM6P',
 
   /* ---------------------------------------------------------- talk notes */
-  'Selected panelist.': 'Panéliste sélectionné.',
+  'Chair: Salvatore Moccia.': 'Président de séance : Salvatore Moccia.',
   'Digital transformation, inclusivity and innovation in higher education.':
     'Transformation numérique, inclusivité et innovation dans l’enseignement supérieur.',
   'Facilitated the workshop and represented UM6P at the university’s stand.': 'Animation de l’atelier et représentation de l’UM6P au stand de l’université.',
 
   /* --------------------------------------------------------- link labels */
   Event: 'Événement',
+  'Official programme': 'Programme officiel',
   Video: 'Vidéo',
   'Video (from 49:40)': 'Vidéo (à partir de 49:40)',
   Slides: 'Diapositives',

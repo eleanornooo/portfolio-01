@@ -4,21 +4,18 @@ import type { Affiliation, Position } from './types';
 // carried over from the previous site. Newest first.
 export const positions: Position[] = [
   {
-    id: 'ap-um6p',
-    role: 'Assistant Professor & Coordinator, Technopedagogy & AI Axis',
+    // One continuous role since 2020; the titles held are listed as steps.
+    id: 'ise-um6p',
+    role: 'Faculty member & Coordinator, Technopedagogy & AI Axis',
     org: 'Institute of Education Sciences (ISE), UM6P',
-    place: 'Rabat, Morocco',
-    start: '2026',
-    logo: 'um6p',
-  },
-  {
-    id: 'lecturer-um6p',
-    role: 'Lecturer & Coordinator, Technopedagogy & AI Axis (formerly Digital & AI Axis)',
-    org: 'Institute of Education Sciences (ISE), UM6P',
-    place: 'Ben Guerir, Morocco',
+    place: 'Ben Guerir and Rabat, Morocco',
     start: '2020',
-    end: '2026',
     logo: 'um6p',
+    steps: [
+      { role: 'Assistant Professor', start: '2026' },
+      { role: 'Lecturer (Technopedagogy & AI Axis, formerly Digital & AI Axis)', start: '2020', end: '2026' },
+      { role: 'Co-founder of ISE', start: '2020', end: '2020' },
+    ],
   },
   {
     id: 'cssp',

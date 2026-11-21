@@ -118,7 +118,7 @@ function itemsFor(def: PlaceDef): PlaceItem[] {
   for (const t of talks) {
     // Arizona is a collaboration, not a venue: match the organisers, not the location.
     const text = def.id === 'arizona' ? t.event : `${t.location ?? ''}`;
-    if (def.match.test(text)) items.push({ kind: 'talk', title: t.title ?? t.event, meta: year(t.date), date: t.date, href: '/talks' });
+    if (def.match.test(text)) items.push({ kind: 'talk', title: t.title ?? t.event, meta: year(t.date), date: t.date, href: t.page ?? '/talks' });
   }
   for (const p of positions) {
     if (def.match.test(`${p.place ?? ''} ${def.id === 'quebec' ? p.org : ''}`))

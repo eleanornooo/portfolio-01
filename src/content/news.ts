@@ -7,16 +7,16 @@ export const news: NewsItem[] = [
   {
     id: 'unu-macau',
     date: '2026-11-25',
-    endDate: '2026-11-26',
     kind: 'Talk',
     title: {
       en: 'Panelist at the UNU Macau AI Conference 2026',
       fr: 'Panéliste à la UNU Macau AI Conference 2026',
     },
     detail: {
-      en: 'United Nations University, Macau SAR — panel “AI & Education: End of an Era of the Old Education System?”',
-      fr: 'Université des Nations unies, Macao — panel « AI & Education: End of an Era of the Old Education System? »',
+      en: 'United Nations University, MGM MACAU — “Emerging Challenges and Practices for Validating Evidence of Learning and Competence in an AI-Mediated World”.',
+      fr: 'Université des Nations unies, MGM MACAU — « Emerging Challenges and Practices for Validating Evidence of Learning and Competence in an AI-Mediated World ».',
     },
+    page: '/talks/unu-macau-2026',
   },
   {
     id: 'lydex',
@@ -52,24 +52,6 @@ export const news: NewsItem[] = [
       en: 'Technological innovation with social responsibility — Palais des congrès Bouregreg.',
       fr: 'Innovation technologique avec responsabilité sociale — Palais des congrès Bouregreg.',
     },
-  },
-  {
-    id: 'phd',
-    date: '2026',
-    kind: 'Milestone',
-    title: { en: 'Ph.D. in Education completed, Université de Sherbrooke', fr: 'Doctorat en éducation obtenu, Université de Sherbrooke' },
-    detail: {
-      en: 'Thesis on interdisciplinary collaboration in the design of an intelligent tutoring system.',
-      fr: 'Thèse sur la collaboration interdisciplinaire dans la conception d’un système tutoriel intelligent.',
-    },
-    url: 'https://doi.org/10.71892/11143/1932',
-  },
-  {
-    id: 'assistant-professor',
-    date: '2026',
-    kind: 'Milestone',
-    title: { en: 'Appointed Assistant Professor, ISE – UM6P', fr: 'Nommé professeur assistant, ISE – UM6P' },
-    detail: { en: 'Coordinator of the Technopedagogy & AI Axis.', fr: 'Coordonnateur de l’axe Technopédagogie et IA.' },
   },
   {
     id: 'qs-judge',

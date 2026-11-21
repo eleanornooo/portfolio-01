@@ -4,7 +4,8 @@ import type { NewsItem } from '../content/types';
 import { useLang } from '../i18n/useLang';
 import { formatDate, timing } from '../lib/dates';
 import { photoSrc, photoSrcSet, photos, type Photo } from '../lib/photos';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 
 /** Bento layout: which highlights get a bigger tile, and which carry a photo or a giant mark. */
 const FEATURES: Record<string, { span: string; photo?: Photo; big?: boolean; mark?: [string, string] }> = {
@@ -14,11 +15,12 @@ const FEATURES: Record<string, { span: string; photo?: Photo; big?: boolean; mar
     mark: ['MACAU', '2026'],
   },
   'qs-judge': { span: 'sm:col-span-2', photo: photos.scienceWeekPanelC },
-  phd: { span: 'sm:col-span-2' },
+  lydex: { span: 'sm:col-span-2' },
+  'qq-article': { span: 'sm:col-span-2' },
 };
 
 /** The six strongest highlights, shown first; the others open with "See all highlights". */
-const TOP = new Set(['unu-macau', 'innovenssup', 'assistant-professor', 'phd', 'qs-judge', 'qq-article']);
+const TOP = new Set(['unu-macau', 'innovenssup', 'bouregreg', 'qs-judge', 'qq-article', 'lydex']);
 
 /**
  * The year's highlights as a bento grid: one large feature tile (a glow and a giant
@@ -110,7 +112,20 @@ export default function Highlights({ items, now }: { items: NewsItem[]; now: num
                         f?.big ? 'text-[1.75rem] md:text-[2.375rem]' : f ? 'text-[1.5rem]' : 'text-[1.1875rem]'
                       }`}
                     >
-                      {n.url ? (
+                      {n.page ? (
+                        // Internal page (same tab): the whole tile is the link.
+                        <Link
+                          to={n.page}
+                          className="outline-none after:absolute after:inset-0 after:rounded-3xl focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-amber"
+                        >
+                          {title}
+                          <ArrowRight
+                            size="0.8em"
+                            aria-hidden="true"
+                            className="ml-1 inline-block align-[-0.05em] text-amber transition-transform duration-300 group-hover:translate-x-1"
+                          />
+                        </Link>
+                      ) : n.url ? (
                         // The whole tile is the link (stretched); the arrow shows it.
                         <a
                           href={n.url}

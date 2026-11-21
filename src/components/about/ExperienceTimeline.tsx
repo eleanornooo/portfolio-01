@@ -83,6 +83,15 @@ export default function ExperienceTimeline({ positions }: { positions: Position[
                         )}
                       </span>
                       <span className="mt-0.5 block font-sans text-[0.9375rem] text-ink2">{p.org}</span>
+                      {p.steps && (
+                        <span className="mt-1.5 block space-y-0.5 border-l border-amber/30 pl-3 font-sans text-sm text-ink3">
+                          {p.steps.map((s) => (
+                            <span key={s.role} className="block">
+                              <span className="num">{s.end === s.start ? s.start : `${s.start}–${s.end ?? t.common.present}`}</span> · {s.role}
+                            </span>
+                          ))}
+                        </span>
+                      )}
                     </span>
                   </span>
                   <ChevronDown

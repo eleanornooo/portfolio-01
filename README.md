@@ -1,6 +1,6 @@
 # mimoudi.com
 
-Academic website of **Dr. Aziz Mimoudi, Ph.D.** — Assistant Professor and Coordinator of the
+Academic website of **Dr. Aziz Mimoudi** — Assistant Professor and Coordinator of the
 Technopedagogy & AI Axis, Institute of Education Sciences (ISE), Mohammed VI Polytechnic
 University (UM6P).
 
@@ -110,8 +110,16 @@ The "Copy APA citation" button and the type/year filters work from these fields.
   location: 'Rabat, Morocco',
   virtual: false,
   links: [{ label: 'Video', url: 'https://…' }],
+  page: '/talks/rabat-2027',           // optional: an internal session page (see below)
 },
 ```
+
+**Session pages.** A talk can have its own page, like `/talks/unu-macau-2026`
+(`src/pages/UnuMacau2026.tsx`: times, chair, panel and the "About the session" text, whose EN/FR
+copy is under `session` in `src/i18n/strings.ts`). Register it in `src/routes.tsx` and in
+`DARK_HERO_ROUTES` (`src/components/nav.ts`), and set `page` on the talk (and on the highlight in
+`news.ts`): the ticket, the tour poster, the globe, the research guide and the highlight tile then
+link to it. The sitemap picks it up automatically.
 
 The "talks and keynotes" number on the home page counts the talks whose date has passed.
 

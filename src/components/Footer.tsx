@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="page grid-12 gap-y-10 border-t border-rule py-14">
         <div className="col-span-4 md:col-span-5">
           <p className="font-serif text-h3">
-            {profile.honorific} {profile.name}, {profile.postnominal}
+            {profile.honorific} {profile.name}
           </p>
           <p className="mt-2 max-w-sm text-sm text-ink2">
             {pick(profile.title)} · {pick(profile.role)}, {profile.institutionShort}

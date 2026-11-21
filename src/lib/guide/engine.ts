@@ -11,7 +11,7 @@ import { students } from '../../content/students';
 import { news } from '../../content/news';
 import { positions } from '../../content/experience';
 import type { Lang } from '../../content/types';
-import { byDateDesc, formatDate, timing } from '../dates';
+import { byDateDesc, formatDate, monthYear, timing } from '../dates';
 import type { GuideAnswer, GuideResult, ResultKind } from './types';
 
 interface Doc extends GuideResult {
@@ -35,6 +35,9 @@ const T = {
     latest: (list: string) => `Latest highlights: ${list}.`,
     about: 'About — biography, experience, education',
     cv: 'Curriculum vitae (PDF)',
+    metrics: (c: number, h: number, i10: number, src: string, when: string) =>
+      `${c} citations on ${src} (h-index ${h}, i10-index ${i10}), as of ${when}.`,
+    metricsCard: 'Publications and citation metrics',
   },
   fr: {
     intro: (q: string) => `Voici ce que ce site dit de « ${q} ».`,
@@ -51,6 +54,9 @@ const T = {
     latest: (list: string) => `Faits marquants récents : ${list}.`,
     about: 'À propos — biographie, parcours, formation',
     cv: 'Curriculum vitae (PDF)',
+    metrics: (c: number, h: number, i10: number, src: string, when: string) =>
+      `${c} citations sur ${src} (indice h ${h}, indice i10 ${i10}), en ${when}.`,
+    metricsCard: 'Publications et indicateurs de citation',
   },
 };
 
@@ -100,7 +106,7 @@ function buildDocs(lang: Lang): Doc[] {
       kind: 'talk',
       title: t.title ?? t.event,
       meta: [t.dateLabel?.[lang] ?? formatDate(t.date, lang, t.endDate), t.location].filter(Boolean).join(' · '),
-      href: '/talks',
+      href: t.page ?? '/talks',
       text: [t.title, t.event, t.location, t.type, t.note, t.date].filter(Boolean).join(' '),
       date: t.date,
     });
@@ -346,6 +352,16 @@ export function answerLocally(question: string, lang: Lang, now = Date.now()): G
     return { text: L.upcoming(upcoming.length, list), results, source: 'local' };
   }
 
+  // Intent: citation metrics (Google Scholar), from content/profile.ts.
+  if (/citations?|cited|cité|scholar|h-?index|indice\s*h|i10|metrics|indicateurs/i.test(q)) {
+    const m = profile.metrics;
+    return {
+      text: L.metrics(m.citations, m.hIndex, m.i10Index, m.source, monthYear(m.asOf, lang)),
+      results: [{ id: 'metrics', kind: 'publication', title: L.metricsCard, meta: `${m.source} · ${monthYear(m.asOf, lang)}`, href: '/publications' }],
+      source: 'local',
+    };
+  }
+
   // Intent: doctoral supervision (students = supervision = doctorants).
   if (/supervis|\bstudents?\b|doctoral|ph\.?\s?d\.? students?|doctorant|étudiants?|encadr|codirect/i.test(q)) {
     const list = students.map((s) => `${s.name} (${s.topic}, ${s.cohort})`).join('; ');
@@ -378,7 +394,7 @@ export function answerLocally(question: string, lang: Lang, now = Date.now()): G
           kind: 'highlight' as const,
           title: n.title[lang],
           meta: formatDate(n.date, lang, n.endDate),
-          href: '/#highlights',
+          href: n.page ?? '/#highlights',
         })),
       ],
       source: 'local',

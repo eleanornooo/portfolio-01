@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import type { Talk } from '../../content/types';
 import { useLang } from '../../i18n/useLang';
 import { SELF } from '../../lib/apa';
@@ -51,6 +53,12 @@ export default function Ticket({ talk, now }: { talk: Talk; now: number }) {
         )}
         {talk.note && <p className="mt-2 text-sm text-ink2" lang={lang}>{tx(talk.note)}</p>}
         {talk.links && <LinkRow links={talk.links} className="mt-3" />}
+        {talk.page && (
+          <Link to={talk.page} className="btn-small mt-4 inline-flex items-center gap-1.5 text-ink" lang={lang}>
+            {t.talks.sessionPage}
+            <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        )}
       </div>
     </article>
   );

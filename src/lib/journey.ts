@@ -1,15 +1,14 @@
-// "Journey 1999 → 2026": career milestones, assembled from the CV data files
+// "Journey 1999 → today": career milestones, assembled from the CV data files
 // (degrees, positions, service) so nothing is typed twice.
 import { degrees } from '../content/education';
 import { positions } from '../content/experience';
-import { service } from '../content/service';
 import type { Localized } from '../content/types';
 import { photos, type Photo } from './photos';
 
 export interface Milestone {
   id: string;
   year: string;
-  period?: string;
+  period?: string | Localized;
   chapter: Localized;
   title: string;
   org: string;
@@ -19,7 +18,6 @@ export interface Milestone {
 
 const degree = (id: string) => degrees.find((d) => d.id === id)!;
 const position = (id: string) => positions.find((p) => p.id === id)!;
-const cofounder = service.flatMap((g) => g.items).find((s) => s.role === 'Co-founder')!;
 
 export function milestones(): Milestone[] {
   const crf = degree('crf');
@@ -29,7 +27,7 @@ export function milestones(): Milestone[] {
   const d4r = position('d4r');
   const phd = degree('phd');
   const teluq = position('teluq-ra');
-  const ap = position('ap-um6p');
+  const ise = position('ise-um6p');
   return [
     {
       id: 'crf',
@@ -76,15 +74,6 @@ export function milestones(): Milestone[] {
       photo: photos.panel2019,
     },
     {
-      id: 'ise',
-      year: cofounder.period ?? '2020',
-      chapter: { en: 'Building an institute', fr: 'Fonder un institut' },
-      title: cofounder.role,
-      org: cofounder.body,
-      place: d4r.place,
-      photo: photos.campus,
-    },
-    {
       id: 'phd',
       year: teluq.start,
       period: `${teluq.start}–${phd.year}`,
@@ -95,12 +84,14 @@ export function milestones(): Milestone[] {
       photo: photos.montreal,
     },
     {
-      id: 'ap',
-      year: ap.start,
-      chapter: { en: 'Professor of AI in education', fr: 'Professeur en IA et éducation' },
-      title: ap.role,
-      org: ap.org,
-      place: ap.place,
+      // The current chapter, last: ISE since 2020 (co-founder, then the Technopedagogy & AI Axis).
+      id: 'ise',
+      year: ise.start,
+      period: { en: `${ise.start}–today`, fr: `${ise.start}–aujourd’hui` },
+      chapter: { en: 'Building an institute', fr: 'Bâtir un institut' },
+      title: 'Building ISE and leading the Technopedagogy & AI Axis',
+      org: ise.org,
+      place: ise.place,
       photo: photos.scienceWeekPanelB,
     },
   ];

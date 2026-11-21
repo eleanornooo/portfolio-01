@@ -6,12 +6,18 @@ export const talks: Talk[] = [
   {
     id: 'unu-macau-2026',
     date: '2026-11-25',
-    endDate: '2026-11-26',
     type: 'Panel',
-    title: 'AI & Education: End of an Era of the Old Education System?',
+    title: 'Emerging Challenges and Practices for Validating Evidence of Learning and Competence in an AI-Mediated World',
     event: 'UNU Macau AI Conference 2026, United Nations University',
-    location: 'Macau SAR, China',
-    note: 'Selected panelist.',
+    location: 'MGM MACAU, Grand Ballroom 1 & 2, Macau SAR, China',
+    note: 'Chair: Salvatore Moccia.',
+    page: '/talks/unu-macau-2026',
+    links: [
+      {
+        label: 'Official programme',
+        url: 'https://unu.edu/macau/aiconf2026/program/emerging-challenges-and-practices-validating-evidence-learning-and-competence-ai',
+      },
+    ],
   },
   {
     id: 'innovenssup-2026',

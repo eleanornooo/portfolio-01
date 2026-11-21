@@ -1,4 +1,6 @@
 import { useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { useLang } from '../../i18n/useLang';
 import { photoSrc, photoSrcSet } from '../../lib/photos';
 import { talkDate, type TalkCity } from '../../lib/talk-cities';
@@ -65,6 +67,21 @@ export default function TourPoster({
                 {c.talks.length > 3 && <span className="hidden text-amber md:block">+{c.talks.length - 3}</span>}
               </span>
             </button>
+
+            {/* A talk with its own page (UNU Macau): a direct link under the city. */}
+            {c.talks
+              .filter((x) => x.page)
+              .slice(0, 1)
+              .map((x) => (
+                <Link
+                  key={x.id}
+                  to={x.page!}
+                  className="link-quiet -mt-1 mb-2 inline-flex min-h-[2.75rem] items-center gap-1.5 text-sm text-amber md:min-h-0"
+                >
+                  {t.talks.sessionPage} · {talkDate(x, lang)}
+                  <ArrowRight size={14} aria-hidden="true" />
+                </Link>
+              ))}
 
             {/* Hover preview (pointer devices): photo, number of talks, the latest title. */}
             {hover === c.id && (
