@@ -205,3 +205,8 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 - Text in `src/lib/og.json`, template `scripts/og-template.html`, renderer `npm run og` (headless Chrome + sharp)
 - `Seo` sets og:image (+ type, width, height, alt), twitter:image (+ alt) and og:locale per page and language; the old `og-image.jpg` and `scripts/og-image.html` are removed
 - Crawlers read the pre-rendered English pages, so shared links show the English image; FR images are used client-side only
+
+## Caching after deploys ✅ (21 Nov 2026, branch `cache-fix`)
+- `vercel.json`: every HTML page (`/`, the clean-URL routes, any `*.html`) is served with `Cache-Control: no-cache, must-revalidate`; `/assets/*` stays `public, max-age=31536000, immutable`
+- No service worker or PWA plugin, now or in the git history (`/sw.js` is 404 live), so nothing to unregister
+- Safety net (inline script in `index.html`): a failed `/assets/*.js` script or modulepreload, `vite:preloadError`, or a failed dynamic import reloads the page once; a sessionStorage flag prevents loops and `main.tsx` clears it 10 s after the app starts. Tested with a missing main bundle and a missing lazy chunk: one reload each, no loop

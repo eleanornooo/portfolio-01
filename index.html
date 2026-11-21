@@ -21,6 +21,48 @@
         d.setAttribute('data-theme', t);
       })();
     </script>
+    <script>
+      // Safety net after a deploy: if the main bundle or a lazy page chunk no longer exists (an
+      // old page asking for /assets/app-OLD.js), reload once to get the current page.
+      // The sessionStorage flag stops any loop; src/main.tsx clears it once the app runs fine.
+      (function () {
+        var KEY = 'reload-after-deploy';
+        function reloadOnce() {
+          try {
+            if (sessionStorage.getItem(KEY)) return;
+            sessionStorage.setItem(KEY, String(Date.now()));
+          } catch (e) {
+            return; // no storage: never reload, so it can't loop
+          }
+          location.reload();
+        }
+        // A <script> or <link rel="modulepreload"> under /assets/ that fails to load.
+        window.addEventListener(
+          'error',
+          function (e) {
+            var el = e.target;
+            var url = el && (el.src || el.href);
+            if (typeof url === 'string' && /\/assets\/[^/]+\.js(\?|$)/.test(url)) reloadOnce();
+          },
+          true,
+        );
+        // Vite's event for a lazy chunk that fails to preload.
+        window.addEventListener('vite:preloadError', function (e) {
+          e.preventDefault();
+          reloadOnce();
+        });
+        // A dynamic import() that fails (the message differs per browser).
+        window.addEventListener('unhandledrejection', function (e) {
+          var msg = String((e.reason && e.reason.message) || e.reason || '');
+          if (/dynamically imported module|Importing a module script failed|Loading chunk|ChunkLoadError/i.test(msg)) reloadOnce();
+        });
+        window.__clearReloadFlag = function () {
+          try {
+            sessionStorage.removeItem(KEY);
+          } catch (e) {}
+        };
+      })();
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

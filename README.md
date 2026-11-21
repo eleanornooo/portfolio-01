@@ -372,6 +372,10 @@ repository **eleanornooo/portfolio-01**: every push to `main` deploys to product
 - Old URLs redirect permanently: `/skills` and `/projects` → `/research`, `/courses` → `/teaching`,
   `/timetable` → `/teaching#timetable`.
 - Hashed assets in `/assets/` are cached for a year; images for a week.
+- HTML pages are sent with `Cache-Control: no-cache, must-revalidate`, so after a deploy browsers
+  always fetch the page that points to the new bundles. If a page still asks for a bundle that is
+  gone (a tab left open across a deploy), an inline script in `index.html` reloads it once
+  (guarded by sessionStorage, so it can't loop). The site has no service worker.
 - Domains: `www.mimoudi.com` is primary and `mimoudi.com` redirects to it (canonical URLs and the
   sitemap use `https://www.mimoudi.com`).
 
