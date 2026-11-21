@@ -68,7 +68,7 @@ export function Component() {
 
   return (
     <div ref={root}>
-      <Seo title={t.research.metaTitle} description={t.research.metaDescription} path="/research" />
+      <Seo title={t.research.metaTitle} description={t.research.metaDescription} path="/research" image="research" />
 
       {/* ------------------------------------------------------- the map (opening) */}
       <section aria-labelledby="research-title" className="tone-dark blend-b relative isolate overflow-hidden md:h-[100svh] md:min-h-[44rem]">

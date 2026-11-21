@@ -88,7 +88,7 @@ export function Component() {
 
   return (
     <>
-      <Seo title={t.publications.metaTitle} description={t.publications.metaDescription} path="/publications" />
+      <Seo title={t.publications.metaTitle} description={t.publications.metaDescription} path="/publications" image="publications" />
 
       {/* -------------------------------------------- opening: the number + venues */}
       <section aria-labelledby="pub-title" className="tone-dark blend-b relative isolate overflow-hidden pb-20 pt-28 md:pb-24 md:pt-32">

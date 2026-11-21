@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "images": "node scripts/build-images.mjs",
     "images:hero": "node scripts/build-hero.mjs",
-    "favicons": "node scripts/build-favicons.mjs"
+    "favicons": "node scripts/build-favicons.mjs",
+    "og": "node scripts/build-og.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

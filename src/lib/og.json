@@ -1,0 +1,31 @@
+{
+  "_comment": "Share images (Open Graph), one per page and language. `npm run og` renders public/<file> from scripts/og-template.html with this text. Give an image a NEW file name when it changes, so WhatsApp, LinkedIn and Facebook don't keep the cached one.",
+  "name": { "en": "Dr. Aziz Mimoudi", "fr": "Dr Aziz Mimoudi" },
+  "title": { "en": "AI in Education · ISE – UM6P, Rabat", "fr": "IA en éducation · ISE – UM6P, Rabat" },
+  "images": {
+    "default": {
+      "en": { "file": "og-default-v2.jpg", "eyebrow": "Mohammed VI Polytechnic University", "line": "Responsible AI in teaching and teacher education" },
+      "fr": { "file": "og-default-v2-fr.jpg", "eyebrow": "Université Mohammed VI Polytechnique", "line": "Une IA responsable dans l’enseignement et la formation des enseignants" }
+    },
+    "talks": {
+      "en": { "file": "og-talks-v2.jpg", "eyebrow": "Talks", "line": "Keynotes, panels and conference papers, from Montréal to Rabat and Macau" },
+      "fr": { "file": "og-talks-v2-fr.jpg", "eyebrow": "Conférences", "line": "Conférences d’ouverture, panels et communications, de Montréal à Rabat et Macao" }
+    },
+    "publications": {
+      "en": { "file": "og-publications-v2.jpg", "eyebrow": "Publications", "line": "Journal articles, book chapters and proceedings on AI in education" },
+      "fr": { "file": "og-publications-v2-fr.jpg", "eyebrow": "Publications", "line": "Articles, chapitres d’ouvrages et actes sur l’IA en éducation" }
+    },
+    "research": {
+      "en": { "file": "og-research-v2.jpg", "eyebrow": "Research", "line": "Teacher education, generative AI and funded projects" },
+      "fr": { "file": "og-research-v2-fr.jpg", "eyebrow": "Recherche", "line": "Formation des enseignants, IA générative et projets financés" }
+    },
+    "about": {
+      "en": { "file": "og-about-v2.jpg", "eyebrow": "About", "line": "27+ years in education · Faculty at ISE since 2020" },
+      "fr": { "file": "og-about-v2-fr.jpg", "eyebrow": "À propos", "line": "Plus de 27 ans en éducation · À l’ISE depuis 2020" }
+    },
+    "unu-macau-2026": {
+      "en": { "file": "og-unu-macau-2026.jpg", "event": true, "eyebrow": "UNU Macau AI Conference 2026", "line": "Panelist · 25 Nov 2026, Macau" },
+      "fr": { "file": "og-unu-macau-2026-fr.jpg", "event": true, "eyebrow": "UNU Macau AI Conference 2026", "line": "Panéliste · 25 nov. 2026, Macao" }
+    }
+  }
+}

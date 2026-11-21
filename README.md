@@ -304,8 +304,22 @@ redeploy (`src/lib/guide/provider.ts`). Never put an API key in a `VITE_` variab
 
 Originals live in `assets-src/` (not deployed). After replacing one, run `npm run images` to
 regenerate the WebP files in `public/img/` (event photos in 640 and 1200 px, portrait crops,
-grayscale institution logos) and the favicons (see below). The share image `public/og-image.jpg` is
-designed in `scripts/og-image.html` (render it at 1200×630 in a browser and export as JPEG).
+grayscale institution logos) and the favicons (see below).
+
+### Share images (Open Graph)
+
+Each page has its own 1200×630 share image, in English and French: default (Home, Teaching,
+Contact), Talks, Publications, Research, About and the UNU Macau session page. The text lives in
+`src/lib/og.json`; `npm run og` renders them from `scripts/og-template.html` (dark background,
+cut-out portrait, "m" mark) with headless Chrome and writes `public/og-*.jpg` (≈90 KB each). A page
+picks its image with `<Seo image="talks" …/>`.
+
+**When an image changes, give it a new file name in `og.json`** (e.g. `og-talks-v3.jpg`) and delete
+the old one: WhatsApp, LinkedIn and Facebook cache images by URL. Pages are pre-rendered in
+English, so link previews use the English image; the French one is used once a visitor switches
+the site to French. To refresh a preview that was already shared, use the
+[LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) or the
+[Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/).
 
 ### Favicon and logo mark
 

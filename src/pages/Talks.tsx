@@ -160,7 +160,7 @@ export function Component() {
 
   return (
     <>
-      <Seo title={t.talks.metaTitle} description={t.talks.metaDescription} path="/talks" />
+      <Seo title={t.talks.metaTitle} description={t.talks.metaDescription} path="/talks" image="talks" />
 
       {/* ------------------------------------------------- opening: tour poster */}
       <section aria-labelledby="talks-title" className="tone-dark blend-b relative isolate overflow-hidden pb-24 pt-28 md:pt-32">

@@ -199,3 +199,9 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 
 ## ResearchGate ✅ (21 Nov 2026, branch `researchgate`)
 - https://www.researchgate.net/profile/Aziz-Mimoudi-2 (`profile.links.researchgate`) after ORCID in the Home hero links, About "Researcher profiles", the Contact profiles card, the footer, and the JSON-LD `sameAs`; new tab with ↗ like the others
+
+## Share images ✅ (21 Nov 2026, branch `og-images`)
+- New premium-dark Open Graph images, 1200×630 JPEG, 83–101 KB: default (Home, Teaching, Contact, 404), Talks, Publications, Research, About, UNU Macau 2026, each in EN and FR (`public/og-*-v2*.jpg`, `og-unu-macau-2026*.jpg`)
+- Text in `src/lib/og.json`, template `scripts/og-template.html`, renderer `npm run og` (headless Chrome + sharp)
+- `Seo` sets og:image (+ type, width, height, alt), twitter:image (+ alt) and og:locale per page and language; the old `og-image.jpg` and `scripts/og-image.html` are removed
+- Crawlers read the pre-rendered English pages, so shared links show the English image; FR images are used client-side only

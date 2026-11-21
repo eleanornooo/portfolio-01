@@ -102,7 +102,7 @@ export function Component() {
 
   return (
     <div ref={root}>
-      <Seo title={t.about.metaTitle} description={t.about.metaDescription} path="/about" />
+      <Seo title={t.about.metaTitle} description={t.about.metaDescription} path="/about" image="about" />
 
       {/* --------------------------------------------------------------- hero */}
       <section aria-labelledby="about-title" className="tone-dark blend-b relative isolate overflow-hidden">

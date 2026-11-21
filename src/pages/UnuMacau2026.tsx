@@ -155,7 +155,7 @@ export function Component() {
 
   return (
     <div ref={root}>
-      <Seo title={t.session.metaTitle} description={t.session.metaDescription} path={PATH} />
+      <Seo title={t.session.metaTitle} description={t.session.metaDescription} path={PATH} image="unu-macau-2026" />
 
       {/* ------------------------------------------------------------ opener */}
       <section aria-labelledby="page-title" className="tone-dark blend-b relative isolate overflow-hidden pb-16 pt-28 md:pb-24 md:pt-36">
