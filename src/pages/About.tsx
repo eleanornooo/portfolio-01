@@ -176,6 +176,7 @@ export function Component() {
                 {[
                   ['Google Scholar', profile.links.scholar],
                   ['ORCID 0000-0003-2219-9586', profile.links.orcid],
+                  ...(profile.links.researchgate ? [['ResearchGate', profile.links.researchgate]] : []),
                   ...(profile.links.scopus ? [['Scopus', profile.links.scopus]] : []),
                   ['LinkedIn', profile.links.linkedin],
                 ].map(([label, href]) => (

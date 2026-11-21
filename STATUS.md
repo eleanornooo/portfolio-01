@@ -196,3 +196,6 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 - Tab: `d-m-dot-transparent.svg` (adapts to light/dark tabs) + `favicon.ico` fallback; `favicon.svg` and `favicon-32.png` removed
 - `d-m-dot.svg` (dark rounded background) did not exist in the repo; it was created from the same mark (light "m", near-black #0A0B0F square, rx 14) and feeds `npm run favicons` (ICO 32, Apple 180, manifest 192/512). The manifest colours are now #0A0B0F
 - Nav: inline SVG in `currentColor` beside "Aziz Mimoudi" (checked in dark, light and on a phone)
+
+## ResearchGate ✅ (21 Nov 2026, branch `researchgate`)
+- https://www.researchgate.net/profile/Aziz-Mimoudi-2 (`profile.links.researchgate`) after ORCID in the Home hero links, About "Researcher profiles", the Contact profiles card, the footer, and the JSON-LD `sameAs`; new tab with ↗ like the others

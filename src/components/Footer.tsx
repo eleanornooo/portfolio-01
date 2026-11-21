@@ -53,6 +53,13 @@ export default function Footer() {
                 ORCID
               </Ext>
             </li>
+            {profile.links.researchgate && (
+              <li>
+                <Ext href={profile.links.researchgate} className="link-quiet no-underline hover:underline">
+                  ResearchGate
+                </Ext>
+              </li>
+            )}
             <li>
               <Ext href={profile.links.linkedin} className="link-quiet no-underline hover:underline">
                 LinkedIn

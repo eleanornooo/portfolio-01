@@ -218,6 +218,13 @@ export default function Hero() {
                   ORCID
                 </Ext>
               </li>
+              {profile.links.researchgate && (
+                <li>
+                  <Ext href={profile.links.researchgate} className="link-quiet">
+                    ResearchGate
+                  </Ext>
+                </li>
+              )}
               <li>
                 <Ext href={profile.links.linkedin} className="link-quiet">
                   LinkedIn

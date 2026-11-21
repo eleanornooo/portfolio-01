@@ -211,6 +211,7 @@ export function Component() {
                 {[
                   ['Google Scholar', profile.links.scholar],
                   ['ORCID', profile.links.orcid],
+                  ...(profile.links.researchgate ? [['ResearchGate', profile.links.researchgate]] : []),
                   ['LinkedIn', profile.links.linkedin],
                   ...(profile.links.instagram ? [['Instagram', profile.links.instagram]] : []),
                 ].map(([label, href]) => (

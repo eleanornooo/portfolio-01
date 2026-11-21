@@ -46,6 +46,7 @@ export const profile: Profile = {
   links: {
     scholar: 'https://scholar.google.com/citations?user=-9rVxq0AAAAJ',
     orcid: 'https://orcid.org/0000-0003-2219-9586',
+    researchgate: 'https://www.researchgate.net/profile/Aziz-Mimoudi-2',
     linkedin: 'https://www.linkedin.com/in/aziz-mimoudi-328442115/',
     scopus: 'https://www.scopus.com/authid/detail.uri?authorId=59523511000',
     instagram: 'https://www.instagram.com/aziz.mimoudi',

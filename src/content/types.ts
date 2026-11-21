@@ -38,6 +38,7 @@ export interface Profile {
   links: {
     scholar: string;
     orcid: string;
+    researchgate?: string;
     linkedin: string;
     scopus?: string;
     instagram?: string;
