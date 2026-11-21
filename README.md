@@ -304,8 +304,20 @@ redeploy (`src/lib/guide/provider.ts`). Never put an API key in a `VITE_` variab
 
 Originals live in `assets-src/` (not deployed). After replacing one, run `npm run images` to
 regenerate the WebP files in `public/img/` (event photos in 640 and 1200 px, portrait crops,
-grayscale institution logos) and the monogram favicons. The share image `public/og-image.jpg` is
+grayscale institution logos) and the favicons (see below). The share image `public/og-image.jpg` is
 designed in `scripts/og-image.html` (render it at 1200×630 in a browser and export as JPEG).
+
+### Favicon and logo mark
+
+The mark is a serif "m" (Georgia Italic, converted to an outline so it looks the same on every
+device) with an orange dot.
+
+- Browser tab: `public/d-m-dot-transparent.svg` (transparent; the "m" is dark or light with
+  `prefers-color-scheme`), linked from `index.html`, with `favicon.ico` as the fallback.
+- `public/d-m-dot.svg` (dark rounded square) → `npm run favicons` → `favicon.ico` (32 px),
+  `apple-touch-icon.png` (180) and `icon-192.png` / `icon-512.png` (`site.webmanifest`).
+- Nav: the `Monogram` component in `src/components/Header.tsx` draws the same outline in the
+  current text colour, so it follows the theme.
 
 ### Gallery photos (About → "In the field")
 

@@ -58,23 +58,5 @@ for (const f of await readdir(path.join(src, 'logos'))) {
   console.log('logo', name);
 }
 
-// Monogram favicon set (drawn as strokes, so no font is needed).
-const monogram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#172033"/>
-  <g fill="none" stroke="#F6F2EA" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="miter">
-    <polyline points="12,46 21,18 30,46"/>
-    <line x1="15.6" y1="36" x2="26.4" y2="36"/>
-    <polyline points="35,46 35,18 43.5,35 52,18 52,46"/>
-  </g>
-  <line x1="12" y1="53.5" x2="52" y2="53.5" stroke="#C8512B" stroke-width="2.5"/>
-</svg>`;
-await writeFile(path.join(root, 'public', 'favicon.svg'), monogram);
-for (const [size, name] of [
-  [32, 'favicon-32.png'],
-  [180, 'apple-touch-icon.png'],
-  [192, 'icon-192.png'],
-  [512, 'icon-512.png'],
-]) {
-  await sharp(Buffer.from(monogram)).resize(size, size).png().toFile(path.join(root, 'public', name));
-}
-console.log('favicons done');
+// Favicons (the "m" + dot mark): see build-favicons.mjs.
+await import('./build-favicons.mjs');

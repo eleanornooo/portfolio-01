@@ -5,16 +5,19 @@ import { useLang } from '../i18n/useLang';
 import Dialog from './Dialog';
 import { DARK_HERO_ROUTES, NAV } from './nav';
 
+/** Outline of a Georgia Italic "m" (same as the favicon, public/d-m-dot-transparent.svg). */
+const M_PATH =
+  'M49.21 47.02L48.82 48.71Q46.39 49.68 44.94 50.07Q43.49 50.45 42.46 50.45Q40.35 50.45 39.30 49.35Q38.25 48.26 38.25 46.65Q38.25 46.07 38.35 45.37Q38.46 44.67 38.69 43.72L41.28 33.89Q41.57 32.76 41.74 31.83Q41.91 30.91 41.91 30.36Q41.91 28.59 41.15 27.56Q40.38 26.53 38.72 26.53Q36.95 26.53 35.25 27.36Q33.55 28.19 31.42 30.46L26.83 50L21.92 50L26.06 32.39Q26.20 31.81 26.31 31.16Q26.43 30.51 26.43 30.20Q26.43 28.48 25.58 27.51Q24.72 26.53 23.06 26.53Q21.56 26.53 19.74 27.28Q17.92 28.04 15.52 30.65L11.06 50L6.16 50L10.09 32.91Q10.30 31.99 10.49 30.94Q10.69 29.88 10.69 29.14Q10.69 27.61 10.19 27.13Q9.69 26.64 8.24 26.64Q7.66 26.64 6.75 26.85Q5.84 27.06 5.34 27.19L5.73 25.50Q7.79 24.58 9.37 24.13Q10.96 23.69 12.09 23.69Q14.20 23.69 15.08 24.83Q15.97 25.98 16.02 27.96L16.18 27.96Q19.29 25.50 21.29 24.45Q23.30 23.40 26.06 23.40Q28.41 23.40 29.87 24.75Q31.34 26.11 31.52 28.17L31.63 28.17Q34.45 25.82 36.65 24.61Q38.85 23.40 41.78 23.40Q44.31 23.40 45.67 24.86Q47.03 26.32 47.03 28.70Q47.03 29.17 46.88 30.38Q46.74 31.600 46.42 32.78L44.20 41.25Q43.97 42.09 43.76 43.18Q43.55 44.28 43.55 44.88Q43.55 46.39 44.18 46.93Q44.81 47.47 46.31 47.47Q46.81 47.47 47.76 47.34Q48.71 47.21 49.21 47.02Z';
+
+/**
+ * The site mark: a serif "m" in the current text colour (it follows the theme) and an orange dot.
+ * Trimmed viewBox so the glyph sits on the text baseline next to the name.
+ */
 export function Monogram({ className = '' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <rect width="64" height="64" rx="12" className="fill-ink" />
-      <g fill="none" className="stroke-paper" strokeWidth="4.5" strokeLinecap="square" strokeLinejoin="miter">
-        <polyline points="12,46 21,18 30,46" />
-        <line x1="15.6" y1="36" x2="26.4" y2="36" />
-        <polyline points="35,46 35,18 43.5,35 52,18 52,46" />
-      </g>
-      <line x1="12" y1="53.5" x2="52" y2="53.5" className="stroke-vivid" strokeWidth="2.5" />
+    <svg viewBox="4 20 58 34" className={className} aria-hidden="true">
+      <path d={M_PATH} fill="currentColor" />
+      <circle cx="55" cy="47" r="6" fill="#E8622C" />
     </svg>
   );
 }
@@ -111,8 +114,8 @@ export default function Header() {
             scrolled ? 'scale-100 opacity-100' : 'scale-[0.97] opacity-0'
           }`}
         />
-        <Link to="/" className="group relative flex items-center gap-3" aria-label={`Aziz Mimoudi — ${t.nav.home}`}>
-          <Monogram className="h-7 w-7" />
+        <Link to="/" className="group relative flex items-center gap-2" aria-label={`Aziz Mimoudi — ${t.nav.home}`}>
+          <Monogram className="h-[1.375rem] w-auto translate-y-[0.1rem]" />
           <span className="font-display text-[1.0625rem] font-bold tracking-[-0.02em] group-hover:text-accent">
             Aziz Mimoudi
           </span>
